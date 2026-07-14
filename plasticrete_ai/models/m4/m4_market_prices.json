@@ -1,0 +1,38 @@
+{
+  "market_prices": {
+    "cement_opc53": 9.0,
+    "river_sand": 1.8,
+    "coarse_agg_20mm": 1.5,
+    "water": 0.003,
+    "PET": 3.5,
+    "HDPE": 4.0,
+    "LDPE": 3.8,
+    "PVC": 4.5,
+    "PP": 3.6,
+    "Mixed": 2.8,
+    "fly_ash": 1.2,
+    "silica_fume": 15.0,
+    "fibres": 60.0,
+    "none": 0.0
+  },
+  "product_area_yield": {
+    "paving_block_light": 6.0,
+    "paving_block_heavy": 5.0,
+    "floor_tile_indoor": 10.0,
+    "floor_tile_outdoor": 10.0,
+    "hollow_concrete_block": 8.0,
+    "lightweight_partition_block": 10.0,
+    "structural_concrete": 1.0,
+    "nonstructural_concrete_fill": 1.0,
+    "plastic_sand_paver": 7.0,
+    "wall_cladding_panel": 8.0,
+    "thermal_insulation_panel": 12.0,
+    "kerb_stone": 4.0
+  },
+  "conventional_mix_m20": {
+    "cement_opc53": 383.0,
+    "river_sand": 723.0,
+    "coarse_agg_20mm": 1102.0,
+    "water": 191.5
+  }
+}

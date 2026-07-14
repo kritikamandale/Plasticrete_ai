@@ -1,0 +1,290 @@
+/* ============================================================================
+   PlastiCrete AI — Premium Civil-Sector design system
+   Injected by ui.theme.load_css(). Everything is variable-driven; dark mode is
+   a second :root override appended by theme.py (see _DARK_VARS).
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  /* surfaces */
+  --pc-bg:            #F7F8FA;
+  --pc-surface:       #FFFFFF;
+  --pc-surface-2:     #FFFFFF;
+  --pc-inset:         #F1F5F9;
+  --pc-text:          #0F172A;
+  --pc-text-muted:    #64748B;
+  --pc-border:        #E2E8F0;
+  --pc-border-strong: #CBD5E1;
+  /* structural + signal */
+  --pc-primary:       #2B3A55;
+  --pc-primary-2:     #3E5277;
+  --pc-amber:         #F59E0B;
+  --pc-amber-soft:    #FEF3C7;
+  --pc-green:         #16A34A;
+  --pc-green-2:       #22C55E;
+  --pc-green-soft:    #DCFCE7;
+  --pc-red:           #DC2626;
+  --pc-red-soft:      #FEE2E2;
+  /* plastic palette */
+  --pc-pet:  #06B6D4;  --pc-hdpe: #8B5CF6;  --pc-ldpe: #EC4899;
+  --pc-pvc:  #F97316;  --pc-pp:   #10B981;  --pc-mixed:#64748B;
+  /* effects */
+  --pc-shadow:     0 1px 2px rgba(15,23,42,.04), 0 6px 20px rgba(15,23,42,.06);
+  --pc-shadow-lg:  0 2px 4px rgba(15,23,42,.05), 0 14px 40px rgba(15,23,42,.12);
+  --pc-grid-line:  rgba(43,58,85,.06);
+  --pc-radius:     18px;
+  --pc-radius-sm:  12px;
+}
+
+/* ---- dark palette is appended by theme.py, but keep container hooks here ---- */
+
+html, body, .stApp, [data-testid="stAppViewContainer"] {
+  background: var(--pc-bg) !important;
+  color: var(--pc-text);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+[data-testid="stHeader"] { background: transparent !important; }
+[data-testid="stSidebar"] {
+  background: var(--pc-surface) !important;
+  border-right: 1px solid var(--pc-border);
+}
+[data-testid="stSidebar"] * { color: var(--pc-text); }
+
+/* hide default chrome */
+#MainMenu, footer, [data-testid="stDecoration"] { display: none !important; }
+[data-testid="stToolbar"] { right: 1rem; }
+
+/* typography */
+h1, h2, h3, h4 { font-family: 'Space Grotesk', 'Inter', sans-serif; color: var(--pc-text); letter-spacing: -.01em; }
+.block-container { padding-top: 2.4rem; padding-bottom: 4rem; max-width: 1500px; }
+
+/* ---------- blueprint motif ---------- */
+.pc-blueprint {
+  background-image:
+    linear-gradient(var(--pc-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--pc-grid-line) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+/* ---------- hero ---------- */
+.pc-hero {
+  position: relative; overflow: hidden;
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius);
+  padding: 30px 34px;
+  background:
+    linear-gradient(var(--pc-grid-line) 1px, transparent 1px) 0 0/26px 26px,
+    linear-gradient(90deg, var(--pc-grid-line) 1px, transparent 1px) 0 0/26px 26px,
+    linear-gradient(135deg, var(--pc-primary) 0%, var(--pc-primary-2) 60%, #4a628c 100%);
+  color: #F8FAFC;
+  box-shadow: var(--pc-shadow);
+}
+.pc-hero h1 { color: #FFFFFF; font-size: 2.15rem; margin: 0 0 6px; }
+.pc-hero .pc-tagline { color: #CBD5E1; font-size: 1.02rem; margin: 0; font-weight: 500; }
+.pc-hero .pc-eyebrow {
+  font-family: 'JetBrains Mono', monospace; font-size: .72rem; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--pc-amber); font-weight: 600; margin-bottom: 10px;
+}
+
+/* ---------- cards ---------- */
+.pc-card {
+  background: var(--pc-surface);
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius);
+  padding: 20px 22px;
+  box-shadow: var(--pc-shadow);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  height: 100%;
+}
+.pc-card.pc-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--pc-shadow-lg);
+  border-color: var(--pc-border-strong);
+}
+.pc-card-title {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: .95rem;
+  color: var(--pc-text); margin: 0 0 4px; display:flex; align-items:center; gap:8px;
+}
+.pc-card-sub { color: var(--pc-text-muted); font-size: .8rem; margin: 0; }
+
+/* streamlit-native bordered container → give it card feel */
+[data-testid="stVerticalBlockBorderWrapper"] {
+  border-radius: var(--pc-radius) !important;
+  border-color: var(--pc-border) !important;
+  box-shadow: var(--pc-shadow);
+}
+
+/* ---------- metric / spec card ---------- */
+.pc-metric-label {
+  font-size: .78rem; color: var(--pc-text-muted); font-weight: 600;
+  text-transform: uppercase; letter-spacing: .04em; margin: 0 0 6px;
+  display:flex; align-items:center; gap:6px;
+}
+.pc-metric-value {
+  font-family: 'JetBrains Mono', monospace; font-weight: 700; line-height: 1;
+  font-size: 2.6rem; color: var(--pc-text);
+}
+.pc-metric-value.sm { font-size: 1.9rem; }
+.pc-metric-unit { font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: var(--pc-text-muted); font-weight: 500; margin-left: 6px; }
+.pc-metric-interval {
+  font-family: 'JetBrains Mono', monospace; font-size: .82rem; color: var(--pc-text-muted); margin-top: 8px;
+}
+.pc-delta-up   { color: var(--pc-green); font-weight: 600; }
+.pc-delta-down { color: var(--pc-red);   font-weight: 600; }
+.pc-standard {
+  font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: var(--pc-text-muted);
+  border-top: 1px dashed var(--pc-border); margin-top: 12px; padding-top: 8px; letter-spacing: .02em;
+}
+/* interval band */
+.pc-band { height: 6px; border-radius: 6px; background: var(--pc-inset); position: relative; margin-top: 10px; }
+.pc-band > span { position:absolute; height:100%; border-radius:6px; background: linear-gradient(90deg, var(--pc-green-2), var(--pc-amber)); opacity:.7; }
+.pc-band > b { position:absolute; top:-3px; width:2px; height:12px; background: var(--pc-primary); border-radius:2px; }
+
+/* status dot */
+.pc-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.pc-dot.ok   { background: var(--pc-green); box-shadow: 0 0 0 3px var(--pc-green-soft); }
+.pc-dot.warn { background: var(--pc-amber); box-shadow: 0 0 0 3px var(--pc-amber-soft); }
+.pc-dot.fail { background: var(--pc-red);   box-shadow: 0 0 0 3px var(--pc-red-soft); }
+
+/* ---------- chips ---------- */
+.pc-chip {
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:'JetBrains Mono', monospace; font-weight:600; font-size:.72rem;
+  padding:3px 10px; border-radius:999px; color:#fff; letter-spacing:.02em;
+}
+.pc-chip.pet{background:var(--pc-pet)} .pc-chip.hdpe{background:var(--pc-hdpe)}
+.pc-chip.ldpe{background:var(--pc-ldpe)} .pc-chip.pvc{background:var(--pc-pvc)}
+.pc-chip.pp{background:var(--pc-pp)} .pc-chip.mixed{background:var(--pc-mixed)}
+.pc-chip-outline{
+  background: transparent; color: var(--pc-text-muted);
+  border:1px solid var(--pc-border-strong);
+}
+
+/* ---------- compliance pill ---------- */
+.pc-pill {
+  display:inline-flex; align-items:center; gap:6px; font-weight:600; font-size:.78rem;
+  padding:4px 12px; border-radius:999px;
+}
+.pc-pill.pass { background:var(--pc-green-soft); color:#166534; }
+.pc-pill.warn { background:var(--pc-amber-soft); color:#92400E; }
+.pc-pill.fail { background:var(--pc-red-soft);   color:#991B1B; }
+
+/* ---------- SDG badge ---------- */
+.pc-sdg {
+  display:flex; flex-direction:column; justify-content:space-between;
+  border-radius: 12px; padding:12px 14px; min-height:78px; color:#fff;
+  box-shadow: var(--pc-shadow);
+}
+.pc-sdg .n { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem; line-height:1; }
+.pc-sdg .l { font-size:.68rem; font-weight:600; opacity:.95; margin-top:6px; }
+
+/* ---------- workflow rail ---------- */
+.pc-rail { display:flex; align-items:center; gap:0; flex-wrap:wrap; }
+.pc-rail .step {
+  display:flex; align-items:center; gap:9px; padding:8px 15px; border-radius:999px;
+  background:var(--pc-inset); border:1px solid var(--pc-border);
+  font-size:.8rem; font-weight:600; color:var(--pc-text-muted);
+}
+.pc-rail .step.active { background:var(--pc-primary); color:#fff; border-color:var(--pc-primary); }
+.pc-rail .step .b {
+  font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.72rem;
+  background:rgba(255,255,255,.18); border-radius:6px; padding:1px 6px;
+}
+.pc-rail .step:not(.active) .b { background:var(--pc-surface); }
+.pc-rail .arrow { color:var(--pc-border-strong); padding:0 8px; font-weight:700; }
+
+/* ---------- quick-action tile ---------- */
+.pc-tile {
+  border:1px solid var(--pc-border); border-radius:var(--pc-radius);
+  background:var(--pc-surface); padding:18px 20px; box-shadow:var(--pc-shadow);
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  cursor:pointer; height:100%;
+}
+.pc-tile:hover { transform:translateY(-4px); box-shadow:var(--pc-shadow-lg); border-color:var(--pc-amber); }
+.pc-tile .ico { font-size:1.5rem; }
+.pc-tile .t { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.02rem; margin:8px 0 2px; }
+.pc-tile .d { color:var(--pc-text-muted); font-size:.8rem; }
+
+/* ---------- citation card ---------- */
+.pc-citation {
+  border:1px solid var(--pc-border); border-left:3px solid var(--pc-primary-2);
+  border-radius:var(--pc-radius-sm); background:var(--pc-surface); padding:14px 16px; box-shadow:var(--pc-shadow);
+}
+.pc-citation .au { font-weight:600; font-size:.92rem; }
+.pc-citation .meta { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--pc-text-muted); margin-top:2px; }
+.pc-citation .doi { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--pc-pet); word-break:break-all; }
+.pc-sim {
+  float:right; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.8rem;
+  color:var(--pc-green); background:var(--pc-green-soft); padding:2px 9px; border-radius:999px;
+}
+
+/* ---------- progress ring (application suitability) ---------- */
+.pc-ring {
+  --v: 0; --c: var(--pc-green);
+  width:74px; height:74px; border-radius:50%;
+  background: conic-gradient(var(--c) calc(var(--v)*1%), var(--pc-inset) 0);
+  display:grid; place-items:center; position:relative;
+  transition: background .6s ease;
+}
+.pc-ring::after {
+  content:''; position:absolute; inset:8px; border-radius:50%; background:var(--pc-surface);
+}
+.pc-ring b {
+  position:relative; z-index:1; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:1.05rem; color:var(--pc-text);
+}
+
+/* section header */
+.pc-section {
+  font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.15rem;
+  padding:2px 0 2px 12px; border-left:4px solid var(--pc-amber); margin:6px 0 14px;
+}
+.pc-eyebrow-dark {
+  font-family:'JetBrains Mono',monospace; font-size:.7rem; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--pc-amber); font-weight:600;
+}
+
+/* small badge (ensemble etc.) */
+.pc-badge {
+  display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace;
+  font-size:.7rem; font-weight:600; padding:3px 9px; border-radius:8px;
+  background:var(--pc-inset); color:var(--pc-primary-2); border:1px solid var(--pc-border);
+}
+
+/* callout */
+.pc-callout {
+  border-radius:12px; padding:12px 16px; font-size:.85rem; font-weight:500;
+  border:1px solid var(--pc-amber); background:var(--pc-amber-soft); color:#92400E;
+  display:flex; gap:10px; align-items:flex-start;
+}
+
+/* ---------- streamlit widget polish ---------- */
+.stButton > button {
+  border-radius:12px; font-weight:600; border:1px solid var(--pc-border);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.stButton > button:hover { transform:translateY(-1px); box-shadow:var(--pc-shadow); }
+.stButton > button[kind="primary"] {
+  background:var(--pc-amber); color:#3B2600; border:none;
+}
+.stButton > button[kind="primary"]:hover { background:#E8920A; }
+.stTabs [data-baseweb="tab-list"] { gap:4px; }
+.stTabs [data-baseweb="tab"] {
+  border-radius:10px 10px 0 0; font-weight:600; padding:6px 14px;
+}
+.stTabs [aria-selected="true"] { color:var(--pc-primary-2); }
+div[data-testid="stMetric"] {
+  background:var(--pc-surface); border:1px solid var(--pc-border);
+  border-radius:var(--pc-radius-sm); padding:14px 16px; box-shadow:var(--pc-shadow);
+}
+div[data-testid="stMetricValue"] { font-family:'JetBrains Mono',monospace; font-weight:700; }
+[data-testid="stSliderThumbValue"], [data-testid="stTickBar"] { font-family:'JetBrains Mono',monospace; }
+
+/* fade-in for page content */
+.main .block-container { animation: pcFade .4s ease; }
+@keyframes pcFade { from {opacity:0; transform:translateY(6px);} to {opacity:1; transform:none;} }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

@@ -1,0 +1,11 @@
+material,inr_per_kg,inr_per_m3,notes
+OPC_cement,6.5,,,bulk rate India 2024
+GGBS,4.0,,,
+fly_ash,1.5,,,
+silica_fume,18.0,,,
+PET_waste,0.8,,,scrap price India 2024
+HDPE_waste,1.2,,,
+PP_waste,1.0,,,
+fine_aggregate,,450,,per m3
+coarse_aggregate,,800,,per m3
+water,,0.05,,per litre

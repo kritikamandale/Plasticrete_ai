@@ -1,0 +1,85 @@
+{
+  "version": "BIS_Rules_v1.0",
+  "reference": "Bureau of Indian Standards + NBC 2016",
+  "last_updated": "2024",
+  "standards": {
+    "IS_516_2018": {
+      "title": "Method of Tests for Strength of Concrete",
+      "description": "Cube compressive strength test; grade-based minimums",
+      "primary_output": "compressive_strength_mpa",
+      "grades": {
+        "M10": {"min_cs_mpa": 10.0, "application": "lean concrete, mass fill"},
+        "M15": {"min_cs_mpa": 15.0, "application": "non-structural slabs"},
+        "M20": {"min_cs_mpa": 20.0, "application": "general structural, RCC"},
+        "M25": {"min_cs_mpa": 25.0, "application": "beams, columns, slabs"},
+        "M30": {"min_cs_mpa": 30.0, "application": "high-performance structural"}
+      },
+      "cube_cylinder_conversion": 1.25,
+      "compliance_rule": "cs_mpa >= grade_threshold"
+    },
+    "IS_1237_2012": {
+      "title": "Cement Concrete Flooring Tiles",
+      "description": "Requirements for cement concrete floor/paving tiles",
+      "primary_outputs": ["compressive_strength_mpa", "water_absorption_pct"],
+      "thresholds": {
+        "min_cs_mpa": 30.0,
+        "max_water_absorption_pct": 1.0,
+        "max_abrasion_mm": 2.0
+      },
+      "compliance_rule": "cs_mpa >= 30.0 AND water_absorption_pct <= 1.0",
+      "application": "Floor tiles, paving tiles, pedestrian footpath blocks"
+    },
+    "IS_2185_Part1_2005": {
+      "title": "Concrete Masonry Units - Hollow and Solid Blocks",
+      "description": "Solid and hollow load-bearing/non-load-bearing concrete blocks",
+      "primary_outputs": ["compressive_strength_mpa", "density_kgm3"],
+      "grades": {
+        "Grade_A": {"min_cs_mpa": 8.0,  "density_min": 1800, "application": "load-bearing walls"},
+        "Grade_B": {"min_cs_mpa": 5.0,  "density_min": 1500, "application": "non-load-bearing"},
+        "Grade_C": {"min_cs_mpa": 4.0,  "density_min": 1200, "application": "partition walls"},
+        "Grade_D": {"min_cs_mpa": 3.5,  "density_min": 1000, "application": "lightweight non-structural"}
+      },
+      "compliance_rule": "cs_mpa >= 3.5 (Grade D minimum)",
+      "note": "Use Grade D as minimum threshold for plastic-modified blocks"
+    },
+    "IS_2185_Part2_2008": {
+      "title": "Concrete Masonry Units - Hollow Blocks (Lightweight)",
+      "description": "Lightweight concrete hollow blocks using lightweight aggregates",
+      "primary_outputs": ["compressive_strength_mpa", "density_kgm3", "water_absorption_pct"],
+      "thresholds": {
+        "min_cs_mpa": 3.5,
+        "max_density_kgm3": 1500,
+        "max_water_absorption_pct": 10.0
+      },
+      "compliance_rule": "cs_mpa >= 3.5 AND density_kgm3 <= 1500 AND water_absorption_pct <= 10.0",
+      "application": "Lightweight partition walls, thermal insulation blocks"
+    },
+    "IS_5816_1999": {
+      "title": "Method of Test for Splitting Tensile Strength of Concrete",
+      "description": "Cylinder splitting tensile test; relationship to CS",
+      "primary_outputs": ["split_tensile_mpa", "compressive_strength_mpa"],
+      "thresholds": {
+        "min_sts_to_cs_ratio": 0.10,
+        "min_sts_mpa": 1.5
+      },
+      "compliance_rule": "split_tensile_mpa >= 0.10 x compressive_strength_mpa AND split_tensile_mpa >= 1.5",
+      "application": "Impact resistance, structural tensile requirements"
+    },
+    "NBC_2016": {
+      "title": "National Building Code of India 2016 - Part 6 Structural Design",
+      "description": "Structural and non-structural material requirements",
+      "structural": {
+        "min_cs_mpa": 20.0,
+        "min_density_kgm3": 1800,
+        "max_density_kgm3": 2500,
+        "compliance_rule": "cs_mpa >= 20.0 AND 1800 <= density_kgm3 <= 2500"
+      },
+      "nonstructural": {
+        "min_cs_mpa": 5.0,
+        "max_density_kgm3": 1800,
+        "compliance_rule": "cs_mpa >= 5.0 AND density_kgm3 <= 1800"
+      },
+      "application": "Partition walls, non-load-bearing elements, infill panels"
+    }
+  }
+}

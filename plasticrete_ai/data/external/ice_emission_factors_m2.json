@@ -1,0 +1,11 @@
+{
+    "cement": 0.830,
+    "fine_aggregate": 0.005,
+    "coarse_aggregate": 0.007,
+    "fly_ash": 0.027,
+    "silica_fume": 0.014,
+    "fibres": 1.800,
+    "water": 0.0003,
+    "transport": 0.025,
+    "none": 0.0
+}

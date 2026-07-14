@@ -1,0 +1,67 @@
+m2:
+  dataset:
+    path: data/processed/m2_training_dataset.csv
+    n_rows_expected: 2100
+    n_cols_expected: 65
+    random_seed: 42
+
+  search_space:
+    plastic_types: [PET, HDPE, LDPE, PVC, PP, Mixed]
+    additive_types: [fly_ash, silica_fume, fibres, none]
+    continuous_ranges:
+      replacement_pct:  [0.0, 40.0]
+      particle_size_mm: [0.5, 20.0]
+      wc_ratio:         [0.35, 0.65]
+      additive_pct:     [0.0, 30.0]
+      curing_temp_c:    [20.0, 80.0]
+    discrete_ranges:
+      curing_days: [3, 7, 14, 28, 56, 90]
+
+  objectives:
+    weights_default:
+      compressive_strength: 0.40
+      cost:                 0.25
+      co2:                  0.20
+      plastic_diversion:    0.15
+    normalisation:
+      cs_max:     60.0
+      cost_min:   2800.0
+      cost_max:   5500.0
+      co2_max:    380.0
+      plastic_max: 180.0
+    scenarios:
+      strength_optimised:
+        weights: {compressive_strength: 0.70, cost: 0.10, co2: 0.10, plastic_diversion: 0.10}
+        hard_constraint: {plastic_diversion_kg_per_m3_min: 50.0}
+      cost_optimised:
+        weights: {compressive_strength: 0.20, cost: 0.60, co2: 0.10, plastic_diversion: 0.10}
+        hard_constraint: {compressive_strength_mpa_min: 15.0}
+      sustainability_optimised:
+        weights: {compressive_strength: 0.20, cost: 0.10, co2: 0.35, plastic_diversion: 0.35}
+        hard_constraint: {compressive_strength_mpa_min: 10.0}
+
+  feasibility:
+    compressive_strength_mpa_min: 10.0
+    density_kgm3_min:             1200.0
+    water_absorption_pct_max:     15.0
+    co2_kgco2e_per_m3_max:        450.0
+
+  sensitivity:
+    perturbation_pct: 10.0
+    risk_threshold_mpa: 5.0
+
+  bayesian_optimiser:
+    algorithm:    gp_bo
+    n_iterations: 150
+    n_initial:    50
+    acquisition:  EI
+    gp_kernel:    matern52
+    noise_level:  0.01
+
+  pareto:
+    algorithm_primary:   nsga2
+    algorithm_secondary: mopso
+    population_size: 100
+    n_generations:   200
+    n_objectives:    3
+    objectives: [compressive_strength_mpa, cost_inr_per_m3, co2_kgco2e_per_m3]

@@ -1,0 +1,19 @@
+{
+  "best_composite_score": 0.7307019834439455,
+  "best_mix": {
+    "plastic_type": "LDPE",
+    "additive_type": "silica_fume",
+    "replacement_pct": 8.474485316924312,
+    "particle_size_mm": 0.5,
+    "wc_ratio": 0.35,
+    "additive_pct": 30.0,
+    "curing_temp_c": 20.0,
+    "curing_days": 90
+  },
+  "predicted_properties": {
+    "compressive_strength_mpa": 44.40842056274414,
+    "cost_inr_per_m3": 4999.9423828125,
+    "co2_kgco2e_per_m3": 297.0716552734375,
+    "plastic_diversion_kg_per_m3": 10.500107765197754
+  }
+}

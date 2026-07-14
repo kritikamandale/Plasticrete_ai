@@ -1,0 +1,50 @@
+{
+    "PET": {
+        "density_kg_m3": 1380,
+        "co2_factor_kg_per_kg": 2.73,
+        "strength_penalty_per_pct": -0.55,
+        "thermal_effect": -0.025,
+        "water_absorption_base": 0.10,
+        "cost_rs_per_kg": 45
+    },
+    "HDPE": {
+        "density_kg_m3": 960,
+        "co2_factor_kg_per_kg": 1.93,
+        "strength_penalty_per_pct": -0.48,
+        "thermal_effect": -0.030,
+        "water_absorption_base": 0.15,
+        "cost_rs_per_kg": 38
+    },
+    "LDPE": {
+        "density_kg_m3": 920,
+        "co2_factor_kg_per_kg": 2.11,
+        "strength_penalty_per_pct": -0.52,
+        "thermal_effect": -0.028,
+        "water_absorption_base": 0.20,
+        "cost_rs_per_kg": 35
+    },
+    "PVC": {
+        "density_kg_m3": 1400,
+        "co2_factor_kg_per_kg": 2.41,
+        "strength_penalty_per_pct": -0.65,
+        "thermal_effect": -0.018,
+        "water_absorption_base": 0.08,
+        "cost_rs_per_kg": 30
+    },
+    "PP": {
+        "density_kg_m3": 905,
+        "co2_factor_kg_per_kg": 1.85,
+        "strength_penalty_per_pct": -0.42,
+        "thermal_effect": -0.022,
+        "water_absorption_base": 0.12,
+        "cost_rs_per_kg": 42
+    },
+    "Mixed": {
+        "density_kg_m3": 1050,
+        "co2_factor_kg_per_kg": 2.20,
+        "strength_penalty_per_pct": -0.55,
+        "thermal_effect": -0.026,
+        "water_absorption_base": 0.16,
+        "cost_rs_per_kg": 25
+    }
+}

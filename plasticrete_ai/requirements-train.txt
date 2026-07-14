@@ -1,0 +1,14 @@
+# Training-only dependencies — NOT needed for HuggingFace Spaces deployment
+# Install with: pip install -r requirements-train.txt
+
+-r requirements.txt
+
+# Synthetic data augmentation (M3 dataset generation)
+ctgan>=0.10.0
+sdv>=1.14.0
+
+# UCI dataset fetch (M1 data pipeline)
+ucimlrepo>=0.0.6
+
+# Imputation
+imbalanced-learn>=0.12.3

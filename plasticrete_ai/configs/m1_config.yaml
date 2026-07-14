@@ -1,0 +1,163 @@
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  augmented_dir: "data/augmented"
+  pretrain_sources:
+    - "data/raw/uci_yeh_concrete.csv"
+    - "data/raw/mendeley_rubberized.csv"
+  finetune_sources:
+    - "data/raw/nayir_yilmaz_2024.csv"
+    - "data/raw/nafees_2022.csv"
+    - "data/raw/chong_shi_2023.csv"
+    - "data/raw/alkharisi_dahish_2025.csv"
+    - "data/raw/manual_extraction.csv"
+
+schema:
+  input_features:
+    - plastic_type
+    - replacement_pct
+    - particle_size_mm
+    - wc_ratio
+    - additive_type
+    - additive_pct
+    - curing_temp_c
+    - curing_days
+  target_columns:
+    - compressive_strength_mpa
+    - flexural_strength_mpa
+    - split_tensile_mpa
+    - density_kgm3
+    - water_absorption_pct
+    - thermal_conductivity_wm
+    - durability_index
+  categorical_features:
+    - plastic_type
+    - additive_type
+  plastic_type_classes: ["PET", "HDPE", "LDPE", "PVC", "PP", "Mixed", "None"]
+  additive_type_classes: ["fly_ash", "silica_fume", "fibres", "none"]
+  min_coverage_rows: 50
+
+preprocessing:
+  test_size: 0.15
+  validation_size: 0.15
+  random_seed: 42
+  outlier_detection: false
+  scaler: "RobustScaler"
+  target_scaler: "StandardScaler"
+  imputer: "KNNImputer"
+  knn_neighbors: 5
+  feature_engineering:
+    log_particle_size: true
+    log_curing_days: true
+    is_plain_concrete: true
+    interaction_pct_wc: true
+    interaction_pct_additive: true
+
+xgboost:
+  n_estimators: 1000
+  max_depth: 6
+  learning_rate: 0.05
+  subsample: 0.8
+  colsample_bytree: 0.8
+  min_child_weight: 3
+  gamma: 0.1
+  reg_alpha: 0.1
+  reg_lambda: 1.0
+  early_stopping_rounds: 50
+  tree_method: "hist"
+  optuna_trials: 100
+  optuna_timeout: 3600
+
+random_forest:
+  n_estimators: 500
+  oob_score: true
+  max_features: "sqrt"
+  min_samples_split: 4
+  min_samples_leaf: 2
+
+dnn:
+  architecture:
+    hidden_layers: [256, 128, 64, 32]
+    dropout_rate: 0.25
+    batch_norm: true
+  training:
+    epochs: 300
+    batch_size: 32
+    learning_rate: 0.001
+    weight_decay: 0.0001
+    early_stopping_patience: 30
+    gradient_clip: 1.0
+  mc_dropout:
+    enabled: true
+    n_forward_passes: 50
+
+transfer_learning:
+  pretrain_epochs: 100
+  pretrain_lr: 0.001
+  finetune_epochs: 200
+  finetune_lr: 0.0003
+  freeze_layers_until: 2
+
+ensemble:
+  weighting_strategy: "cv_r2"
+  fallback_weights:
+    xgboost: 0.40
+    random_forest: 0.35
+    dnn: 0.25
+  ci_percentile_low: 5
+  ci_percentile_high: 95
+  uncertainty_flag_threshold:
+    compressive_strength_mpa: 0.30
+    flexural_strength_mpa: 0.35
+    split_tensile_mpa: 0.35
+    density_kgm3: 0.20
+    water_absorption_pct: 0.40
+    thermal_conductivity_wm: 0.40
+    durability_index: 0.40
+
+augmentation:
+  ctgan:
+    enabled: true
+    epochs: 300
+    n_synthetic_rows: 500
+    batch_size: 500
+  constraints:
+    compressive_strength_mpa: [0.0, 90.0]
+    flexural_strength_mpa: [0.0, 15.0]
+    split_tensile_mpa: [0.0, 10.0]
+    density_kgm3: [1200.0, 2600.0]
+    water_absorption_pct: [0.0, 25.0]
+    thermal_conductivity_wm: [0.10, 2.50]
+    durability_index: [0.0, 100.0]
+    replacement_pct: [0.0, 40.0]
+    particle_size_mm: [0.5, 20.0]
+    wc_ratio: [0.35, 0.65]
+    additive_pct: [0.0, 30.0]
+    curing_temp_c: [20.0, 80.0]
+    curing_days: [3, 90]
+
+evaluation:
+  cv_folds: 5
+  target_r2_threshold: 0.80
+  expected_r2_ranges:
+    compressive_strength_mpa: [0.88, 0.94]
+    flexural_strength_mpa: [0.82, 0.90]
+    split_tensile_mpa: [0.80, 0.88]
+    density_kgm3: [0.90, 0.96]
+    water_absorption_pct: [0.75, 0.85]
+    thermal_conductivity_wm: [0.65, 0.78]
+    durability_index: [0.70, 0.82]
+
+model_output:
+  save_dir: "models/m1/"
+  hf_repo_id: "plasticrete-ai/m1-property-predictor"
+
+explainability:
+  shap:
+    background_samples: 100
+    max_display: 8
+    compute_interactions: true
+  lime:
+    n_samples: 1000
+  pdp:
+    grid_resolution: 50

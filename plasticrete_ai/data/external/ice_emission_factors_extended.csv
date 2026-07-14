@@ -1,0 +1,18 @@
+material_key,material_name,kg_co2e_per_kg,scope,source,notes
+cement_opc,Ordinary Portland Cement OPC 53,0.8720,A1-A3,ICE_v4.1,Clinker production + grinding; dominant M3 carbon driver
+cement_ppc,Portland Pozzolana Cement PPC,0.6800,A1-A3,ICE_v4.1,Blended cement; ~22% lower than OPC
+ggbs,Ground Granulated Blast Furnace Slag,0.0830,A1-A3,ICE_v4.1,Steel industry byproduct; drying+grinding only
+fly_ash,Fly Ash (Class F),0.0040,A1-A3,ICE_v4.1,Power plant byproduct; near-zero upstream burden
+silica_fume,Silica Fume (Microsilica),0.0140,A1-A3,ICE_v4.1,Ferrosilicon industry byproduct
+fibres_steel,Steel Fibres (recycled),0.7000,A1-A3,ICE_v4.1,Recycled steel; lower than virgin 1.46 kg/kg
+fibres_plastic,Plastic Fibres (PP recycled),0.0000,A1-A3,ICE_v4.1,Recycled PP fibre; zero upstream burden assumed
+sand_river,River Sand (fine aggregate),0.0048,A1-A3,ICE_v4.1,Quarried and washed; crushing emissions
+sand_msand,Manufactured Sand,0.0080,A1-A3,ICE_v4.1,Crushed rock; slightly higher than river sand
+coarse_aggregate,Coarse Aggregate (20mm crushed),0.0048,A1-A3,ICE_v4.1,Same as sand per ICE for quarried aggregate
+water_municipal,Municipal Water,0.0003,A1-A3,ICE_v4.1,Treatment and distribution
+PET,PET Plastic (post-consumer recycled),-1.3200,A1-A3,ICE_v4.1,Credit for diversion from landfill; avoids virgin production
+HDPE,HDPE Plastic (post-consumer recycled),-1.2000,A1-A3,ICE_v4.1,Credit for landfill diversion
+LDPE,LDPE Plastic (post-consumer recycled),-1.2500,A1-A3,ICE_v4.1,Credit for landfill diversion
+PVC,PVC Plastic (post-consumer recycled),-0.9500,A1-A3,ICE_v4.1,Lower credit due to chlorine content processing
+PP,PP Plastic (post-consumer recycled),-1.1800,A1-A3,ICE_v4.1,Credit for landfill diversion
+Mixed,Mixed Post-Consumer Plastic,-1.1000,A1-A3,ICE_v4.1,Weighted average across PET/HDPE/PP/LDPE/PVC

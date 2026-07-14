@@ -1,0 +1,73 @@
+{
+  "version": "GreenRating_v1.0",
+  "references": {
+    "IGBC": "Indian Green Building Council - Green Homes v3 (2022)",
+    "GRIHA": "Green Rating for Integrated Habitat Assessment v2019",
+    "LEED": "LEED v4.1 BD+C (Building Design and Construction)"
+  },
+  "IGBC_Green_Homes_v3": {
+    "max_credits_modelled": 3,
+    "credits": {
+      "recycled_content": {
+        "credit_id": "MR-3",
+        "name": "Use of Recycled Content Materials",
+        "points": 1,
+        "condition": "plastic_diversion_kg_m3 >= 50",
+        "rationale": "Using post-consumer plastic waste as aggregate demonstrates minimum 5% recycled content by cost"
+      },
+      "regional_materials": {
+        "credit_id": "MR-4",
+        "name": "Use of Regional Materials",
+        "points": 1,
+        "condition": "plastic_type IN ['PET','HDPE','Mixed']",
+        "rationale": "PET and HDPE are the dominant plastic waste streams in Indian urban areas - sourced regionally"
+      },
+      "low_heat_conductivity": {
+        "credit_id": "EE-2",
+        "name": "Thermal Comfort and Insulation",
+        "points": 1,
+        "condition": "thermal_conductivity_wm <= 0.60",
+        "rationale": "Lightweight plastic-aggregate concrete with TC < 0.60 W/mK qualifies as thermal insulation material"
+      }
+    }
+  },
+  "GRIHA_v2019": {
+    "max_points_modelled": 2,
+    "criterion": "Criterion 12 - Sustainable Building Materials",
+    "points": {
+      "embodied_energy_reduction": {
+        "point_id": "C12-P1",
+        "name": "Reduction in Embodied Carbon vs Conventional",
+        "points": 1,
+        "condition": "co2_saving_pct >= 10.0",
+        "rationale": ">=10% reduction in embodied carbon vs conventional M20 concrete earns 1 point"
+      },
+      "waste_valorisation": {
+        "point_id": "C12-P2",
+        "name": "Plastic Waste Valorisation",
+        "points": 1,
+        "condition": "plastic_diversion_kg_m3 >= 100",
+        "rationale": "Diverting >=100 kg of plastic waste per m3 concrete qualifies as significant waste valorisation"
+      }
+    }
+  },
+  "LEED_v4_1": {
+    "max_points_modelled": 2,
+    "credits": {
+      "building_product_disclosure": {
+        "credit_id": "MRc2",
+        "name": "Building Product Disclosure and Optimization - Sourcing of Raw Materials",
+        "points": 1,
+        "condition": "replacement_pct >= 10.0",
+        "rationale": ">=10% plastic content demonstrates responsible sourcing of post-consumer waste"
+      },
+      "construction_waste": {
+        "credit_id": "MRc3",
+        "name": "Construction and Demolition Waste Management",
+        "points": 1,
+        "condition": "plastic_diversion_kg_m3 >= 75",
+        "rationale": ">=75 kg plastic diversion per m3 qualifies as significant waste diversion equivalent"
+      }
+    }
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "module": "M3",
+  "version": "1.0",
+  "description": "PlastiCrete AI — Sustainability & Compliance Scoring Engine",
+  "training_dataset": "data/processed/m3_training_dataset.csv",
+  "training_rows": 2200,
+  "feature_count": 15,
+  "features": [
+    "plastic_type_enc",
+    "replacement_pct",
+    "particle_size_mm",
+    "wc_ratio",
+    "additive_type_enc",
+    "additive_pct",
+    "curing_temp_c",
+    "curing_days",
+    "compressive_strength_mpa",
+    "flexural_strength_mpa",
+    "split_tensile_mpa",
+    "density_kgm3",
+    "water_absorption_pct",
+    "thermal_conductivity_wm",
+    "durability_index"
+  ],
+  "models": {
+    "carbon_regressor": {
+      "file": "carbon_regressor.pkl",
+      "type": "XGBRegressor",
+      "target": "embodied_carbon_kgco2e_m3",
+      "unit": "kg CO2e per m3 concrete",
+      "metrics": {
+        "r2": 0.9978,
+        "rmse": 7.1947,
+        "mae": 5.2478,
+        "mape": 17.39
+      }
+    },
+    "score_regressor_xgb": {
+      "file": "score_regressor_xgb.pkl",
+      "type": "XGBRegressor (ensemble with RF)",
+      "target": "sustainability_score",
+      "unit": "0–100 composite score",
+      "metrics": {
+        "r2": 0.9951,
+        "rmse": 1.3605,
+        "mae": 1.0186,
+        "mape": 1.77
+      }
+    },
+    "co2_saving_regressor": {
+      "file": "co2_saving_regressor.pkl",
+      "type": "XGBRegressor",
+      "target": "co2_saving_pct",
+      "unit": "% reduction vs conventional M20"
+    },
+    "diversion_regressor": {
+      "file": "diversion_regressor.pkl",
+      "type": "XGBRegressor",
+      "target": "plastic_diversion_kg_m3",
+      "unit": "kg plastic waste diverted per m3"
+    },
+    "bis_classifier": {
+      "file": "bis_classifier.pkl",
+      "type": "RandomForestClassifier",
+      "target": "bis_overall_pass",
+      "unit": "binary (0=fail, 1=pass)",
+      "metrics": {
+        "accuracy": 0.9939,
+        "f1_weighted": 0.9945,
+        "roc_auc": 0.9992331288343559
+      }
+    },
+    "is1237_classifier": {
+      "file": "is1237_classifier.pkl",
+      "type": "XGBClassifier",
+      "target": "is_1237_compliant",
+      "unit": "binary (0=fail, 1=pass)",
+      "threshold": "CS>=30 MPa AND WA<=1%"
+    },
+    "nbc_structural_classifier": {
+      "file": "nbc_structural_classifier.pkl",
+      "type": "RandomForestClassifier",
+      "target": "nbc_2016_structural",
+      "unit": "binary (0=fail, 1=pass)",
+      "threshold": "CS>=20 MPa AND 1800<=density<=2500"
+    },
+    "green_rating_regressor": {
+      "file": "green_rating_regressor.pkl",
+      "type": "XGBRegressor",
+      "target": "total_green_credits",
+      "unit": "integer 0–7 (IGBC+GRIHA+LEED combined)"
+    },
+    "grade_classifier": {
+      "file": "grade_classifier.pkl",
+      "type": "XGBClassifier",
+      "target": "sustainability_grade",
+      "unit": "A/B/C/D grade"
+    },
+    "remediation_classifier": {
+      "file": "remediation_classifier.pkl",
+      "type": "XGBClassifier",
+      "target": "top_negative_factor",
+      "unit": "factor class (6 categories)"
+    }
+  },
+  "scalers": {
+    "input_scaler": "m3_scaler.pkl",
+    "plastic_encoder": "m3_plastic_encoder.pkl",
+    "additive_encoder": "m3_additive_encoder.pkl",
+    "grade_encoder": "grade_label_encoder.pkl",
+    "remed_encoder": "remediation_label_encoder.pkl"
+  },
+  "shap_plots": [
+    "shap_carbon_regressor.png",
+    "shap_score_regressor.png",
+    "shap_co2_saving_regressor.png",
+    "shap_diversion_regressor.png",
+    "shap_is1237_classifier.png",
+    "shap_green_scorer.png"
+  ],
+  "evaluation_report": "m3_evaluation_report.json"
+}

@@ -1,0 +1,114 @@
+{
+  "primary_classifier": {
+    "accuracy": 0.9947,
+    "f1_macro": 0.7487,
+    "f1_weighted": 0.9933,
+    "cv_f1_macro_mean": 0.8395,
+    "cv_f1_macro_std": 0.0862
+  },
+  "multilabel_classifier": {
+    "paving_block_light": {
+      "f1": 0.9945,
+      "acc": 0.992
+    },
+    "paving_block_heavy": {
+      "f1": 0.9263,
+      "acc": 0.9813
+    },
+    "floor_tile_indoor": {
+      "f1": 0.9231,
+      "acc": 0.992
+    },
+    "floor_tile_outdoor": {
+      "f1": 0.75,
+      "acc": 0.9947
+    },
+    "hollow_concrete_block": {
+      "f1": 1.0,
+      "acc": 1.0
+    },
+    "lightweight_partition_block": {
+      "f1": 1.0,
+      "acc": 1.0
+    },
+    "structural_concrete": {
+      "f1": 0.9639,
+      "acc": 0.952
+    },
+    "nonstructural_concrete_fill": {
+      "f1": 0.9987,
+      "acc": 0.9973
+    },
+    "plastic_sand_paver": {
+      "f1": 0.9971,
+      "acc": 0.9973
+    },
+    "wall_cladding_panel": {
+      "f1": 1.0,
+      "acc": 1.0
+    },
+    "thermal_insulation_panel": {
+      "f1": 1.0,
+      "acc": 1.0
+    },
+    "kerb_stone": {
+      "f1": 0.9845,
+      "acc": 0.984
+    }
+  },
+  "score_regressor": {
+    "paving_block_light": {
+      "r2": 0.9968,
+      "mae": 0.62
+    },
+    "paving_block_heavy": {
+      "r2": 0.9965,
+      "mae": 0.47
+    },
+    "floor_tile_indoor": {
+      "r2": 0.9975,
+      "mae": 0.43
+    },
+    "floor_tile_outdoor": {
+      "r2": 0.9973,
+      "mae": 0.34
+    },
+    "hollow_concrete_block": {
+      "r2": 0.9819,
+      "mae": 0.07
+    },
+    "lightweight_partition_block": {
+      "r2": 0.995,
+      "mae": 0.1
+    },
+    "structural_concrete": {
+      "r2": 0.9962,
+      "mae": 0.88
+    },
+    "nonstructural_concrete_fill": {
+      "r2": 0.9938,
+      "mae": 0.09
+    },
+    "plastic_sand_paver": {
+      "r2": 0.9988,
+      "mae": 0.2
+    },
+    "wall_cladding_panel": {
+      "r2": 0.9929,
+      "mae": 0.28
+    },
+    "thermal_insulation_panel": {
+      "r2": 0.9997,
+      "mae": 0.11
+    },
+    "kerb_stone": {
+      "r2": 0.9975,
+      "mae": 0.58
+    }
+  },
+  "rag": {
+    "index_type": "FAISS FlatL2",
+    "kb_size": 18,
+    "embedding_dims": 7
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "module": "M2 \u2014 Intelligent Mix Optimisation Engine",
+  "generated_at": "2026-06-27T06:15:37.545896",
+  "dataset_rows": 2125,
+  "dataset_cols": 67,
+  "random_seed": 42,
+  "models": {
+    "gp_surrogate_composite": {
+      "file": "gp_surrogate_composite.zip",
+      "library": "GPy",
+      "kernel": "Matern52 + ARD",
+      "target": "composite_objective_score",
+      "gp_train_n": 800,
+      "val_r2": 0.9843,
+      "val_rmse": 0.00888,
+      "role": "Primary GP surrogate \u2014 used in Bayesian Optimisation EI acquisition"
+    },
+    "xgb_cost_surrogate": {
+      "file": "xgb_cost_surrogate.pkl",
+      "target": "cost_inr_per_m3",
+      "val_r2": 0.9864,
+      "val_rmse_inr": 73.72,
+      "role": "Cost objective in NSGA-II / MOPSO multi-objective loop"
+    },
+    "xgb_co2_surrogate": {
+      "file": "xgb_co2_surrogate.pkl",
+      "target": "co2_kgco2e_per_m3",
+      "val_r2": 0.9927,
+      "val_rmse_kgco2e": 5.5,
+      "role": "CO2 objective in NSGA-II / MOPSO multi-objective loop"
+    },
+    "xgb_cs_surrogate": {
+      "file": "xgb_cs_surrogate.pkl",
+      "target": "compressive_strength_mpa",
+      "val_r2": 0.9864,
+      "val_rmse_mpa": 2.014,
+      "val_mae_mpa": 1.396,
+      "role": "Feasibility constraint checker (CS >= threshold) inside BO loop"
+    },
+    "xgb_plastic_diversion_surrogate": {
+      "file": "xgb_plastic_diversion_surrogate.pkl",
+      "target": "plastic_diversion_kg_per_m3",
+      "val_r2": 0.9993,
+      "val_rmse_kg": 0.413,
+      "role": "Plastic diversion objective in sustainability scenario"
+    }
+  },
+  "encoders_scalers": {
+    "le_plastic.pkl": "LabelEncoder for plastic_type",
+    "le_additive.pkl": "LabelEncoder for additive_type",
+    "scaler_X.pkl": "StandardScaler for 8 input features",
+    "scaler_composite.pkl": "StandardScaler for composite_objective_score",
+    "scaler_cost.pkl": "StandardScaler for cost_inr_per_m3",
+    "scaler_co2.pkl": "StandardScaler for co2_kgco2e_per_m3",
+    "scaler_cs.pkl": "StandardScaler for compressive_strength_mpa",
+    "scaler_plastic_diversion.pkl": "StandardScaler for plastic_diversion_kg_per_m3"
+  },
+  "outputs": {
+    "bo_demo_result.json": "Best mix from GP-BO 50-iteration demo",
+    "pareto_solutions_nsga2.csv": "NSGA-II Pareto front (CS/cost/CO2)",
+    "pareto_solutions_nsga2_ranked.csv": "Pareto front with TOPSIS ranking",
+    "scenario_results.json": "3 pre-built scenario best mixes",
+    "sensitivity_analysis.json": "\u00b110% sensitivity per input on best mix",
+    "bo_convergence.png": "GP-BO convergence plot",
+    "pareto_front_nsga2.png": "2D Pareto scatter plots (3 pairs)",
+    "sensitivity_tornado.png": "Tornado chart for sensitivity analysis",
+    "shap_cs_surrogate.png": "SHAP feature importance bar chart (CS)"
+  },
+  "cv_results": {
+    "CS Surrogate": {
+      "cv_r2_mean": 0.9849,
+      "cv_r2_std": 0.001,
+      "cv_rmse_mean": 2.0306,
+      "cv_rmse_std": 0.0381
+    },
+    "Cost Surrogate": {
+      "cv_r2_mean": 0.9821,
+      "cv_r2_std": 0.0014,
+      "cv_rmse_mean": 85.3672,
+      "cv_rmse_std": 4.8866
+    },
+    "CO2 Surrogate": {
+      "cv_r2_mean": 0.9907,
+      "cv_r2_std": 0.0027,
+      "cv_rmse_mean": 6.3786,
+      "cv_rmse_std": 0.8584
+    },
+    "Plastic Diversion Surrogate": {
+      "cv_r2_mean": 0.9993,
+      "cv_r2_std": 0.0,
+      "cv_rmse_mean": 0.4048,
+      "cv_rmse_std": 0.0108
+    }
+  },
+  "nsga2_n_pareto": 80,
+  "nsga2_hypervolume": 85576553.440223,
+  "bo_best_score": 0.7307,
+  "bo_best_mix": {
+    "plastic_type": "LDPE",
+    "additive_type": "silica_fume",
+    "replacement_pct": 8.474485316924312,
+    "particle_size_mm": 0.5,
+    "wc_ratio": 0.35,
+    "additive_pct": 30.0,
+    "curing_temp_c": 20.0,
+    "curing_days": 90
+  },
+  "input_features": [
+    "plastic_type_enc",
+    "additive_type_enc",
+    "replacement_pct",
+    "particle_size_mm",
+    "wc_ratio",
+    "additive_pct",
+    "curing_temp_c",
+    "curing_days"
+  ],
+  "plastic_types": [
+    "PET",
+    "HDPE",
+    "LDPE",
+    "PVC",
+    "PP",
+    "Mixed"
+  ],
+  "additive_types": [
+    "fly_ash",
+    "silica_fume",
+    "fibres",
+    "none"
+  ],
+  "cs_threshold_default": 15.0
+}

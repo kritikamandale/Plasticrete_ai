@@ -1,0 +1,62 @@
+{
+  "strength_optimised": {
+    "best_mix": {
+      "plastic_type": "LDPE",
+      "additive_type": "none",
+      "replacement_pct": 6.2,
+      "particle_size_mm": 0.5,
+      "wc_ratio": 0.357,
+      "additive_pct": 30.0,
+      "curing_temp_c": 20.0,
+      "curing_days": 90
+    },
+    "predicted": {
+      "compressive_strength_mpa": 56.45,
+      "cost_inr_per_m3": 6686.0,
+      "co2_kgco2e_per_m3": 303.9,
+      "plastic_diversion_kg_per_m3": 8.4
+    },
+    "feasible": true,
+    "description": "Maximum CS \u2014 structural/load-bearing applications"
+  },
+  "cost_optimised": {
+    "best_mix": {
+      "plastic_type": "LDPE",
+      "additive_type": "silica_fume",
+      "replacement_pct": 19.1,
+      "particle_size_mm": 2.0,
+      "wc_ratio": 0.35,
+      "additive_pct": 0.0,
+      "curing_temp_c": 72.4,
+      "curing_days": 86
+    },
+    "predicted": {
+      "compressive_strength_mpa": 34.52,
+      "cost_inr_per_m3": 4758.0,
+      "co2_kgco2e_per_m3": 248.8,
+      "plastic_diversion_kg_per_m3": 22.5
+    },
+    "feasible": true,
+    "description": "Minimum cost \u2014 affordable housing / non-structural"
+  },
+  "sustainability_optimised": {
+    "best_mix": {
+      "plastic_type": "Mixed",
+      "additive_type": "silica_fume",
+      "replacement_pct": 40.0,
+      "particle_size_mm": 3.6,
+      "wc_ratio": 0.35,
+      "additive_pct": 0.0,
+      "curing_temp_c": 80.0,
+      "curing_days": 90
+    },
+    "predicted": {
+      "compressive_strength_mpa": 17.35,
+      "cost_inr_per_m3": 5487.0,
+      "co2_kgco2e_per_m3": 169.2,
+      "plastic_diversion_kg_per_m3": 61.5
+    },
+    "feasible": true,
+    "description": "Maximum plastic diversion + minimum CO\u2082 \u2014 SDG impact"
+  }
+}

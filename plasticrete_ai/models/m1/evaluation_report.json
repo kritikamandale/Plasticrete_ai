@@ -1,0 +1,72 @@
+[
+  {
+    "target": "compressive_strength_mpa",
+    "r2": 0.9104,
+    "rmse": 5.6011,
+    "mae": 3.6123,
+    "mape": 13.69,
+    "n_test": 455,
+    "expected_range": "[0.88-0.94]",
+    "status": "[PASS]"
+  },
+  {
+    "target": "flexural_strength_mpa",
+    "r2": 0.9435,
+    "rmse": 0.319,
+    "mae": 0.2205,
+    "mape": 8.05,
+    "n_test": 282,
+    "expected_range": "[0.82-0.90]",
+    "status": "[PASS]"
+  },
+  {
+    "target": "split_tensile_mpa",
+    "r2": 0.9393,
+    "rmse": 0.3731,
+    "mae": 0.2501,
+    "mape": 15.08,
+    "n_test": 282,
+    "expected_range": "[0.80-0.88]",
+    "status": "[PASS]"
+  },
+  {
+    "target": "density_kgm3",
+    "r2": 0.8874,
+    "rmse": 30.2412,
+    "mae": 23.7415,
+    "mape": 1.06,
+    "n_test": 282,
+    "expected_range": "[0.90-0.96]",
+    "status": "[PASS]"
+  },
+  {
+    "target": "water_absorption_pct",
+    "r2": 0.8928,
+    "rmse": 0.2961,
+    "mae": 0.233,
+    "mape": 7.84,
+    "n_test": 282,
+    "expected_range": "[0.75-0.85]",
+    "status": "[PASS]"
+  },
+  {
+    "target": "thermal_conductivity_wm",
+    "r2": 0.929,
+    "rmse": 0.0578,
+    "mae": 0.045,
+    "mape": 4.69,
+    "n_test": 282,
+    "expected_range": "[0.65-0.78]",
+    "status": "[PASS]"
+  },
+  {
+    "target": "durability_index",
+    "r2": 0.9192,
+    "rmse": 4.2642,
+    "mae": 3.393,
+    "mape": 9.46,
+    "n_test": 282,
+    "expected_range": "[0.70-0.82]",
+    "status": "[PASS]"
+  }
+]

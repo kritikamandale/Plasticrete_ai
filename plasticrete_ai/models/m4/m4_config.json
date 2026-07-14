@@ -1,0 +1,67 @@
+{
+  "all_features": [
+    "plastic_type_enc",
+    "replacement_pct",
+    "particle_size_mm",
+    "wc_ratio",
+    "additive_type_enc",
+    "additive_pct",
+    "curing_temp_c",
+    "curing_days",
+    "compressive_strength_mpa",
+    "flexural_strength_mpa",
+    "split_tensile_mpa",
+    "density_kgm3",
+    "water_absorption_pct",
+    "thermal_conductivity_wm",
+    "durability_index"
+  ],
+  "mix_features": [
+    "plastic_type_enc",
+    "replacement_pct",
+    "particle_size_mm",
+    "wc_ratio",
+    "additive_type_enc",
+    "additive_pct",
+    "curing_temp_c",
+    "curing_days"
+  ],
+  "property_features": [
+    "compressive_strength_mpa",
+    "flexural_strength_mpa",
+    "split_tensile_mpa",
+    "density_kgm3",
+    "water_absorption_pct",
+    "thermal_conductivity_wm",
+    "durability_index"
+  ],
+  "application_categories": [
+    "paving_block_light",
+    "paving_block_heavy",
+    "floor_tile_indoor",
+    "floor_tile_outdoor",
+    "hollow_concrete_block",
+    "lightweight_partition_block",
+    "structural_concrete",
+    "nonstructural_concrete_fill",
+    "plastic_sand_paver",
+    "wall_cladding_panel",
+    "thermal_insulation_panel",
+    "kerb_stone"
+  ],
+  "plastic_type_map": {
+    "PET": 0,
+    "HDPE": 1,
+    "LDPE": 2,
+    "PVC": 3,
+    "PP": 4,
+    "Mixed": 5
+  },
+  "additive_type_map": {
+    "none": 0,
+    "fly_ash": 1,
+    "silica_fume": 2,
+    "fibres": 3
+  },
+  "suitability_threshold": 55.0
+}

@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "module": "M4 \u2014 Application Recommendation Engine",
+  "files": [
+    "m4_rf_primary_classifier.pkl",
+    "m4_rf_multilabel_classifier.pkl",
+    "m4_rf_score_regressor.pkl",
+    "m4_feature_scaler.pkl",
+    "m4_rag_property_scaler.pkl",
+    "m4_label_encoder.pkl",
+    "m4_faiss_index.bin",
+    "m4_rag_knowledge_base.json",
+    "m4_bis_thresholds.json",
+    "m4_market_prices.json",
+    "m4_config.json",
+    "m4_evaluation_report.json"
+  ]
+}

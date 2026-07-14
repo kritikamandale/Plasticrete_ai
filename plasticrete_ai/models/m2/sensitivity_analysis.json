@@ -1,0 +1,51 @@
+{
+  "base_cs_mpa": 55.68912124633789,
+  "base_mix": {
+    "plastic_type": "LDPE",
+    "additive_type": "silica_fume",
+    "replacement_pct": 8.474485316924312,
+    "particle_size_mm": 0.5,
+    "wc_ratio": 0.35,
+    "additive_pct": 30.0,
+    "curing_temp_c": 20.0,
+    "curing_days": 90
+  },
+  "sensitivity": {
+    "replacement_pct": {
+      "plus10_cs_delta": -0.864,
+      "minus10_cs_delta": 0.303,
+      "max_abs_delta": 0.864,
+      "risk_flag": false
+    },
+    "particle_size_mm": {
+      "plus10_cs_delta": 0.0,
+      "minus10_cs_delta": 0.0,
+      "max_abs_delta": 0.0,
+      "risk_flag": false
+    },
+    "wc_ratio": {
+      "plus10_cs_delta": -3.039,
+      "minus10_cs_delta": 0.0,
+      "max_abs_delta": 3.039,
+      "risk_flag": false
+    },
+    "additive_pct": {
+      "plus10_cs_delta": 0.0,
+      "minus10_cs_delta": 0.679,
+      "max_abs_delta": 0.679,
+      "risk_flag": false
+    },
+    "curing_temp_c": {
+      "plus10_cs_delta": 0.702,
+      "minus10_cs_delta": 0.0,
+      "max_abs_delta": 0.702,
+      "risk_flag": false
+    },
+    "curing_days": {
+      "plus10_cs_delta": 0.0,
+      "minus10_cs_delta": -0.295,
+      "max_abs_delta": 0.295,
+      "risk_flag": false
+    }
+  }
+}

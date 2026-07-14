@@ -1,0 +1,41 @@
+{
+  "version": "Remediation_v1.0",
+  "context": "SHAP-guided remediation paths for M3 non-compliant or low-scoring mixes",
+  "templates": {
+    "reduce_replacement_pct": {
+      "action_template": "Reduce replacement_pct by {delta}% (from {current}% to {target}%)",
+      "estimated_cs_gain_per_5pct": 1.5,
+      "estimated_score_gain": 4.0,
+      "applies_when": "compressive_strength below threshold"
+    },
+    "reduce_wc_ratio": {
+      "action_template": "Reduce wc_ratio from {current} to {target}",
+      "estimated_cs_gain_per_0.05": 2.0,
+      "estimated_score_gain": 5.0,
+      "applies_when": "compressive_strength or water_absorption non-compliant"
+    },
+    "add_silica_fume": {
+      "action_template": "Add 10% silica_fume additive (pozzolanic reaction boosts CS by 2-4 MPa)",
+      "estimated_cs_gain": 3.0,
+      "estimated_score_gain": 6.0,
+      "applies_when": "CS below 20 MPa with no additive"
+    },
+    "switch_to_pet": {
+      "action_template": "Switch plastic_type from {current} to PET (higher density 1380 vs {current_density})",
+      "estimated_density_gain": 200,
+      "estimated_score_gain": 3.0,
+      "applies_when": "density below NBC 2016 structural minimum 1800"
+    },
+    "extend_curing": {
+      "action_template": "Extend curing_days from {current} to 28 days (65% of 28d strength at 7d)",
+      "estimated_cs_gain_at_28d": "35% increase from 7d",
+      "estimated_score_gain": 3.5,
+      "applies_when": "curing_days < 14"
+    },
+    "increase_replacement_for_diversion": {
+      "action_template": "Increase replacement_pct from {current}% to {target}% (diversion increases to {diversion} kg/m3)",
+      "estimated_score_gain": 7.0,
+      "applies_when": "plastic_diversion_kg_m3 < 50"
+    }
+  }
+}

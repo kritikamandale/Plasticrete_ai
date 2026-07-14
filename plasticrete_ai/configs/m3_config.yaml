@@ -1,0 +1,77 @@
+# -- Module 3 - Sustainability & Compliance Scoring Engine ----------------------
+
+version: "M3_v1.0"
+
+# External data references
+external_data:
+  bis_rules_path:           "data/external/bis_compliance_rules.json"
+  green_credits_path:       "data/external/green_rating_credits.json"
+  plastic_density_path:     "data/external/plastic_density_lookup.json"
+  ice_ef_path:              "data/external/ice_emission_factors_extended.csv"
+  remediation_templates:    "data/external/remediation_action_templates.json"
+
+# M1 interface
+m1:
+  model_dir:    "models/m1/"
+  config_path:  "configs/m1_config.yaml"
+
+# Dataset generation
+dataset:
+  output_path:  "data/processed/m3_training_dataset.csv"
+  n_rows:       2200
+  random_seed:  42
+  row_splits:
+    m1_predicted:    1400
+    physics_formula:  600
+    augmented:        200
+
+# Mix composition model (IS 10262 M20 reference baseline)
+mix_model:
+  baseline_grade: "M20"
+  cement_baseline_kgm3: 383.0
+  coarse_agg_baseline_kgm3: 1210.0
+  fine_agg_baseline_kgm3: 680.0
+  water_baseline_kgm3: 191.5
+
+# Baseline for comparison (conventional M20 concrete)
+# Source: Goh et al. 2022 LCIA Table 5 - E1 scenario
+baseline_conventional_co2: 365.71  # kg CO2e/m3
+
+# Sustainability score weights (must sum to 100)
+score_weights:
+  carbon_component:           30
+  plastic_diversion_comp:     25
+  recycled_content_comp:      20
+  bis_compliance_comp:        15
+  green_rating_comp:          10
+  total:                     100
+
+# Green rating thresholds
+green_rating:
+  igbc_plastic_diversion_min_kg_m3:  50
+  igbc_tc_threshold_wm:             0.60
+  griha_co2_saving_min_pct:         10.0
+  griha_diversion_min_kg_m3:       100.0
+  leed_replacement_pct_min:         10.0
+  leed_diversion_min_kg_m3:         75.0
+
+# BIS thresholds (quick reference - full rules in JSON)
+bis:
+  is_1237_min_cs_mpa:           30.0
+  is_1237_max_wa_pct:            1.0
+  is_2185_pt1_min_cs_mpa:        3.5
+  is_2185_pt2_max_density_kgm3: 1500.0
+  is_5816_min_sts_cs_ratio:      0.10
+  nbc_structural_min_cs_mpa:    20.0
+  nbc_structural_min_density:  1800.0
+  nbc_nonstructural_max_density: 1800.0
+
+# Model output
+model_output:
+  save_dir:     "models/m3/"
+  hf_repo_id:   "plasticrete-ai/m3-sustainability-scorer"
+  push_to_hub:  false
+
+logging:
+  level: "INFO"
+  log_file: "logs/m3_dataset_generation.log"

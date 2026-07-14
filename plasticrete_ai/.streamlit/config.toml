@@ -1,0 +1,22 @@
+# PlastiCrete AI — base Streamlit theme tokens.
+# Custom fonts + premium styling are layered on via .streamlit/style.css
+# (injected by ui.theme.load_css). Dark mode is handled in-app via a CSS
+# variable override, so the base theme here is the light "premium civil" surface.
+
+[theme]
+primaryColor = "#F59E0B"            # engineering amber accent
+backgroundColor = "#F7F8FA"         # off-white base surface
+secondaryBackgroundColor = "#FFFFFF" # pure white cards / sidebar
+textColor = "#0F172A"               # deep slate
+font = "sans serif"
+
+[server]
+headless = true
+runOnSave = false
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = true

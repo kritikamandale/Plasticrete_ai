@@ -1,0 +1,11 @@
+material,kg_co2_per_kg,source
+OPC_cement,0.830,ICE_v3.0_2019
+GGBS,0.083,ICE_v3.0_2019
+fly_ash,0.004,ICE_v3.0_2019
+silica_fume,0.014,ICE_v3.0_2019
+PET_plastic,2.730,ICE_v3.0_2019
+HDPE_plastic,1.930,ICE_v3.0_2019
+PP_plastic,1.960,ICE_v3.0_2019
+fine_aggregate,0.005,ICE_v3.0_2019
+coarse_aggregate,0.004,ICE_v3.0_2019
+water,0.000,ICE_v3.0_2019

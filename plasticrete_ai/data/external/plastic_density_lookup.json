@@ -1,0 +1,15 @@
+{
+  "version": "PlasticDensity_v1.0",
+  "source": "ICE Database v4.1 + standard polymer handbooks",
+  "units": "kg/m3",
+  "densities": {
+    "PET":   {"density_kgm3": 1380, "full_name": "Polyethylene Terephthalate", "common_source": "Bottles, packaging film, textiles"},
+    "HDPE":  {"density_kgm3":  960, "full_name": "High-Density Polyethylene",  "common_source": "Containers, pipes, bags"},
+    "LDPE":  {"density_kgm3":  920, "full_name": "Low-Density Polyethylene",   "common_source": "Plastic film, flexible packaging"},
+    "PVC":   {"density_kgm3": 1400, "full_name": "Polyvinyl Chloride",         "common_source": "Pipes, cables, profiles"},
+    "PP":    {"density_kgm3":  905, "full_name": "Polypropylene",              "common_source": "Caps, containers, automotive parts"},
+    "Mixed": {"density_kgm3": 1100, "full_name": "Mixed Post-Consumer Plastic", "common_source": "Unsorted municipal plastic waste"}
+  },
+  "pet_bottle_weight_kg": 0.025,
+  "note": "500ml PET bottle avg 25g. Use for pet_bottle_equiv = plastic_diversion_kg / 0.025"
+}
