@@ -3,7 +3,7 @@ Optuna-based constrained Bayesian optimisation for M2.
 """
 from __future__ import annotations
 
-from modules.m2_optimization.utils.encoding import predict
+from modules.m2_optimization.utils import encoding as enc
 from modules.m2_optimization.utils.schema import (
     PLASTIC_TYPES, ADDITIVE_TYPES,
     CS_NORM_MAX, COST_NORM_MAX, CO2_NORM_MAX, DIV_NORM_MAX,
@@ -48,7 +48,7 @@ def run(constraints: dict, weights: dict, mode: str = "constrained") -> dict:
         cure_t   = trial.suggest_float("curing_temp_c",    20.0, 80.0)
         cure_d   = trial.suggest_categorical("curing_days", [3, 7, 14, 28, 56, 90])
 
-        cs, cost, co2, div = predict(plastic, additive, rep_pct, psize, wc, add_pct, cure_t, cure_d)
+        cs, cost, co2, div = enc.predict(plastic, additive, rep_pct, psize, wc, add_pct, cure_t, cure_d)
 
         if cs < cs_min:
             return 1e9
@@ -70,7 +70,7 @@ def run(constraints: dict, weights: dict, mode: str = "constrained") -> dict:
     study.optimize(objective, n_trials=120, show_progress_bar=False)
 
     best = study.best_params
-    cs, cost, co2, div = predict(
+    cs, cost, co2, div = enc.predict(
         best["plastic_type"],
         best["additive_type"],
         best["replacement_pct"],

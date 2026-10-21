@@ -107,13 +107,13 @@ ensemble:
   ci_percentile_low: 5
   ci_percentile_high: 95
   uncertainty_flag_threshold:
-    compressive_strength_mpa: 0.30
-    flexural_strength_mpa: 0.35
-    split_tensile_mpa: 0.35
-    density_kgm3: 0.20
-    water_absorption_pct: 0.40
-    thermal_conductivity_wm: 0.40
-    durability_index: 0.40
+    compressive_strength_mpa: 1.50
+    flexural_strength_mpa: 1.00
+    split_tensile_mpa: 1.80
+    density_kgm3: 0.10
+    water_absorption_pct: 1.00
+    thermal_conductivity_wm: 0.50
+    durability_index: 1.00
 
 augmentation:
   ctgan:

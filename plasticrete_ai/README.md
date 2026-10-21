@@ -12,6 +12,7 @@ An explainable machine learning platform that predicts 7 mechanical and physical
 | **M2 — Optimisation** | ✅ Active | XGBoost-surrogate constrained optimisation via Optuna |
 | **M3 — Sustainability** | ✅ Active | Embodied carbon (LCA), BIS compliance, IGBC/GRIHA/LEED scorer |
 | **M4 — Recommendation** | ✅ Active | RF classifier + FAISS RAG application recommender |
+| **M5 — Report Generation** | ✅ Active | Automated PDF mix design & compliance audit report engine |
 
 ---
 
@@ -19,12 +20,15 @@ An explainable machine learning platform that predicts 7 mechanical and physical
 
 ```bash
 cd plasticrete_ai
+python -m venv venv
+# Windows: .\venv\Scripts\activate | Linux/Mac: source venv/bin/activate
 pip install -r requirements.txt
-python pipeline/run_m1_training.py
-uvicorn deployment.api.app:app --port 8000
+
+# Launch FastAPI backend
+uvicorn deployment.api.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Optional flags:
+Optional training flags:
 ```bash
 python pipeline/run_m1_training.py --tune-xgb      # Optuna HPO (~2 hrs)
 python pipeline/run_m1_training.py --no-transfer    # skip DNN transfer learning
@@ -69,14 +73,17 @@ plasticrete_ai/
 │   │   └── explainability/pdp_ice_plots.py
 │   ├── m2_optimization/        ← surrogate-model optimiser (Optuna)
 │   ├── m3_sustainability/      ← LCA + BIS + green rating scorer
-│   └── m4_recommendation/      ← RF classifier + FAISS RAG
-├── models/m1/                  ← trained artefacts
+│   ├── m4_recommendation/      ← RF classifier + FAISS RAG
+│   └── m5_report/              ← Automated ReportLab PDF generator
+├── models/                     ← trained artefacts (M1, M4 FAISS index)
 ├── pipeline/
 │   ├── run_data_pipeline.py
-│   └── run_m1_training.py
+│   ├── run_m1_training.py
+│   └── run_m4_data_pipeline.py
 ├── deployment/
-│   ├── api/app.py              ← FastAPI
-│   └── frontend/streamlit_app.py
+│   └── api/
+│       ├── app.py              ← FastAPI main application
+│       └── schemas.py          ← Pydantic v2 schemas
 └── docs/
 ```
 

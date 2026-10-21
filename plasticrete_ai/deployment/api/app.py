@@ -1,8 +1,9 @@
 """
-FastAPI application serving M1 predictions via /predict endpoint.
+FastAPI application serving M1/M2/M3/M4/M5 endpoints for PlastiCrete.ai.
 """
 from __future__ import annotations
 
+import io
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -10,12 +11,14 @@ from pathlib import Path
 import yaml
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from loguru import logger
 
 import modules.m1_prediction as m1
 import modules.m2_optimization as m2
 import modules.m3_sustainability as m3
 import modules.m4_recommendation as m4
+import modules.m5_report as m5
 
 
 from deployment.api.schemas import (
@@ -23,6 +26,7 @@ from deployment.api.schemas import (
     M4MixInput, RecommendationResponse, RAGAnalogueSchema, CostBenefitSchema,
     ScoreRequest, ScoreResponse,
     OptimizeRequest, OptimizeResponse,
+    ReportRequest,
 )
 from modules.m1_prediction.utils.schema import (
     ADDITIVE_TYPE_CLASSES, INPUT_RANGES, PLASTIC_TYPE_CLASSES, TARGET_COLUMNS,
@@ -47,23 +51,32 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         logger.error(f"Failed to load M1 ensemble: {exc}")
     try:
-        m4.load_models()
-        logger.info("M4 recommendation models loaded")
+        m2.load_models()
+        logger.info("M2 optimisation models loaded")
     except Exception as exc:
-        logger.error(f"Failed to load M4 models: {exc}")
+        logger.error(f"Failed to load M2 models: {exc}")
     try:
         m3.load_models()
         logger.info("M3 sustainability models loaded")
     except Exception as exc:
         logger.error(f"Failed to load M3 models: {exc}")
+    try:
+        m4.load_models()
+        logger.info("M4 recommendation models loaded")
+    except Exception as exc:
+        logger.error(f"Failed to load M4 models: {exc}")
     yield
     logger.info("PlastiCrete AI shutting down")
 
 
 app = FastAPI(
-    title="PlastiCrete AI — M1 Property Predictor",
-    description="Predict 7 mechanical/physical properties of plastic waste concrete.",
-    version="1.0.0",
+    title="PlastiCrete AI",
+    description=(
+        "Predict 7 mechanical/physical properties of plastic-waste composite concrete, "
+        "run Pareto optimisation, score sustainability (LCA + BIS), recommend applications, "
+        "and generate professional PDF Mix Design Reports."
+    ),
+    version="1.1.0",
     lifespan=lifespan,
 )
 
@@ -230,3 +243,36 @@ def optimize(payload: OptimizeRequest) -> OptimizeResponse:
         raise HTTPException(status_code=500, detail="Internal optimisation error.")
 
     return OptimizeResponse(**result)
+
+
+# ── M5: PDF Mix Design Report ──────────────────────────────────────────────────
+@app.post(
+    "/report/pdf",
+    response_class=StreamingResponse,
+    summary="Generate a professional PDF Mix Design Report",
+    description=(
+        "Accepts full mix parameters, M1 prediction, M3 score, and M4 recommendation. "
+        "Returns a formatted A4 PDF with recipe table, predicted properties, BIS compliance, "
+        "LCA carbon, green credits, SHAP feature influence, and literature analogues."
+    ),
+)
+def report_pdf(payload: "ReportRequest") -> StreamingResponse:
+    try:
+        pdf_bytes = m5.generate_report(
+            mix_params=payload.mix_params,
+            prediction=payload.prediction,
+            score=payload.score,
+            recommendation=payload.recommendation,
+            session_id=payload.session_id or "WEB-SESSION",
+        )
+    except Exception as exc:
+        logger.exception(f"M5 report generation error: {exc}")
+        raise HTTPException(status_code=500, detail=f"Report generation failed: {exc}")
+
+    session_slug = (payload.session_id or "report").replace(" ", "_")[:24]
+    filename = f"plasticrete_report_{session_slug}.pdf"
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )

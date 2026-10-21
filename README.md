@@ -1,154 +1,270 @@
-# PlastiCrete AI
+<div align="center">
 
-An explainable machine learning platform that predicts 7 mechanical and physical properties of plastic waste composite construction materials from 8 mix design inputs — replacing ₹5,000–₹20,000 lab tests with millisecond inference.
+# 🧱 PlastiCrete.ai
+
+### **AI-Driven Circular Concrete Formulation & Sustainability Intelligence Platform**
+
+*Accelerating circular economy in construction by predicting 7 mechanical & durability properties, optimizing mix designs, verifying BIS & green building compliance, and generating audit-ready technical certification.*
+
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-19-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-06B6D4.svg?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Optuna](https://img.shields.io/badge/Optuna-HPO-2962FF.svg)](https://optuna.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-Transfer_Learning-EE4C2C.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+[Live Demo](http://localhost:5173) • [API Documentation](http://localhost:8000/docs) • [Modules Guide](#-modular-system-architecture) • [Quick Start](#-quick-start)
 
 ---
 
-## Module status
+</div>
 
-| Module | Status | Description |
-|--------|--------|-------------|
-| **M1 — Prediction** | ✅ Active | Ensemble (XGBoost + RF + DNN) property predictor |
-| **M2 — Optimisation** | ✅ Active | XGBoost-surrogate constrained optimisation via Optuna |
-| **M3 — Sustainability** | ✅ Active | Embodied carbon (LCA), BIS compliance, IGBC/GRIHA/LEED scorer |
-| **M4 — Recommendation** | ✅ Active | RF classifier + FAISS RAG application recommender |
+## 📌 Executive Summary
+
+Traditional laboratory validation of concrete mixes with recycled plastic aggregate replacements requires **28-day curing cycles** and costs between **₹5,000 to ₹25,000 per trial batch**. 
+
+**PlastiCrete.ai** delivers an end-to-end computational intelligence system that:
+1. **Replaces empirical trial-and-error** with sub-second property prediction using a stacked ensemble (XGBoost + Random Forest + Transfer-Learned DNN).
+2. **Discovers optimal formulations** via multi-objective Pareto optimization (maximizing strength & plastic recycling while minimizing carbon footprint & production cost).
+3. **Automates compliance audits** against Indian Standards (IS 456, IS 2185, IS 15658, IS 383) and scores credits for **IGBC, GRIHA, and LEED v4.1**.
+4. **Recommends certified applications** using semantic FAISS vector RAG across peer-reviewed concrete literature.
+5. **Generates publication-ready PDF certification reports** for civil engineering audits and industrial deployment.
 
 ---
 
-## Quick start
+## 🏛️ Modular System Architecture
 
+The platform is structured into five cohesive AI/ML micro-modules operating behind a high-performance **FastAPI** backend and an interactive **React + Vite** frontend:
+
+```mermaid
+flowchart TD
+    subgraph UI ["Modern Web Interface (plasticrete_web)"]
+        A[Mix Designer & Studio]
+        B[Real-time Property Predictor]
+        C[Pareto Optimizer]
+        D[Sustainability & Carbon Tracker]
+        E[Application Recommender]
+        F[Explainability & SHAP Visualizer]
+    end
+
+    subgraph API ["FastAPI Engine (plasticrete_ai)"]
+        G["/predict"]
+        H["/optimize"]
+        I["/score"]
+        J["/recommend"]
+        K["/report/pdf"]
+    end
+
+    subgraph Core ["AI / ML Pipeline Modules"]
+        M1["<b>M1: Property Predictor</b><br/>Ensemble (XGBoost + RF + PyTorch DNN)<br/>SHAP / LIME / PDP"]
+        M2["<b>M2: Multi-Objective Optimizer</b><br/>Optuna NSGA-II / TPE<br/>Surrogate Optimization"]
+        M3["<b>M3: Sustainability Engine</b><br/>Cradle-to-Gate LCA (CO2e)<br/>BIS / IGBC / GRIHA / LEED"]
+        M4["<b>M4: Application Recommender</b><br/>Random Forest + FAISS Vector RAG<br/>Literature Analogues & Cost-Benefit"]
+        M5["<b>M5: Report Generator</b><br/>ReportLab PDF Engine<br/>Audit-Ready Mix Certificates"]
+    end
+
+    UI --> API
+    G --> M1
+    H --> M2
+    I --> M3
+    J --> M4
+    K --> M5
+    M2 -.-> M1
+    M4 -.-> M1
+    M5 -.-> M1 & M3 & M4
+```
+
+---
+
+## 🧩 Deep Dive: The 5 Modules
+
+| Module | Core Technology | Primary Functionality | Output |
+|---|---|---|---|
+| **M1 — Prediction** | XGBoost + Random Forest + PyTorch DNN + TreeSHAP | Predicts 7 mechanical and physical properties from 8 mix parameters with 90% confidence intervals. | Predicted values, CI bounds, and SHAP feature influence attributions. |
+| **M2 — Optimization** | Optuna NSGA-II & TPE + ML Surrogate Models | Finds Pareto-optimal mix recipes satisfying user-defined structural and cost constraints. | Optimal mix parameters, Pareto frontier curves, trade-off analysis. |
+| **M3 — Sustainability** | ICE Database + IS 456 / IS 2185 / IS 15658 / IS 383 rules | Computes cradle-to-gate embodied carbon (kg CO₂e/m³), evaluates BIS grade compliance, and tallies green building credits. | CO₂ reduction %, carbon grade, BIS compliance verdict, IGBC/GRIHA/LEED points. |
+| **M4 — Recommendation** | Scikit-Learn Classifier + FAISS Vector Store + SentenceTransformers | Recommends structural vs. non-structural civil applications and extracts real-world published scientific analogues. | Primary recommendation, confidence score, cost savings %, literature citations. |
+| **M5 — Report Engine** | ReportLab + Matplotlib + Dynamic PDF Builder | Compiles full mix recipe, predictions, radar comparisons, BIS audit verdicts, and references into a downloadable document. | Multi-page, formatted A4 PDF Technical Report. |
+
+---
+
+## 🧪 Mix Input Parameters & Predicted Properties
+
+### 8 Input Parameters
+- **Plastic Waste Type:** PET, HDPE, LDPE, PP, PS, PVC, Crumb Rubber
+- **Aggregate Replacement Percentage:** `0.0% – 50.0%`
+- **Plastic Particle Size:** `0.1 mm – 20.0 mm`
+- **Water-to-Cement (w/c) Ratio:** `0.30 – 0.65`
+- **Supplementary Cementitious Material (SCM):** Fly Ash, Silica Fume, GGBS, Metakaolin, None
+- **SCM Addition Percentage:** `0.0% – 40.0%`
+- **Curing Temperature:** `10.0 °C – 50.0 °C`
+- **Curing Duration:** `1 – 90 days`
+
+### 7 Target Output Properties
+
+| Target Property | Unit | Expected Test R² | BIS Reference Code |
+|---|:---:|:---:|:---:|
+| **Compressive Strength** | MPa | **0.88 – 0.94** | IS 516 / IS 456 |
+| **Flexural Strength** | MPa | **0.82 – 0.90** | IS 516 |
+| **Split Tensile Strength** | MPa | **0.80 – 0.88** | IS 5816 |
+| **Dry Density** | kg/m³ | **0.90 – 0.96** | IS 2185 |
+| **Water Absorption** | % | **0.75 – 0.85** | IS 2185 / IS 15658 |
+| **Thermal Conductivity** | W/m·K | **0.65 – 0.78** | ASTM C177 |
+| **Durability Index** | 0 – 100 | **0.70 – 0.82** | Composite Durability Metric |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Python 3.10+**
+- **Node.js 18+** & **npm**
+- **Git** (with Git LFS for binary model artifacts)
+
+### 1. Clone the Repository
 ```bash
+git clone https://github.com/kritikamandale/Plasticrete_ai.git
+cd Plasticrete_ai
+```
+
+### 2. Backend Setup (`plasticrete_ai`)
+```bash
+# Navigate to backend directory
 cd plasticrete_ai
+
+# Create and activate virtual environment
+python -m venv venv
+# On Windows:
+.\venv\Scripts\activate
+# On Linux/macOS:
+source venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
-python pipeline/run_m1_training.py
-uvicorn deployment.api.app:app --port 8000
-```
 
-Optional flags:
+# Start FastAPI backend server
+uvicorn deployment.api.app:app --host 0.0.0.0 --port 8000 --reload
+```
+API will be live at `http://localhost:8000`. Interactive OpenAPI documentation available at `http://localhost:8000/docs`.
+
+### 3. Frontend Setup (`plasticrete_web`)
+Open a new terminal window:
 ```bash
-python pipeline/run_m1_training.py --tune-xgb      # Optuna HPO (~2 hrs)
-python pipeline/run_m1_training.py --no-transfer    # skip DNN transfer learning
-python pipeline/run_m1_training.py --no-ctgan       # skip CTGAN augmentation
+# Navigate to frontend directory
+cd plasticrete_web
+
+# Install npm dependencies
+npm install
+
+# Start Vite dev server
+npm run dev
 ```
+Open your browser at `http://localhost:5173`.
 
 ---
 
-## File tree
+## 💻 REST API Endpoints Overview
 
-```
-plasticrete_ai/
-├── README.md
-├── requirements.txt
-├── .env.example
-├── configs/
-│   ├── m1_config.yaml
-│   ├── m2_config.yaml
-│   ├── m3_config.yaml
-│   └── m4_config.yaml
-├── data/
-│   ├── raw/                    ← immutable source CSVs
-│   ├── processed/              ← master_dataset.csv
-│   ├── augmented/              ← CTGAN synthetic rows
-│   └── external/               ← BIS tables, ICE factors
-├── modules/
-│   ├── m1_prediction/
-│   │   ├── __init__.py         ← PUBLIC CONTRACT
-│   │   ├── CONTRACT.md
-│   │   ├── utils/schema.py     ← SINGLE SOURCE OF TRUTH
-│   │   ├── utils/data_loader.py
-│   │   ├── utils/preprocessor.py
-│   │   ├── utils/feature_engineering.py
-│   │   ├── model/xgboost_model.py
-│   │   ├── model/random_forest_model.py
-│   │   ├── model/dnn_model.py
-│   │   ├── model/ensemble.py
-│   │   ├── model/trainer.py
-│   │   ├── model/evaluator.py
-│   │   ├── explainability/shap_explainer.py
-│   │   ├── explainability/lime_explainer.py
-│   │   └── explainability/pdp_ice_plots.py
-│   ├── m2_optimization/        ← surrogate-model optimiser (Optuna)
-│   ├── m3_sustainability/      ← LCA + BIS + green rating scorer
-│   └── m4_recommendation/      ← RF classifier + FAISS RAG
-├── models/m1/                  ← trained artefacts
-├── pipeline/
-│   ├── run_data_pipeline.py
-│   └── run_m1_training.py
-├── deployment/
-│   ├── api/app.py              ← FastAPI
-│   └── frontend/streamlit_app.py
-└── docs/
-```
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/health` | Service health status check |
+| `GET` | `/schema` | Schema definitions, categories, and valid input bounds |
+| `POST` | `/predict` | Predict 7 mechanical properties + 90% CIs + SHAP feature importance |
+| `POST` | `/optimize` | Multi-objective mix optimization via Optuna |
+| `POST` | `/score` | Embodied carbon LCA, BIS compliance, & green building credits |
+| `POST` | `/recommend` | Application suitability & FAISS literature retrieval |
+| `POST` | `/report/pdf` | Stream generated audit-ready PDF Mix Design Certificate |
 
----
-
-## M1 → M2/M3/M4 contract
-
-```python
-import modules.m1_prediction as m1
-
-# At startup
-m1.load_ensemble("models/m1/", config)
-
-# Single prediction (M3, M4, API)
-result = m1.predict({
-    "plastic_type":    "PET",
+### Example Prediction Request
+```bash
+curl -X POST "http://localhost:8000/predict" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "plastic_type": "PET",
     "replacement_pct": 15.0,
     "particle_size_mm": 4.0,
-    "wc_ratio":        0.45,
-    "additive_type":   "fly_ash",
-    "additive_pct":    10.0,
-    "curing_temp_c":   27.0,
-    "curing_days":     28,
-})
-# result.compressive_strength_mpa → float or None
-# result.ci_low, result.ci_high   → Dict[str, float]
-# result.shap_values              → Dict[str, Dict[str, float]]
-
-# Batch prediction (M2 optimisation loop — no SHAP, fast)
-prep = m1.get_preprocessor()
-X = prep.transform_input(input_dict)          # (1, n_features)
-means, ci_low, ci_high = m1.predict_batch(X) # each (1, 7)
+    "wc_ratio": 0.45,
+    "additive_type": "fly_ash",
+    "additive_pct": 10.0,
+    "curing_temp_c": 27.0,
+    "curing_days": 28
+  }'
 ```
 
-`PredictionResult` field → column order mapping:
+---
 
-| Index | Field | Unit |
-|-------|-------|------|
-| 0 | compressive_strength_mpa | MPa |
-| 1 | flexural_strength_mpa | MPa |
-| 2 | split_tensile_mpa | MPa |
-| 3 | density_kgm3 | kg/m³ |
-| 4 | water_absorption_pct | % |
-| 5 | thermal_conductivity_wm | W/m·K |
-| 6 | durability_index | 0–100 |
+## 📂 Repository Directory Layout
+
+```
+Plasticrete_ai/
+├── README.md                      # Primary project documentation
+├── .gitignore                     # Git ignore rules for Python & Node
+├── .gitattributes                 # Git LFS configuration for model binaries
+│
+├── plasticrete_ai/                # Backend API & AI/ML modules
+│   ├── configs/                   # Hyperparameters and pipeline configuration
+│   ├── data/                      # Raw, processed, and synthetic datasets
+│   ├── deployment/                # FastAPI application and schemas
+│   │   └── api/
+│   │       ├── app.py             # FastAPI entrypoint
+│   │       └── schemas.py         # Pydantic v2 validation models
+│   ├── models/                    # Trained model weights, scalers, FAISS indices
+│   ├── modules/                   # The 5 Core Intelligence Engines
+│   │   ├── m1_prediction/         # Ensemble model & explainability (SHAP/LIME)
+│   │   ├── m2_optimization/       # Optuna surrogate optimizer
+│   │   ├── m3_sustainability/     # Carbon LCA & BIS / Green rating calculators
+│   │   ├── m4_recommendation/     # RF Classifier + FAISS RAG retrieval
+│   │   └── m5_report/             # Automated ReportLab PDF generator
+│   ├── pipeline/                  # Training & ETL data pipelines
+│   └── requirements.txt           # Python backend dependencies
+│
+└── plasticrete_web/               # Modern Frontend (React 19 + TypeScript + Vite)
+    ├── package.json               # Node dependencies & build scripts
+    ├── vite.config.ts             # Vite configuration
+    ├── index.html                 # Single page application entry
+    └── src/
+        ├── api/                   # Axios / fetch client hooks for API
+        ├── components/            # UI components (Navbar, Sidebar, Gauges, Cards)
+        ├── context/               # Global mix parameter state
+        └── pages/                 # Full-featured interactive views
+            ├── Dashboard.tsx      # Overview metrics & project status
+            ├── Predictor.tsx      # Interactive property simulator
+            ├── Optimizer.tsx      # Interactive Pareto trade-off explorer
+            ├── Sustainability.tsx # Embodied carbon & BIS compliance
+            ├── Recommender.tsx    # Application suitability & RAG analogues
+            ├── Explainability.tsx # TreeSHAP & feature attribution
+            ├── StandardsPage.tsx  # IS Codes & Green rating handbook
+            └── Studio.tsx         # Complete all-in-one mix design workflow
+```
 
 ---
 
-## Data checklist
+## 🌿 Standards, Sustainability & Environmental Impact
 
-Place these files in `data/raw/` (see `docs/DATA_EXTRACTION_GUIDE.md`):
-
-| File | DOI | Rows |
-|------|-----|------|
-| `uci_yeh_concrete.csv` | auto-fetched via ucimlrepo | 1030 |
-| `mendeley_rubberized.csv` | Mendeley | ~1200 |
-| `nayir_yilmaz_2024.csv` | 10.1016/nayir_yilmaz_2024 | ~428 |
-| `nafees_2022.csv` | 10.3390/ma15010221 | ~640 |
-| `chong_shi_2023.csv` | J. Clean. Prod. 2023 | 103 |
-| `alkharisi_dahish_2025.csv` | 10.1016/alkharisi_dahish_2025 | ~296 |
-| `manual_extraction.csv` | team-extracted | TBD |
+- **Indian Standards (BIS) Evaluated:**
+  - `IS 456:2000` — Plain and Reinforced Concrete (M10 – M50 classifications)
+  - `IS 2185 (Part 1 & 2)` — Concrete Masonry Units & Hollow / Solid Blocks
+  - `IS 15658:2006` — Precast Concrete Paver Blocks for Pavements
+  - `IS 383:2016` — Coarse and Fine Aggregate Specification
+- **Green Building Rating Systems Supported:**
+  - **IGBC** (Indian Green Building Council) Green Factory & Building Rating
+  - **GRIHA** (Green Rating for Integrated Habitat Assessment) Criterion 14 & 18
+  - **LEED v4.1** Building Design & Construction (MR Credit: Recycled Content)
+- **Life Cycle Assessment (LCA):**
+  - Database factors adapted from the University of Bath Inventory of Carbon and Energy (ICE) and Indian industrial averages.
 
 ---
 
-## Expected performance (R² on held-out test set)
+## 👥 Authors & Acknowledgments
 
-| Target | Expected R² range |
-|--------|--------------------|
-| compressive_strength_mpa | 0.88 – 0.94 |
-| flexural_strength_mpa | 0.82 – 0.90 |
-| split_tensile_mpa | 0.80 – 0.88 |
-| density_kgm3 | 0.90 – 0.96 |
-| water_absorption_pct | 0.75 – 0.85 |
-| thermal_conductivity_wm | 0.65 – 0.78 |
-| durability_index | 0.70 – 0.82 |
+- **Project Lead & Developer:** [Kritika Mandale](https://github.com/kritikamandale)
+- **Repository:** [https://github.com/kritikamandale/Plasticrete_ai](https://github.com/kritikamandale/Plasticrete_ai)
+- **Institution:** Major Project Implementation for Sustainable Materials Engineering
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE) — feel free to use, modify, and build upon this platform for academic and commercial applications.

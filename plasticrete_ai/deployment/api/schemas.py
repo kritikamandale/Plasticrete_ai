@@ -3,7 +3,7 @@ Pydantic request/response models for the M1 FastAPI endpoint.
 """
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -284,4 +284,55 @@ class OptimizeResponse(BaseModel):
     predicted_co2_kgco2e_m3: float
     predicted_plastic_diversion_kg_m3: float
     composite_score:        float
-    mode:                   str        
+    mode:                   str
+
+
+# ═══════════════════════════════════════════════════════════
+# M5 — PDF Mix Design Report Request Schema
+# ═══════════════════════════════════════════════════════════
+
+class ReportRequest(BaseModel):
+    """
+    Full payload for generating a PDF mix design report.
+    Combines 8 mix parameters + M1 prediction + M3 score + M4 recommendation.
+    """
+    mix_params: Dict[str, Any] = Field(
+        ...,
+        description="8 mix design parameters (plastic_type, replacement_pct, etc.)",
+    )
+    prediction: Dict[str, Any] = Field(
+        ...,
+        description="PredictionResponse dict from /predict endpoint",
+    )
+    score: Dict[str, Any] = Field(
+        ...,
+        description="ScoreResponse dict from /score endpoint",
+    )
+    recommendation: Dict[str, Any] = Field(
+        ...,
+        description="RecommendationResponse dict from /recommend endpoint",
+    )
+    session_id: Optional[str] = Field(
+        None,
+        description="Optional session identifier for the report header",
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "mix_params": {
+                    "plastic_type": "PET",
+                    "replacement_pct": 15.0,
+                    "particle_size_mm": 4.0,
+                    "wc_ratio": 0.45,
+                    "additive_type": "fly_ash",
+                    "additive_pct": 10.0,
+                    "curing_temp_c": 27.0,
+                    "curing_days": 28,
+                },
+                "prediction": {"predictions": {}, "shap_values": {}, "uncertainty_flag": False, "low_coverage_targets": []},
+                "score": {"sustainability_score": 72, "sustainability_grade": "A"},
+                "recommendation": {"primary_application": "paving_block_light", "primary_confidence_pct": 89.0},
+                "session_id": "PLT-20241021-001",
+            }
+        }

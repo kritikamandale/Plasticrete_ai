@@ -1,1 +1,65 @@
-# M4 Application Recommender — placeholder (M4 sprint will fill this)
+# ── Module 4 - Construction Application Recommender Configuration ───────────────
+
+version: "M4_v1.0"
+
+models:
+  model_dir: "models/m4/"
+  rf_primary: "m4_rf_primary_classifier.pkl"
+  rf_multilabel: "m4_rf_multilabel_classifier.pkl"
+  rf_score_reg: "m4_rf_score_regressor.pkl"
+  feature_scaler: "m4_feature_scaler.pkl"
+  rag_property_scaler: "m4_rag_property_scaler.pkl"
+  label_encoder: "m4_label_encoder.pkl"
+  faiss_index: "m4_faiss_index.bin"
+  rag_knowledge_base: "m4_rag_knowledge_base.json"
+  bis_thresholds: "m4_bis_thresholds.json"
+  market_prices: "m4_market_prices.json"
+
+features:
+  mix_features:
+    - plastic_type_enc
+    - replacement_pct
+    - particle_size_mm
+    - wc_ratio
+    - additive_type_enc
+    - additive_pct
+    - curing_temp_c
+    - curing_days
+  property_features:
+    - compressive_strength_mpa
+    - flexural_strength_mpa
+    - split_tensile_mpa
+    - density_kgm3
+    - water_absorption_pct
+    - thermal_conductivity_wm
+    - durability_index
+
+mappings:
+  plastic_type_map:
+    PET: 0
+    HDPE: 1
+    LDPE: 2
+    PVC: 3
+    PP: 4
+    Mixed: 5
+  additive_type_map:
+    none: 0
+    fly_ash: 1
+    silica_fume: 2
+    fibres: 3
+
+applications:
+  categories:
+    - paving_block_light
+    - paving_block_heavy
+    - floor_tile_indoor
+    - floor_tile_outdoor
+    - hollow_concrete_block
+    - lightweight_partition_block
+    - structural_concrete
+    - nonstructural_concrete_fill
+    - plastic_sand_paver
+    - wall_cladding_panel
+    - thermal_insulation_panel
+    - kerb_stone
+  suitability_threshold: 55.0

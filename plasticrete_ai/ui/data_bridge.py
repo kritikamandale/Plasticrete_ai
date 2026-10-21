@@ -53,7 +53,12 @@ def input_ranges() -> dict:
 @st.cache_resource(show_spinner=False)
 def _load_m1():
     import modules.m1_prediction as m1
-    m1.load_ensemble(str(_ROOT / "models" / "m1"), _m1_config())
+    cfg = _m1_config()
+    m1.load_ensemble(str(_ROOT / "models" / "m1"), cfg)
+    if hasattr(m1, "_ensemble") and m1._ensemble is not None:
+        th = (cfg.get("ensemble", {}) or {}).get("uncertainty_flag_threshold")
+        if th:
+            m1._ensemble._uncertainty_thresholds = th
     return m1
 
 
@@ -102,6 +107,10 @@ def props_from_prediction(pred: dict) -> dict:
 def _predict_cached(mix_key: tuple) -> dict:
     mix = dict(mix_key)
     m1 = _load_m1()
+    cfg = _m1_config()
+    th = (cfg.get("ensemble", {}) or {}).get("uncertainty_flag_threshold")
+    if th and hasattr(m1, "_ensemble") and m1._ensemble is not None:
+        m1._ensemble._uncertainty_thresholds = th
     return _norm_prediction(m1.predict(mix))
 
 
