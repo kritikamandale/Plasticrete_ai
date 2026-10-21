@@ -78,8 +78,8 @@ export const Sidebar: React.FC = () => {
           <span className="text-slate-950 font-bold">M20 Conventional</span>
         </div>
         <div className="pt-1.5 border-t border-slate-300 flex items-center justify-between text-[11px] text-slate-700 font-semibold">
-          <span>Inference Latency</span>
-          <span className="text-emerald-800 font-bold">&lt; 15ms</span>
+          <span>Factor table</span>
+          <span className="text-emerald-800 font-bold">ICE v4.1 · 2026-03-01</span>
         </div>
       </div>
     </aside>

@@ -43,3 +43,7 @@ class RecommendationResult:
     suitability_scores:      Dict[str, float]
     cost_benefit:            CostBenefit
     rag_analogues:           List[RAGAnalogue]
+    use_class_gates:         List[dict] = field(default_factory=list)
+    primary_gate_status:     str = ""
+    primary_gate_message:    str = ""
+    verification_applications: List[str] = field(default_factory=list)

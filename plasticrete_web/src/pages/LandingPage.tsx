@@ -33,21 +33,20 @@ export const LandingPage: React.FC = () => {
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Accelerating Net-Zero Infrastructure</span>
             <span className="text-emerald-300">|</span>
-            <span className="text-slate-600 font-medium">BIS IS 10262 & IS 1237 Aligned</span>
+            <span className="text-slate-600 font-medium">Shared mass balance · use-class gates</span>
           </div>
 
           {/* Main Title */}
           <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12] mb-6">
-            Design Certified Plastic-Waste Concrete in{' '}
+            Design a plastic-waste mix a plant can defend, then{' '}
             <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
-              Milliseconds, Not Months.
+              cast one verification cube.
             </span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed mb-10">
-            Replace costly ₹20,000 laboratory crush tests with multi-target machine learning.
-            Instantly predict 7 mechanical properties, minimize embodied carbon, and verify Indian Standard compliance before casting a single cube.
+            Screen seven properties with a 90% interval, one shared carbon number, and a use-class gate. A crush test still decides the batch.
           </p>
 
           {/* Action Buttons */}
@@ -146,7 +145,7 @@ export const LandingPage: React.FC = () => {
                   </div>
                   <span className="text-xs text-emerald-800 font-bold flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    IS 456 M20 Structural
+                    90% interval — confirm with a cube
                   </span>
                 </div>
 
@@ -174,16 +173,16 @@ export const LandingPage: React.FC = () => {
             <div className="text-xs font-bold text-slate-800 mt-1">Simultaneous property predictions</div>
           </div>
           <div>
-            <div className="text-3xl sm:text-4xl font-extrabold font-mono text-emerald-800">&lt; 15 ms</div>
-            <div className="text-xs font-bold text-slate-800 mt-1">Instant inference vs 28d curing</div>
+            <div className="text-3xl sm:text-4xl font-extrabold font-mono text-emerald-800">90%</div>
+            <div className="text-xs font-bold text-slate-800 mt-1">Interval used by the use-class gate</div>
           </div>
           <div>
-            <div className="text-3xl sm:text-4xl font-extrabold font-mono text-cyan-800">R² ~ 0.94</div>
-            <div className="text-xs font-bold text-slate-800 mt-1">Held-out test validation score</div>
+            <div className="text-3xl sm:text-4xl font-extrabold font-mono text-cyan-800">R² 0.91</div>
+            <div className="text-xs font-bold text-slate-800 mt-1">Compressive strength, n = 455</div>
           </div>
           <div>
-            <div className="text-3xl sm:text-4xl font-extrabold font-mono text-indigo-800">3 Standards</div>
-            <div className="text-xs font-bold text-slate-800 mt-1">Automated IS 1237 / 2185 / 456 audits</div>
+            <div className="text-3xl sm:text-4xl font-extrabold font-mono text-indigo-800">4 gates</div>
+            <div className="text-xs font-bold text-slate-800 mt-1">Paver, hollow, solid, structural</div>
           </div>
         </div>
       </section>
@@ -250,7 +249,7 @@ export const LandingPage: React.FC = () => {
                   </div>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                  Constrained multi-objective Bayesian optimization using fast surrogate models and Optuna Tree-structured Parzen Estimator (TPE). Balances strength, production cost, CO₂ reduction, and plastic waste diversion.
+                  Optuna searches recipes by calling the same M1 ensemble the predictor uses, then prices them from the shared mass-balance table. The result is a full recipe and up to three trade-off points.
                 </p>
                 <div className="flex flex-wrap gap-1.5 text-[11px] font-mono">
                   <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">Optuna TPE</span>
@@ -281,11 +280,11 @@ export const LandingPage: React.FC = () => {
                   </div>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                  Life cycle cradle-to-gate embodied carbon accounting referencing ICE 3.0 emission factors. Performs deterministic BIS standard compliance checks against IS 1237, IS 2185, and IS 456 codes.
+                  Carbon and cost come from one dated factor table (ICE v4.1). A product is allowed only when its own standard clears on the lower confidence bound.
                 </p>
                 <div className="flex flex-wrap gap-1.5 text-[11px] font-mono">
-                  <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">ICE 3.0 LCA</span>
-                  <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">IS 1237 Pavers</span>
+                  <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">ICE v4.1 table</span>
+                  <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">Use-class gate</span>
                   <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">IS 2185 Blocks</span>
                   <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">LEED / GRIHA / IGBC</span>
                 </div>
@@ -341,7 +340,7 @@ export const LandingPage: React.FC = () => {
               Engineering Workflow
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
-              From Waste Polymer to Certified Product
+              From this week's flake to a batch passport
             </h2>
           </div>
 
@@ -358,7 +357,7 @@ export const LandingPage: React.FC = () => {
               <span className="text-2xl font-extrabold font-mono text-blue-800 block mb-2">02</span>
               <h4 className="font-bold text-slate-950 text-sm mb-1">Multi-ML Inference</h4>
               <p className="text-xs font-medium text-slate-800 leading-relaxed">
-                Ensemble models simultaneously evaluate 7 strength, density, thermal, and durability parameters in &lt;15ms.
+                The ensemble returns seven properties and a 90% interval. The gate uses the conservative side of that interval.
               </p>
             </div>
 
@@ -366,7 +365,7 @@ export const LandingPage: React.FC = () => {
               <span className="text-2xl font-extrabold font-mono text-indigo-800 block mb-2">03</span>
               <h4 className="font-bold text-slate-950 text-sm mb-1">Standards Check</h4>
               <p className="text-xs font-medium text-slate-800 leading-relaxed">
-                Automated regulatory audit checks against IS 1237, IS 2185, and IS 456 to determine structural compliance.
+                A paver, a hollow block, and a solid block each wait for their own standard. Structural use stays a lab trial.
               </p>
             </div>
 

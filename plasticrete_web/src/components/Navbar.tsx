@@ -1,9 +1,9 @@
 import React from 'react';
 import { useMix, type MainNavRoute } from '../context/MixContext';
-import { Sparkles, ArrowRight, ShieldCheck, Activity } from 'lucide-react';
+import { Sparkles, ArrowRight, Activity } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { mainRoute, setMainRoute, score, loading } = useMix();
+  const { mainRoute, setMainRoute, loading, inferenceSource } = useMix();
 
   const navLinks: { id: MainNavRoute; label: string; badge?: string }[] = [
     { id: 'home', label: 'Home' },
@@ -72,15 +72,10 @@ export const Navbar: React.FC = () => {
         {/* Header Right Actions */}
         <div className="flex items-center gap-3">
           {/* Real-time Indicator */}
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 font-bold shadow-sm">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
-            <span className="font-bold text-[11px] text-slate-800">
-              {loading ? 'Evaluating...' : 'Models Ready'}
-            </span>
-            <span className="text-slate-400">|</span>
-            <span className="text-emerald-800 font-bold text-[11px] flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-              {score?.bis_overall_pass ? 'IS 1237 Compliant' : 'Review Needed'}
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-xs font-bold shadow-sm">
+            <span className={`flex h-2 w-2 rounded-full ${inferenceSource === 'live' ? 'bg-emerald-600' : 'bg-amber-500'}`} />
+            <span className="text-[11px] text-slate-800">
+              {loading ? 'Evaluating...' : inferenceSource === 'live' ? 'Live model' : inferenceSource === 'mixed' ? 'Partial demo' : 'Demo data'}
             </span>
           </div>
 

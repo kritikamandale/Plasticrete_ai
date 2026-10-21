@@ -1,0 +1,55 @@
+{
+  "table_id": "plasticrete-use-class-gates-v1",
+  "factor_date": "2026-03-01",
+  "note": "A product is allowed only when its own standard clears on the conservative side of the 90% interval. Structural concrete is never marked allowed.",
+  "classes": [
+    {
+      "id": "paver",
+      "label": "Paver",
+      "standard": "IS 15658",
+      "applications": ["paving_block_light", "paving_block_heavy", "plastic_sand_paver", "floor_tile_outdoor", "kerb_stone"],
+      "cs_min_mpa": 30.0,
+      "wa_max_pct": 6.0,
+      "density_min_kgm3": null,
+      "density_max_kgm3": null,
+      "structural": false,
+      "clause": "IS 15658: compressive strength at least 30 MPa and water absorption not more than 6% by mass."
+    },
+    {
+      "id": "hollow_block",
+      "label": "Hollow concrete block",
+      "standard": "IS 2185 (Part 1)",
+      "applications": ["hollow_concrete_block", "lightweight_partition_block"],
+      "cs_min_mpa": 3.5,
+      "wa_max_pct": null,
+      "density_min_kgm3": null,
+      "density_max_kgm3": null,
+      "structural": false,
+      "clause": "IS 2185 Part 1 hollow masonry: compressive strength at least 3.5 MPa on the lower confidence bound."
+    },
+    {
+      "id": "solid_block",
+      "label": "Solid concrete block",
+      "standard": "IS 2185 (Part 1)",
+      "applications": ["floor_tile_indoor", "wall_cladding_panel", "nonstructural_concrete_fill"],
+      "cs_min_mpa": 5.0,
+      "wa_max_pct": null,
+      "density_min_kgm3": null,
+      "density_max_kgm3": null,
+      "structural": false,
+      "clause": "IS 2185 Part 1 solid masonry: compressive strength at least 5.0 MPa on the lower confidence bound."
+    },
+    {
+      "id": "structural",
+      "label": "Structural concrete",
+      "standard": "IS 456",
+      "applications": ["structural_concrete"],
+      "cs_min_mpa": 20.0,
+      "wa_max_pct": null,
+      "density_min_kgm3": 1800.0,
+      "density_max_kgm3": 2500.0,
+      "structural": true,
+      "clause": "IS 456 M20. A lower bound that clears the grade still means screen for a lab trial. This is not a certificate."
+    }
+  ]
+}

@@ -40,7 +40,7 @@ export const TechPage: React.FC = () => {
           System Architecture & Model Deep Dive
         </h1>
         <p className="text-sm font-semibold text-slate-800 mt-2 max-w-3xl leading-relaxed">
-          How PlastiCrete AI integrates gradient boosting, deep transfer learning, surrogate-model Bayesian optimization, and vector similarity search into a unified civil-engineering engine.
+          How the studio joins the M1 ensemble, a shared mass-balance table, a use-class gate, and a literature search.
         </p>
       </div>
 
@@ -65,7 +65,7 @@ export const TechPage: React.FC = () => {
           <div className="p-4 rounded-xl bg-slate-100 border border-slate-200">
             <span className="text-indigo-800 font-extrabold block mb-1">STAGE 3: M2 & M3 CORES</span>
             <p className="text-slate-800 font-sans text-xs font-medium leading-relaxed">
-              Optuna TPE surrogate searches Pareto front; ICE 3.0 factors compute cradle-to-gate LCA carbon & BIS pass.
+              Optuna calls M1 for each trial. Carbon and cost come from the shared ICE v4.1 table. Each product waits for its own standard.
             </p>
           </div>
           <div className="p-4 rounded-xl bg-slate-100 border border-slate-200">
@@ -90,16 +90,16 @@ export const TechPage: React.FC = () => {
             </h3>
           </div>
           <p className="text-xs text-slate-800 font-medium leading-relaxed">
-            Trained on 2,000+ experimental mix proportions. Features robust KNN imputation and interaction terms (e.g. <code>plastic_% × w/c</code> and <code>additive_% × curing_days</code>). Produces 5th and 95th percentile confidence intervals to quantify extrapolation uncertainty.
+            Trained on UCI Yeh plain concrete (`data/raw/uci_yeh_concrete.csv`) and `data/raw/PlastiCreteAI_M1_Final_2000.csv`. The held-out compressive R² is 0.9104 (n = 455). The named literature CSVs in the README are not in this repository.
           </p>
           <ul className="text-xs text-slate-900 font-semibold space-y-1.5 font-mono pt-2">
             <li className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-              <span>R² = 0.94 on compressive strength</span>
+              <span>Compressive R² = 0.9104, RMSE 5.60, MAE 3.61, n = 455</span>
             </li>
             <li className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-              <span>R² = 0.88 on flexural & split tensile</span>
+              <span>Flexural R² = 0.9435 (n = 282); split tensile R² = 0.9393</span>
             </li>
           </ul>
         </div>
@@ -111,16 +111,16 @@ export const TechPage: React.FC = () => {
               <GitBranch className="w-5 h-5" />
             </div>
             <h3 className="font-extrabold text-slate-950 text-base">
-              M2: Surrogate Bayesian Optimization
+              M2: Mix search on the M1 ensemble
             </h3>
           </div>
           <p className="text-xs text-slate-800 font-medium leading-relaxed">
-            Replaces slow physics iterations with lightweight XGBoost surrogate models that predict cost, CS, CO₂, and diversion. Optuna TPE sampler runs 120 constrained trials in under 200ms to map the non-dominated Pareto frontier.
+            Optuna searches recipes by calling M1's batch prediction and the same mass-balance table the sustainability page and the PDF use. The result is a full recipe, including plastic type and additive, plus up to three trade-off points.
           </p>
           <ul className="text-xs text-slate-900 font-semibold space-y-1.5 font-mono pt-2">
             <li className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-              <span>&lt;200ms solve time per scenario</span>
+              <span>Strength, plastic kg/m³, and ₹/m³ on one curve</span>
             </li>
             <li className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
@@ -140,12 +140,12 @@ export const TechPage: React.FC = () => {
             </h3>
           </div>
           <p className="text-xs text-slate-800 font-medium leading-relaxed">
-            Uses Inventory of Carbon & Energy (ICE 3.0) emission factors and volumetric displacement formulas. Calculates negative carbon credits for diverted municipal plastic waste (-1.10 kg CO₂e/kg PET) and applies IS 10262 reference concrete benchmarks.
+            Carbon and cost come from one dated factor table (ICE v4.1 A1–A3, material costs in INR). The same rows appear on the sustainability page and in the PDF. Green-rating numbers are quantities a consultant can recompute. This app does not file an IGBC, GRIHA, or LEED rating.
           </p>
           <ul className="text-xs text-slate-900 font-semibold space-y-1.5 font-mono pt-2">
             <li className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-              <span>Full cradle-to-gate LCA accounting</span>
+              <span>Factor source and date on every mass-balance row</span>
             </li>
             <li className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
@@ -170,7 +170,7 @@ export const TechPage: React.FC = () => {
           <ul className="text-xs text-slate-900 font-semibold space-y-1.5 font-mono pt-2">
             <li className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-              <span>Sub-millisecond FAISS vector search</span>
+              <span>Nearest published mixes, with author, journal, and DOI</span>
             </li>
             <li className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />

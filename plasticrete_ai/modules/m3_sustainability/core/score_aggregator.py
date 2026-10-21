@@ -32,11 +32,12 @@ class ScoreAggregator:
         self.w_bis      = w["bis_compliance_comp"]
         self.w_green    = w["green_rating_comp"]
 
-    def score(self, params, lca, bis, green) -> ScoreResult:
+    def score(self, params, lca, bis, green, bis_fraction: float | None = None) -> ScoreResult:
         n_carbon   = np.clip((lca.co2_saving_pct - (-50)) / 130, 0, 1)
         n_div      = np.clip(lca.plastic_diversion_kg_m3 / 200,  0, 1)
         n_recycled = np.clip(params["replacement_pct"] / 40,      0, 1)
-        n_bis      = bis.n_standards_passed / 7
+        # Product gates replace the old "3 of 7 standards" pass.
+        n_bis      = bis.n_standards_passed / 7 if bis_fraction is None else float(bis_fraction)
         n_green    = green.total_green_credits / 7
 
         c_carbon   = round(float(n_carbon   * self.w_carbon),   3)

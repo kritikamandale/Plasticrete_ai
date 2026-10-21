@@ -18,6 +18,8 @@ from modules.m3_sustainability.core.lca_calculator import LCACalculator
 from modules.m3_sustainability.core.green_rater import GreenRater
 from modules.m3_sustainability.core.score_aggregator import ScoreAggregator
 from modules.m3_sustainability.core.remediation_advisor import RemediationAdvisor
+from modules.shared.mass_balance import compute as compute_mass_balance
+from modules.shared.use_class_gate import evaluate_classes
 
 # ── Module-level config/singletons ────────────────────────────────────────────
 _CONFIG_PATH = Path(__file__).parent.parent.parent / "configs" / "m3_config.yaml"
@@ -59,7 +61,7 @@ def load_models(model_dir: str = "", config: dict | None = None) -> None:
     logger.info("M3 sustainability scoring engine loaded")
 
 
-def score_mix(mix_params: dict, m1_props: dict) -> dict:
+def score_mix(mix_params: dict, m1_props: dict, ci_low: dict | None = None, ci_high: dict | None = None) -> dict:
     """
     Compute full sustainability report for a mix.
 
@@ -73,9 +75,17 @@ def score_mix(mix_params: dict, m1_props: dict) -> dict:
     _ensure_loaded()
 
     lca_result  = _lca.compute(mix_params, m1_props)
+    balance     = compute_mass_balance(mix_params)
+    gates       = evaluate_classes(m1_props, ci_low, ci_high)
     bis_result  = _bis.check(m1_props)
+    cleared     = sum(1 for gate in gates if gate["status"] in ("allowed", "lab_trial"))
+    bis_result.bis_overall_pass = any(gate["status"] == "allowed" for gate in gates)
+    bis_result.n_standards_passed = cleared
     green_result = _green.rate(mix_params, m1_props, lca_result)
-    score_result = _agg.score(mix_params, lca_result, bis_result, green_result)
+    score_result = _agg.score(
+        mix_params, lca_result, bis_result, green_result,
+        bis_fraction=cleared / max(len(gates), 1),
+    )
     rem_result   = _advisor.advise(mix_params, m1_props, lca_result, bis_result, score_result)
 
     return {
@@ -95,6 +105,8 @@ def score_mix(mix_params: dict, m1_props: dict) -> dict:
         "remediation_action_2":          rem_result.remediation_action_2,
         "remediation_action_3":          rem_result.remediation_action_3,
         "estimated_score_gain":          rem_result.estimated_score_gain,
+        "mass_balance":                  balance,
+        "use_class_gates":               gates,
     }
 
 

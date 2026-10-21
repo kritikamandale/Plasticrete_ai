@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import type {
   MixInput,
   PredictionResponse,
@@ -11,9 +11,9 @@ import {
   scoreSustainability,
   recommendApplications,
 } from '../api/client';
+import { mixFromQuery, mixToQuery, pathFor, readLocation, type MainNavRoute, type StudioSubTab } from '../routing';
 
-export type MainNavRoute = 'home' | 'studio' | 'standards' | 'technology';
-export type StudioSubTab = 'overview' | 'optimizer' | 'sustainability' | 'recommender' | 'explainability';
+export type { MainNavRoute, StudioSubTab };
 
 interface MixContextType {
   mix: MixInput;
@@ -28,6 +28,9 @@ interface MixContextType {
   studioTab: StudioSubTab;
   setStudioTab: (tab: StudioSubTab) => void;
   applyPreset: (presetName: string) => void;
+  inferenceSource: 'live' | 'demo' | 'mixed';
+  batchId: string | null;
+  openBatch: (id: string) => void;
 }
 
 export const PRESETS: Record<string, MixInput> = {
@@ -76,13 +79,46 @@ export const PRESETS: Record<string, MixInput> = {
 const MixContext = createContext<MixContextType | undefined>(undefined);
 
 export const MixProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [mix, setMix] = useState<MixInput>(DEFAULT_MIX);
+  const initialLocation = readLocation();
+  const [mix, setMixState] = useState<MixInput>(() => mixFromQuery(window.location.search) ?? DEFAULT_MIX);
   const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
   const [score, setScore] = useState<ScoreResponse | null>(null);
   const [recommendation, setRecommendation] = useState<RecommendationResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [mainRoute, setMainRoute] = useState<MainNavRoute>('home');
-  const [studioTab, setStudioTab] = useState<StudioSubTab>('overview');
+  const [inferenceSource, setInferenceSource] = useState<'live' | 'demo' | 'mixed'>('demo');
+  const [mainRoute, setMainRouteState] = useState<MainNavRoute>(initialLocation.route);
+  const [studioTab, setStudioTabState] = useState<StudioSubTab>(initialLocation.tab);
+  const [batchId, setBatchId] = useState<string | null>(initialLocation.batchId);
+  const skipUrlWrite = useRef(false);
+
+  const setMix = (next: MixInput | ((prev: MixInput) => MixInput)) => {
+    setMixState(next);
+  };
+
+  const writeUrl = useCallback((route: MainNavRoute, tab: StudioSubTab, nextBatch: string | null, nextMix: MixInput, replace: boolean) => {
+    const url = `${pathFor(route, tab, nextBatch)}?${mixToQuery(nextMix)}`;
+    const current = `${window.location.pathname}${window.location.search}`;
+    if (url === current) return;
+    if (replace) window.history.replaceState({}, '', url);
+    else window.history.pushState({}, '', url);
+  }, []);
+
+  const setMainRoute = (route: MainNavRoute) => {
+    setMainRouteState(route);
+    writeUrl(route, studioTab, route === 'batch' ? batchId : null, mix, false);
+  };
+
+  const setStudioTab = (tab: StudioSubTab) => {
+    setStudioTabState(tab);
+    setMainRouteState('studio');
+    writeUrl('studio', tab, null, mix, false);
+  };
+
+  const openBatch = (id: string) => {
+    setBatchId(id);
+    setMainRouteState('batch');
+    writeUrl('batch', studioTab, id, mix, false);
+  };
 
   const refreshAll = useCallback(async () => {
     setLoading(true);
@@ -95,6 +131,9 @@ export const MixProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ]);
       setScore(sc);
       setRecommendation(rec);
+      const sources = [pred.source, sc.source, rec.source];
+      const liveCount = sources.filter((source) => source === 'live').length;
+      setInferenceSource(liveCount === 3 ? 'live' : liveCount === 0 ? 'demo' : 'mixed');
     } catch (e) {
       console.error('Refresh error:', e);
     } finally {
@@ -108,6 +147,26 @@ export const MixProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }, 200);
     return () => clearTimeout(timer);
   }, [refreshAll]);
+
+  useEffect(() => {
+    const onPop = () => {
+      skipUrlWrite.current = true;
+      const location = readLocation();
+      setMainRouteState(location.route);
+      setStudioTabState(location.tab);
+      setBatchId(location.batchId);
+      const parsed = mixFromQuery(window.location.search);
+      if (parsed) setMixState(parsed);
+      skipUrlWrite.current = false;
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  useEffect(() => {
+    if (skipUrlWrite.current) return;
+    writeUrl(mainRoute, studioTab, batchId, mix, true);
+  }, [mix, mainRoute, studioTab, batchId, writeUrl]);
 
   const applyPreset = (presetName: string) => {
     if (PRESETS[presetName]) {
@@ -130,6 +189,9 @@ export const MixProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         studioTab,
         setStudioTab,
         applyPreset,
+        inferenceSource,
+        batchId,
+        openBatch,
       }}
     >
       {children}

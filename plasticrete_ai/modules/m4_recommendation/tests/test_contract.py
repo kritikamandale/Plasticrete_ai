@@ -24,6 +24,8 @@ class TestSchemaDataclasses:
             "primary_application", "primary_confidence_pct",
             "suitable_applications", "suitability_scores",
             "cost_benefit", "rag_analogues",
+            "use_class_gates", "primary_gate_status",
+            "primary_gate_message", "verification_applications",
         }
         assert required == field_names
 

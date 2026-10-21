@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { useMix } from '../context/MixContext';
 import { runOptimization } from '../api/client';
-import type { OptimizeResponse } from '../types';
+import type { OptimizeResponse, RecipeMix } from '../types';
+import {
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import {
   SlidersHorizontal,
   Sparkles,
@@ -23,43 +31,62 @@ export const Optimizer: React.FC = () => {
   const [wCo2, setWCo2] = useState<number>(0.20);
   const [wPlastic, setWPlastic] = useState<number>(0.10);
 
+  const [costMax, setCostMax] = useState<string>('');
+  const [diversionMin, setDiversionMin] = useState<string>('');
+  const [useClass, setUseClass] = useState<string>('');
+  const [error, setError] = useState<string>('');
+
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<OptimizeResponse | null>(null);
 
+  const normalizeWeights = () => {
+    const raw = [wCS, wCost, wCo2, wPlastic];
+    const sum = raw.reduce((total, value) => total + value, 0);
+    if (sum <= 0) return [0.25, 0.25, 0.25, 0.25];
+    const rounded = raw.map((value) => Math.round((value / sum) * 1000) / 1000);
+    const drift = Math.round((1 - rounded.reduce((total, value) => total + value, 0)) * 1000) / 1000;
+    rounded[0] = Math.round((rounded[0] + drift) * 1000) / 1000;
+    return rounded;
+  };
+
   const handleRunOptimizer = async () => {
     setLoading(true);
+    setError('');
+    const [weightCompressive, weightCost, weightCo2, weightPlastic] = normalizeWeights();
     try {
       const data = await runOptimization({
-        mode: 'multi_objective',
+        mode: 'constrained',
         plastic_type: plasticType === 'Any' ? null : plasticType,
         replacement_pct_max: repMax,
         compressive_strength_min: csMin,
-        weight_compressive: wCS,
-        weight_cost: wCost,
-        weight_co2: wCo2,
-        weight_plastic_content: wPlastic,
+        cost_max_inr_per_m3: costMax === '' ? null : Number(costMax),
+        plastic_diversion_min_kg_m3: diversionMin === '' ? null : Number(diversionMin),
+        use_class: useClass || null,
+        weight_compressive: weightCompressive,
+        weight_cost: weightCost,
+        weight_co2: weightCo2,
+        weight_plastic_content: weightPlastic,
       });
       setResult(data);
     } catch (e) {
-      console.error('Optimization error:', e);
+      setResult(null);
+      setError(e instanceof Error ? e.message : 'The optimiser rejected this request.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleApplyMix = () => {
-    if (!result) return;
-    const bm = result.best_mix;
-    setMix((prev) => ({
-      ...prev,
-      plastic_type: plasticType === 'Any' ? 'PET' : plasticType,
-      replacement_pct: bm.replacement_pct || 15.0,
-      particle_size_mm: bm.particle_size_mm || 4.0,
-      wc_ratio: bm.wc_ratio || 0.45,
-      additive_pct: bm.additive_pct || 10.0,
-      curing_temp_c: bm.curing_temp_c || 27.0,
-      curing_days: Math.round(bm.curing_days || 28),
-    }));
+  const applyRecipe = (recipe: RecipeMix) => {
+    setMix({
+      plastic_type: recipe.plastic_type,
+      replacement_pct: recipe.replacement_pct,
+      particle_size_mm: recipe.particle_size_mm,
+      wc_ratio: recipe.wc_ratio,
+      additive_type: recipe.additive_type,
+      additive_pct: recipe.additive_pct,
+      curing_temp_c: recipe.curing_temp_c,
+      curing_days: Math.round(recipe.curing_days),
+    });
     setStudioTab('overview');
   };
 
@@ -70,7 +97,7 @@ export const Optimizer: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-extrabold text-slate-950">
-              M2 Intelligent Mix Optimiser (Surrogate-Guided Optuna)
+              M2 Mix Search (M1 predictions, shared mass balance)
             </h2>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-900 border border-indigo-300">
               <Sparkles className="w-3.5 h-3.5" />
@@ -96,7 +123,7 @@ export const Optimizer: React.FC = () => {
                 </h3>
               </div>
               <span className="text-xs font-mono font-bold text-slate-700">
-                Sum: {(wCS + wCost + wCo2 + wPlastic).toFixed(2)} / 1.00
+                Sent as: {normalizeWeights().map((value) => value.toFixed(3)).join(' + ')}
               </span>
             </div>
 
@@ -224,7 +251,47 @@ export const Optimizer: React.FC = () => {
                   className="w-full h-2 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-emerald-600"
                 />
               </div>
+              <div>
+                <label className="text-slate-900 font-bold block mb-1">Use class</label>
+                <select
+                  value={useClass}
+                  onChange={(e) => setUseClass(e.target.value)}
+                  className="w-full text-xs font-semibold rounded-lg border border-slate-300 bg-white text-slate-900 px-3 py-1.5 shadow-sm"
+                >
+                  <option value="">No use-class gate</option>
+                  <option value="paver">IS 15658 paver</option>
+                  <option value="hollow_block">IS 2185 hollow block</option>
+                  <option value="solid_block">IS 2185 solid block</option>
+                  <option value="structural">IS 456 screen (lab trial)</option>
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <label className="text-slate-900 font-bold block">
+                  Max ₹/m³
+                  <input
+                    type="number"
+                    value={costMax}
+                    onChange={(e) => setCostMax(e.target.value)}
+                    placeholder="4200"
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 font-mono"
+                  />
+                </label>
+                <label className="text-slate-900 font-bold block">
+                  Min plastic kg/m³
+                  <input
+                    type="number"
+                    value={diversionMin}
+                    onChange={(e) => setDiversionMin(e.target.value)}
+                    placeholder="80"
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 font-mono"
+                  />
+                </label>
+              </div>
             </div>
+
+            {error && (
+              <p className="mt-3 text-xs font-semibold text-red-800 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
+            )}
 
             <button
               onClick={handleRunOptimizer}
@@ -232,7 +299,7 @@ export const Optimizer: React.FC = () => {
               className="mt-5 w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all disabled:opacity-50 cursor-pointer"
             >
               <Zap className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              <span>{loading ? 'Solving Pareto Front (Optuna)...' : 'Run Mix Optimization'}</span>
+              <span>{loading ? 'Searching with M1...' : 'Run mix search'}</span>
             </button>
           </div>
         </div>
@@ -250,12 +317,12 @@ export const Optimizer: React.FC = () => {
                     </h3>
                   </div>
                   <p className="text-xs font-semibold text-slate-700 mt-0.5">
-                    Mode: {result.mode} · Composite Utility: {result.composite_score.toFixed(4)}
+                    {result.source === 'live' ? 'Live model' : 'Demo data'} · {result.prediction_source === 'm1' ? 'M1 ensemble' : 'Demo strength curve'} · {result.feasible ? 'Feasible' : 'No feasible mix'}
                   </p>
                 </div>
 
                 <button
-                  onClick={handleApplyMix}
+                  onClick={() => applyRecipe(result.best_mix)}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-bold hover:bg-emerald-200 transition-colors cursor-pointer"
                 >
                   <span>Apply as Active Mix</span>
@@ -294,19 +361,46 @@ export const Optimizer: React.FC = () => {
                 </div>
               </div>
 
-              {/* Optimized Mix Design Proportions */}
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3">
-                  Optimal Formulation Recipe
-                </h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-mono">
-                  {Object.entries(result.best_mix).map(([param, val]) => (
-                    <div key={param} className="p-2.5 rounded-lg border border-slate-200 bg-white flex justify-between">
-                      <span className="text-slate-700 font-semibold">{param}:</span>
-                      <span className="font-bold text-slate-950">{val}</span>
-                    </div>
-                  ))}
-                </div>
+              <p className="text-xs font-mono font-semibold text-slate-800">
+                {result.best_mix.plastic_type} · {result.best_mix.additive_type} · {result.best_mix.replacement_pct}% replacement · w/c {result.best_mix.wc_ratio}
+                {' · '}cement {result.best_mix.cement_kg_m3} kg · sand {result.best_mix.sand_kg_m3} kg · coarse {result.best_mix.coarse_agg_kg_m3} kg · plastic {result.best_mix.plastic_kg_m3} kg · water {result.best_mix.water_kg_m3} kg
+              </p>
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ScatterChart>
+                    <XAxis dataKey="plastic" name="Plastic kg/m³" unit=" kg" />
+                    <YAxis dataKey="strength" name="Strength" unit=" MPa" />
+                    <Tooltip />
+                    <Scatter
+                      data={(result.tradeoff_points || []).filter((point) => !point.selected).map((point) => ({
+                        plastic: point.predicted_plastic_diversion_kg_m3,
+                        strength: point.predicted_cs_mpa,
+                        cost: point.predicted_cost_inr_m3,
+                      }))}
+                      fill="#64748b"
+                    />
+                    <Scatter
+                      data={(result.tradeoff_points || []).filter((point) => point.selected).map((point) => ({
+                        plastic: point.predicted_plastic_diversion_kg_m3,
+                        strength: point.predicted_cs_mpa,
+                        cost: point.predicted_cost_inr_m3,
+                      }))}
+                      fill="#047857"
+                    />
+                  </ScatterChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs">
+                {(result.tradeoff_points || []).map((point) => (
+                  <button
+                    key={point.label}
+                    type="button"
+                    onClick={() => applyRecipe(point.recipe)}
+                    className={`px-3 py-1.5 rounded-lg border font-bold cursor-pointer ${point.selected ? 'bg-emerald-100 border-emerald-400 text-emerald-950' : 'bg-white border-slate-300 text-slate-800'}`}
+                  >
+                    {point.label}: {point.predicted_cs_mpa.toFixed(1)} MPa · {point.predicted_plastic_diversion_kg_m3.toFixed(1)} kg · ₹{point.predicted_cost_inr_m3.toFixed(0)}
+                  </button>
+                ))}
               </div>
             </div>
           ) : (

@@ -1,9 +1,13 @@
 """
 Deterministic LCA carbon calculator.
-Formula: CO2e/m3 = sum(mass_kg * EF_kg_CO2e/kg) per material component.
-Grounded in ICE Database v4.1 and IS 10262 M20 mix proportioning.
+
+Masses, cost, and CO2 come from modules.shared.mass_balance so M2, M3, M5,
+and the sustainability page cannot disagree. Emission factors are the ICE v4.1
+rows in data/external/mass_balance_factors.json.
 """
 from dataclasses import dataclass
+
+from modules.shared.mass_balance import compute as compute_mass_balance
 
 BASELINE_CO2_KGM3 = 365.71   # conventional M20 from Goh et al. 2022
 
@@ -57,65 +61,35 @@ class LCACalculator:
         self.density  = densities
 
     def compute(self, params: dict, m1_props: dict = None) -> LCAResult:
-        # -- Component masses ------------------------------------------------
-        cement_kgm3    = 383.0
-        additive_kgm3  = (params["additive_pct"] / 100.0) * cement_kgm3
-        cement_kgm3   -= additive_kgm3   # additive partly replaces cement
-        water_kgm3     = params["wc_ratio"] * cement_kgm3
-        fine_agg_kgm3  = 680.0 * (1.0 - params["replacement_pct"] / 100.0)
-        coarse_kgm3    = 1210.0
+        balance = compute_mass_balance(params)
+        by_name = {row["material"]: row for row in balance["rows"]}
 
-        ptype           = params["plastic_type"]
-        plastic_density = self.density.get(ptype, 1100)
-        vol_fraction    = params["replacement_pct"] / 100.0
-        plastic_kgm3    = vol_fraction * plastic_density
+        def co2_of(name: str) -> float:
+            return float(by_name[name]["co2_kgco2e_m3"])
 
-        # -- CO2e per component ----------------------------------------------
-        ef_cement   = self.ef.get("cement_opc", 0.872)
-        ef_water    = self.ef.get("water_municipal", 0.0003)
-        ef_sand     = self.ef.get("sand_river", 0.0048)
-        ef_coarse   = self.ef.get("coarse_aggregate", 0.0048)
-        ef_plastic  = self.ef.get(ptype, -1.10)   # negative credit
-
-        atype = params["additive_type"]
-        ef_additive_map = {
-            "fly_ash":     self.ef.get("fly_ash", 0.004),
-            "silica_fume": self.ef.get("silica_fume", 0.014),
-            "fibres":      self.ef.get("fibres_plastic", 0.0),
-            "none":        0.0,
-        }
-        ef_additive = ef_additive_map.get(atype, 0.0)
-
-        co2_cement   = cement_kgm3   * ef_cement
-        co2_water    = water_kgm3    * ef_water
-        co2_sand     = fine_agg_kgm3 * ef_sand
-        co2_coarse   = coarse_kgm3   * ef_coarse
-        co2_plastic  = plastic_kgm3  * ef_plastic
-        co2_additive = additive_kgm3 * ef_additive
-
-        total_co2 = (co2_cement + co2_water + co2_sand +
-                     co2_coarse + co2_plastic + co2_additive)
-
-        saving     = BASELINE_CO2_KGM3 - total_co2
-        saving_pct = (saving / BASELINE_CO2_KGM3) * 100.0
-        pet_equiv  = int(plastic_kgm3 / 0.025)
+        additive_name = next(
+            name for name in by_name
+            if name not in {
+                "OPC cement", "River sand", "Coarse aggregate", "Water", "Batching overhead",
+            } and not name.startswith("Plastic")
+        )
 
         return LCAResult(
-            cement_kgm3               = round(cement_kgm3, 2),
-            water_kgm3                = round(water_kgm3, 2),
-            fine_agg_kgm3             = round(fine_agg_kgm3, 2),
-            coarse_agg_kgm3           = round(coarse_kgm3, 2),
-            plastic_mass_kgm3         = round(plastic_kgm3, 2),
-            additive_mass_kgm3        = round(additive_kgm3, 2),
-            co2_cement_kgm3           = round(co2_cement, 4),
-            co2_water_kgm3            = round(co2_water, 4),
-            co2_sand_kgm3             = round(co2_sand, 4),
-            co2_coarse_kgm3           = round(co2_coarse, 4),
-            co2_plastic_kgm3          = round(co2_plastic, 4),
-            co2_additive_kgm3         = round(co2_additive, 4),
-            embodied_carbon_kgco2e_m3 = round(total_co2, 4),
-            co2_saving_kgco2e_m3      = round(saving, 4),
-            co2_saving_pct            = round(saving_pct, 4),
-            plastic_diversion_kg_m3   = round(plastic_kgm3, 2),
-            pet_bottle_equiv          = pet_equiv,
+            cement_kgm3               = balance["cement_kg_m3"],
+            water_kgm3                = balance["water_kg_m3"],
+            fine_agg_kgm3             = balance["sand_kg_m3"],
+            coarse_agg_kgm3           = balance["coarse_agg_kg_m3"],
+            plastic_mass_kgm3         = balance["plastic_kg_m3"],
+            additive_mass_kgm3        = balance["additive_kg_m3"],
+            co2_cement_kgm3           = co2_of("OPC cement"),
+            co2_water_kgm3            = co2_of("Water"),
+            co2_sand_kgm3             = co2_of("River sand"),
+            co2_coarse_kgm3           = co2_of("Coarse aggregate"),
+            co2_plastic_kgm3          = co2_of(f"Plastic ({balance['plastic_type']})"),
+            co2_additive_kgm3         = co2_of(additive_name),
+            embodied_carbon_kgco2e_m3 = balance["co2_kgco2e_m3"],
+            co2_saving_kgco2e_m3      = balance["co2_saving_kgco2e_m3"],
+            co2_saving_pct            = balance["co2_saving_pct"],
+            plastic_diversion_kg_m3   = balance["plastic_kg_m3"],
+            pet_bottle_equiv          = int(balance["pet_bottle_equiv"]),
         )

@@ -46,7 +46,13 @@ export const Recommender: React.FC = () => {
                 {APPLICATION_PRETTY_NAMES[recommendation?.primary_application || ''] || recommendation?.primary_application}
               </h3>
               <p className="text-xs font-semibold text-slate-700 mt-1">
-                Optimally satisfies mechanical load limits, density thresholds, and durability conditions.
+                {recommendation?.primary_gate_message || 'Waiting for a use-class gate.'}
+              </p>
+              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600 mt-2">
+                {recommendation?.primary_gate_status === 'allowed' ? 'Allowed for this standard' :
+                 recommendation?.primary_gate_status === 'verification_batch' ? 'Cast one verification batch' :
+                 recommendation?.primary_gate_status === 'lab_trial' ? 'Screen for a lab trial' :
+                 recommendation?.primary_gate_status === 'refused' ? 'Refused for this use' : 'Gate pending'}
               </p>
             </div>
           </div>
@@ -90,8 +96,8 @@ export const Recommender: React.FC = () => {
                 Cost-Benefit & Commercial Economics (INR / ₹)
               </h3>
             </div>
-            <span className="text-xs font-mono font-bold text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded border border-emerald-300">
-              {cb?.cost_saving_pct}% Cost Reduction
+            <span className="text-xs font-mono font-bold text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-300">
+              {(cb?.cost_saving_inr_m3 ?? 0) >= 0 ? `₹${cb?.cost_saving_inr_m3} below conventional` : `₹${Math.abs(cb?.cost_saving_inr_m3 ?? 0)} above conventional`}
             </span>
           </div>
 
@@ -113,11 +119,11 @@ export const Recommender: React.FC = () => {
             </div>
 
             <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">
-              <span className="text-[11px] font-bold text-slate-700 block mb-0.5">Savings per m³</span>
+              <span className="text-[11px] font-bold text-slate-700 block mb-0.5">Difference per m³</span>
               <span className="text-lg font-extrabold font-mono text-blue-800">
                 ₹{cb?.cost_saving_inr_m3}
               </span>
-              <span className="text-[11px] font-semibold text-slate-600 block">INR saved</span>
+              <span className="text-[11px] font-semibold text-slate-600 block">signed vs conventional</span>
             </div>
 
             <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">
@@ -131,7 +137,7 @@ export const Recommender: React.FC = () => {
 
           <div className="pt-3 border-t border-slate-200 text-xs font-semibold text-slate-800 flex justify-between">
             <span>Material consumption: {cb?.plastic_kg_per_m3} kg plastic + {cb?.additive_kg_per_m3} kg additive per m³</span>
-            <span className="text-emerald-800 font-bold font-mono">₹{cb?.cost_saving_inr_m2} saving/m²</span>
+            <span className="text-slate-900 font-bold font-mono">₹{cb?.cost_saving_inr_m2} / m² vs conventional</span>
           </div>
         </div>
       </div>

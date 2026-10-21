@@ -50,6 +50,8 @@ REQUIRED_SCORE_KEYS = {
     "remediation_action_2",
     "remediation_action_3",
     "estimated_score_gain",
+    "mass_balance",
+    "use_class_gates",
 }
 
 

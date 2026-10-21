@@ -111,6 +111,8 @@ class M4MixInput(BaseModel):
     water_absorption_pct:     float = Field(..., ge=0.0)
     thermal_conductivity_wm:  float = Field(..., ge=0.0)
     durability_index:         float = Field(..., ge=0.0, le=100.0)
+    ci_90_low:                Optional[Dict[str, float]] = None
+    ci_90_high:               Optional[Dict[str, float]] = None
 
     class Config:
         json_schema_extra = {
@@ -167,6 +169,10 @@ class RecommendationResponse(BaseModel):
     suitability_scores:      Dict[str, float]
     cost_benefit:            CostBenefitSchema
     rag_analogues:           List[RAGAnalogueSchema]
+    use_class_gates:         List[Dict[str, Any]] = Field(default_factory=list)
+    primary_gate_status:     str = ""
+    primary_gate_message:    str = ""
+    verification_applications: List[str] = Field(default_factory=list)
 
     class Config:
         json_schema_extra = {
@@ -212,6 +218,8 @@ class ScoreRequest(BaseModel):
     water_absorption_pct:     float = Field(..., ge=0.0)
     thermal_conductivity_wm:  float = Field(..., ge=0.0)
     durability_index:         float = Field(..., ge=0.0, le=100.0)
+    ci_90_low:                Optional[Dict[str, float]] = None
+    ci_90_high:               Optional[Dict[str, float]] = None
 
 
 class ScoreResponse(BaseModel):
@@ -231,6 +239,8 @@ class ScoreResponse(BaseModel):
     remediation_action_2:     str
     remediation_action_3:     str
     estimated_score_gain:     float
+    mass_balance:             Optional[Dict[str, Any]] = None
+    use_class_gates:          List[Dict[str, Any]] = Field(default_factory=list)
 
 
 # ═══════════════════════════════════════════════════════════
@@ -248,6 +258,10 @@ class OptimizeRequest(BaseModel):
     weight_cost:               float           = Field(0.30, ge=0.0, le=1.0)
     weight_co2:                float           = Field(0.20, ge=0.0, le=1.0)
     weight_plastic_content:    float           = Field(0.10, ge=0.0, le=1.0)
+    plastic_diversion_min_kg_m3: Optional[float] = Field(None, ge=0.0)
+    use_class:                 Optional[str]   = Field(
+        None, description="paver | hollow_block | solid_block | structural",
+    )
     mode:                      str             = Field("constrained",
                                                        description="constrained | scenario")
 
@@ -259,6 +273,14 @@ class OptimizeRequest(BaseModel):
             raise ValueError(
                 f"Objective weights must sum to 1.0 (got {total:.3f}). "
                 "Adjust weight_compressive, weight_cost, weight_co2, weight_plastic_content."
+            )
+        if self.mode not in ("constrained", "scenario"):
+            raise ValueError("mode must be 'constrained' or 'scenario'.")
+        if self.use_class is not None and self.use_class not in (
+            "paver", "hollow_block", "solid_block", "structural",
+        ):
+            raise ValueError(
+                "use_class must be paver, hollow_block, solid_block, or structural."
             )
         return self
 
@@ -277,14 +299,31 @@ class OptimizeRequest(BaseModel):
         }
 
 
+class TradeoffPoint(BaseModel):
+    label: str
+    selected: bool
+    predicted_cs_mpa: float
+    predicted_cs_low: float = 0.0
+    predicted_cost_inr_m3: float
+    predicted_co2_kgco2e_m3: float
+    predicted_plastic_diversion_kg_m3: float
+    recipe: Dict[str, Any]
+
+
 class OptimizeResponse(BaseModel):
-    best_mix:               Dict[str, float]
+    best_mix:               Dict[str, Any]
     predicted_cs_mpa:       float
+    predicted_cs_low:       float = 0.0
     predicted_cost_inr_m3:  float
     predicted_co2_kgco2e_m3: float
     predicted_plastic_diversion_kg_m3: float
     composite_score:        float
     mode:                   str
+    feasible:               bool = True
+    prediction_source:      str = "m1"
+    mass_balance:           Optional[Dict[str, Any]] = None
+    tradeoff_points:        List[TradeoffPoint] = Field(default_factory=list)
+    use_class:              Optional[str] = None
 
 
 # ═══════════════════════════════════════════════════════════
@@ -316,6 +355,27 @@ class ReportRequest(BaseModel):
         None,
         description="Optional session identifier for the report header",
     )
+    batch_id: Optional[str] = Field(
+        None,
+        description="Saved batch whose passport QR and lab results are printed on the PDF",
+    )
+
+
+class BatchCreateRequest(BaseModel):
+    plant_name: str = "Plant"
+    cast_date: Optional[str] = None
+    mix_params: Dict[str, Any]
+    prediction: Dict[str, Any]
+    score: Dict[str, Any]
+    recommendation: Dict[str, Any]
+
+
+class BatchUpdateRequest(BaseModel):
+    cast_date: Optional[str] = None
+    measured_cs_7d: Optional[float] = None
+    measured_cs_28d: Optional[float] = None
+    measured_absorption_pct: Optional[float] = None
+    notes: Optional[str] = None
 
     class Config:
         json_schema_extra = {

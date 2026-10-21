@@ -1,44 +1,34 @@
 """
 Cost-benefit economics calculator for M4.
+
+Plastic kilograms and rupees come from the shared mass balance. The per-m2
+yield is still the product geometry in the market table.
 """
 from __future__ import annotations
 
 from modules.m4_recommendation.utils.schema import CostBenefit
 from modules.m4_recommendation.model import classifiers
-
-_PLASTIC_DENSITY = {"PET": 1380, "HDPE": 960, "LDPE": 920, "PVC": 1400, "PP": 905, "Mixed": 1100}
+from modules.shared.mass_balance import compute as compute_mass_balance
+from modules.shared.mass_balance import conventional_mix
 
 
 def calculate(mix_params: dict, primary_application: str) -> CostBenefit:
     """Compute plastic-concrete vs conventional mix economics."""
-    prices = classifiers.market["market_prices"]
-    yields = classifiers.market["product_area_yield"]
-    conv   = classifiers.market["conventional_mix_m20"]
+    balance = compute_mass_balance(mix_params)
+    conventional = conventional_mix()
 
-    ptype = mix_params["plastic_type"]
-    atype = mix_params.get("additive_type", "none")
-    rep   = mix_params["replacement_pct"] / 100.0
-    rho_p = _PLASTIC_DENSITY.get(ptype, 1100)
+    try:
+        yields = classifiers.market["product_area_yield"]
+        yield_m2 = float(yields.get(primary_application, 1.0) or 1.0)
+    except Exception:
+        yield_m2 = 7.0
+    if yield_m2 <= 0:
+        yield_m2 = 1.0
 
-    agg_kg        = conv["coarse_agg_20mm"]
-    plastic_vol   = rep * (agg_kg / 2350)
-    plastic_kg    = plastic_vol * rho_p
-    agg_remaining = agg_kg - rep * agg_kg
-    add_kg        = (mix_params.get("additive_pct", 0.0) / 100.0) * conv["cement_opc53"] \
-                    if atype != "none" else 0.0
-
-    cost_plastic = (
-        conv["cement_opc53"] * prices["cement_opc53"]
-        + conv["river_sand"] * prices["river_sand"]
-        + agg_remaining      * prices["coarse_agg_20mm"]
-        + conv["water"]      * prices["water"]
-        + plastic_kg         * prices.get(ptype, 3.5)
-        + add_kg             * prices.get(atype, 0.0)
-    )
-    cost_conv  = sum(conv[m] * prices[m] for m in conv)
-    yield_m2   = yields.get(primary_application, 1.0)
-    saving_m3  = cost_conv - cost_plastic
-    saving_pct = (saving_m3 / cost_conv) * 100
+    cost_plastic = balance["cost_inr_m3"]
+    cost_conv = conventional["cost_inr_m3"]
+    saving_m3 = cost_conv - cost_plastic
+    saving_pct = (saving_m3 / cost_conv) * 100 if cost_conv else 0.0
 
     return CostBenefit(
         plastic_mix_cost_inr_m3  = round(cost_plastic, 2),
@@ -49,6 +39,6 @@ def calculate(mix_params: dict, primary_application: str) -> CostBenefit:
         conventional_cost_inr_m2 = round(cost_conv / yield_m2, 2),
         cost_saving_inr_m2       = round(saving_m3 / yield_m2, 2),
         product_yield_m2_per_m3  = yield_m2,
-        plastic_kg_per_m3        = round(plastic_kg, 2),
-        additive_kg_per_m3       = round(add_kg, 2),
+        plastic_kg_per_m3        = balance["plastic_kg_m3"],
+        additive_kg_per_m3       = balance["additive_kg_m3"],
     )

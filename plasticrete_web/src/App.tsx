@@ -6,9 +6,10 @@ import { LandingPage } from './pages/LandingPage';
 import { Studio } from './pages/Studio';
 import { StandardsPage } from './pages/StandardsPage';
 import { TechPage } from './pages/TechPage';
+import { BatchPassportPage } from './pages/BatchPassportPage';
 
 const AppContent: React.FC = () => {
-  const { mainRoute } = useMix();
+  const { mainRoute, batchId } = useMix();
 
   const renderCurrentView = () => {
     switch (mainRoute) {
@@ -20,6 +21,8 @@ const AppContent: React.FC = () => {
         return <StandardsPage />;
       case 'technology':
         return <TechPage />;
+      case 'batch':
+        return <BatchPassportPage batchId={batchId} />;
       default:
         return <LandingPage />;
     }

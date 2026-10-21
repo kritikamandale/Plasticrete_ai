@@ -9,9 +9,9 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 import yaml
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from loguru import logger
 
 import modules.m1_prediction as m1
@@ -19,6 +19,7 @@ import modules.m2_optimization as m2
 import modules.m3_sustainability as m3
 import modules.m4_recommendation as m4
 import modules.m5_report as m5
+import modules.batch_passport as batches
 
 
 from deployment.api.schemas import (
@@ -27,6 +28,8 @@ from deployment.api.schemas import (
     ScoreRequest, ScoreResponse,
     OptimizeRequest, OptimizeResponse,
     ReportRequest,
+    BatchCreateRequest,
+    BatchUpdateRequest,
 )
 from modules.m1_prediction.utils.schema import (
     ADDITIVE_TYPE_CLASSES, INPUT_RANGES, PLASTIC_TYPE_CLASSES, TARGET_COLUMNS,
@@ -90,7 +93,7 @@ _CORS_ORIGINS = (
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_CORS_ORIGINS,
-    allow_methods=["GET", "POST"],
+    allow_methods=["GET", "POST", "PATCH"],
     allow_headers=["Content-Type", "Authorization"],
 )
 
@@ -175,7 +178,12 @@ def recommend(payload: M4MixInput) -> RecommendationResponse:
         "durability_index":         payload.durability_index,
     }
     try:
-        result = m4.recommend(mix_params, m1_properties)
+        result = m4.recommend(
+            mix_params,
+            m1_properties,
+            ci_low=payload.ci_90_low,
+            ci_high=payload.ci_90_high,
+        )
     except Exception as exc:
         logger.exception(f"M4 recommendation error: {exc}")
         raise HTTPException(status_code=500, detail="Internal recommendation error.")
@@ -189,6 +197,10 @@ def recommend(payload: M4MixInput) -> RecommendationResponse:
         rag_analogues          = [
             RAGAnalogueSchema(**a.__dict__) for a in result.rag_analogues
         ],
+        use_class_gates        = result.use_class_gates,
+        primary_gate_status    = result.primary_gate_status,
+        primary_gate_message   = result.primary_gate_message,
+        verification_applications = result.verification_applications,
     )
 
 @app.post("/score", response_model=ScoreResponse)
@@ -213,7 +225,12 @@ def score(payload: ScoreRequest) -> ScoreResponse:
         "durability_index":         payload.durability_index,
     }
     try:
-        result = m3.score_mix(mix_params, m1_properties)
+        result = m3.score_mix(
+            mix_params,
+            m1_properties,
+            ci_low=payload.ci_90_low,
+            ci_high=payload.ci_90_high,
+        )
     except Exception as exc:
         logger.exception(f"M3 scoring error: {exc}")
         raise HTTPException(status_code=500, detail="Internal scoring error.")
@@ -229,6 +246,8 @@ def optimize(payload: OptimizeRequest) -> OptimizeResponse:
         "compressive_strength_min": payload.compressive_strength_min,
         "density_max_kgm3":         payload.density_max_kgm3,
         "cost_max_inr_per_m3":      payload.cost_max_inr_per_m3,
+        "plastic_diversion_min_kg_m3": payload.plastic_diversion_min_kg_m3,
+        "use_class":                payload.use_class,
     }
     weights = {
         "compressive_strength": payload.weight_compressive,
@@ -238,6 +257,8 @@ def optimize(payload: OptimizeRequest) -> OptimizeResponse:
     }
     try:
         result = m2.run_optimization(constraints, weights, mode=payload.mode)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
     except Exception as exc:
         logger.exception(f"M2 optimisation error: {exc}")
         raise HTTPException(status_code=500, detail="Internal optimisation error.")
@@ -257,13 +278,22 @@ def optimize(payload: OptimizeRequest) -> OptimizeResponse:
     ),
 )
 def report_pdf(payload: "ReportRequest") -> StreamingResponse:
+    batch = None
+    qr_url = None
+    if payload.batch_id:
+        batch = batches.get_batch(payload.batch_id)
+        if batch is None:
+            raise HTTPException(status_code=404, detail="Batch not found.")
+        qr_url = batch["qr_url"]
     try:
         pdf_bytes = m5.generate_report(
             mix_params=payload.mix_params,
             prediction=payload.prediction,
             score=payload.score,
             recommendation=payload.recommendation,
-            session_id=payload.session_id or "WEB-SESSION",
+            session_id=payload.session_id or (payload.batch_id or "WEB-SESSION"),
+            batch=batch,
+            qr_url=qr_url,
         )
     except Exception as exc:
         logger.exception(f"M5 report generation error: {exc}")
@@ -275,4 +305,94 @@ def report_pdf(payload: "ReportRequest") -> StreamingResponse:
         io.BytesIO(pdf_bytes),
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@app.post("/batches")
+def create_batch(payload: BatchCreateRequest) -> dict:
+    return batches.create_batch(
+        mix_params=payload.mix_params,
+        prediction=payload.prediction,
+        score=payload.score,
+        recommendation=payload.recommendation,
+        plant_name=payload.plant_name,
+        cast_date=payload.cast_date,
+    )
+
+
+@app.get("/batches")
+def get_batches(limit: int = 50) -> list:
+    return batches.list_batches(limit=limit)
+
+
+@app.get("/batches/{batch_id}")
+def read_batch(batch_id: str) -> dict:
+    record = batches.get_batch(batch_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Batch not found.")
+    return record
+
+
+@app.patch("/batches/{batch_id}")
+def patch_batch(batch_id: str, payload: BatchUpdateRequest) -> dict:
+    record = batches.update_measurements(
+        batch_id,
+        cast_date=payload.cast_date,
+        measured_cs_7d=payload.measured_cs_7d,
+        measured_cs_28d=payload.measured_cs_28d,
+        measured_absorption_pct=payload.measured_absorption_pct,
+        notes=payload.notes,
+    )
+    if record is None:
+        raise HTTPException(status_code=404, detail="Batch not found.")
+    return record
+
+
+@app.post("/batches/{batch_id}/photo")
+async def upload_batch_photo(batch_id: str, file: UploadFile = File(...)) -> dict:
+    suffix = Path(file.filename or "").suffix.lower()
+    if suffix not in {".jpg", ".jpeg", ".png", ".webp"}:
+        raise HTTPException(status_code=422, detail="Upload a JPEG, PNG, or WebP photo of the cube.")
+    data = await file.read()
+    if len(data) > 5_000_000:
+        raise HTTPException(status_code=422, detail="Photo must be under 5 MB.")
+    record = batches.save_photo(batch_id, data, suffix if suffix != ".jpeg" else ".jpg")
+    if record is None:
+        raise HTTPException(status_code=404, detail="Batch not found.")
+    return {"id": record["id"], "cube_photo_path": record["cube_photo_path"]}
+
+
+@app.get("/batches/{batch_id}/photo")
+def read_batch_photo(batch_id: str) -> FileResponse:
+    record = batches.get_batch(batch_id)
+    if record is None or not record.get("cube_photo_path"):
+        raise HTTPException(status_code=404, detail="No cube photo for this batch.")
+    path = Path(record["cube_photo_path"])
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Cube photo file is missing.")
+    return FileResponse(path)
+
+
+@app.get("/batches/{batch_id}/passport.pdf")
+def batch_passport_pdf(batch_id: str) -> StreamingResponse:
+    record = batches.get_batch(batch_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Batch not found.")
+    try:
+        pdf_bytes = m5.generate_report(
+            mix_params=record["mix_params"],
+            prediction=record["prediction"],
+            score=record["score"],
+            recommendation=record["recommendation"],
+            session_id=record["id"],
+            batch=record,
+            qr_url=record["qr_url"],
+        )
+    except Exception as exc:
+        logger.exception(f"Batch passport error: {exc}")
+        raise HTTPException(status_code=500, detail="Passport generation failed.")
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="plasticrete_passport_{batch_id}.pdf"'},
     )

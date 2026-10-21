@@ -68,8 +68,8 @@ pnpm-debug.log*
 # Jupyter Notebooks checkpoints
 .ipynb_checkpoints/
 
-# Temporary generated test files
-plasticrete_ai/test_report.pdf
+plasticrete_ai/data/batches/*.sqlite
+plasticrete_ai/data/batches/photos/
 *.tmp
 
 # Operating System files

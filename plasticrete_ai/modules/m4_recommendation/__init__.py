@@ -29,7 +29,12 @@ def load_models(model_dir: str | None = None) -> None:
     classifiers.load(model_dir)
 
 
-def recommend(mix_params: dict, m1_properties: dict) -> RecommendationResult:
+def recommend(
+    mix_params: dict,
+    m1_properties: dict,
+    ci_low: dict | None = None,
+    ci_high: dict | None = None,
+) -> RecommendationResult:
     """
     Main M4 entry point.
 
@@ -41,6 +46,8 @@ def recommend(mix_params: dict, m1_properties: dict) -> RecommendationResult:
     m1_properties : dict
         Keys: compressive_strength_mpa, flexural_strength_mpa, split_tensile_mpa,
               density_kgm3, water_absorption_pct, thermal_conductivity_wm, durability_index
+    ci_low, ci_high : dict or None
+        Conservative side of the 90% interval. Missing bounds never mark a product allowed.
 
     Returns
     -------
@@ -48,4 +55,4 @@ def recommend(mix_params: dict, m1_properties: dict) -> RecommendationResult:
     """
     if not classifiers.is_loaded():
         classifiers.load()
-    return _recommend(mix_params, m1_properties)
+    return _recommend(mix_params, m1_properties, ci_low=ci_low, ci_high=ci_high)

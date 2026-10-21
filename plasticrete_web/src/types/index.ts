@@ -1,3 +1,10 @@
+import type { MassBalance } from '../lib/massBalance';
+import type { UseClassGate } from '../lib/useClassGate';
+
+export type InferenceSource = 'live' | 'demo';
+export type { MassBalance, MassBalanceRow } from '../lib/massBalance';
+export type { UseClassGate, GateStatus } from '../lib/useClassGate';
+
 export interface MixInput {
   plastic_type: string;
   replacement_pct: number;
@@ -20,6 +27,7 @@ export interface PredictionResponse {
   shap_values: Record<string, Record<string, number>>;
   uncertainty_flag: boolean;
   low_coverage_targets: string[];
+  source?: InferenceSource;
 }
 
 export interface ScoreResponse {
@@ -39,6 +47,9 @@ export interface ScoreResponse {
   remediation_action_2: string;
   remediation_action_3: string;
   estimated_score_gain: number;
+  mass_balance?: MassBalance;
+  use_class_gates?: UseClassGate[];
+  source?: InferenceSource;
 }
 
 export interface RAGAnalogue {
@@ -74,6 +85,11 @@ export interface RecommendationResponse {
   suitability_scores: Record<string, number>;
   cost_benefit: CostBenefit;
   rag_analogues: RAGAnalogue[];
+  use_class_gates?: UseClassGate[];
+  primary_gate_status?: string;
+  primary_gate_message?: string;
+  verification_applications?: string[];
+  source?: InferenceSource;
 }
 
 export interface OptimizeRequest {
@@ -82,21 +98,58 @@ export interface OptimizeRequest {
   compressive_strength_min: number;
   density_max_kgm3?: number | null;
   cost_max_inr_per_m3?: number | null;
+  plastic_diversion_min_kg_m3?: number | null;
+  use_class?: string | null;
   weight_compressive: number;
   weight_cost: number;
   weight_co2: number;
   weight_plastic_content: number;
-  mode: string;
+  mode: 'constrained' | 'scenario';
+}
+
+export interface RecipeMix {
+  plastic_type: string;
+  additive_type: string;
+  replacement_pct: number;
+  particle_size_mm: number;
+  wc_ratio: number;
+  additive_pct: number;
+  curing_temp_c: number;
+  curing_days: number;
+  cement_kg_m3?: number;
+  sand_kg_m3?: number;
+  coarse_agg_kg_m3?: number;
+  plastic_kg_m3?: number;
+  water_kg_m3?: number;
+  additive_kg_m3?: number;
+}
+
+export interface TradeoffPoint {
+  label: string;
+  selected: boolean;
+  predicted_cs_mpa: number;
+  predicted_cs_low?: number;
+  predicted_cost_inr_m3: number;
+  predicted_co2_kgco2e_m3: number;
+  predicted_plastic_diversion_kg_m3: number;
+  recipe: RecipeMix;
 }
 
 export interface OptimizeResponse {
-  best_mix: Record<string, number>;
+  best_mix: RecipeMix;
   predicted_cs_mpa: number;
+  predicted_cs_low?: number;
   predicted_cost_inr_m3: number;
   predicted_co2_kgco2e_m3: number;
   predicted_plastic_diversion_kg_m3: number;
   composite_score: number;
   mode: string;
+  feasible?: boolean;
+  prediction_source?: string;
+  mass_balance?: MassBalance;
+  tradeoff_points?: TradeoffPoint[];
+  use_class?: string | null;
+  source?: InferenceSource;
 }
 
 export const TARGET_LABELS: Record<string, { label: string; unit: string; description: string }> = {

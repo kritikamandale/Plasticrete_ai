@@ -1,0 +1,57 @@
+{
+  "table_id": "plasticrete-mass-balance-v1",
+  "factor_date": "2026-03-01",
+  "basis": "IS 10262:2019 M20 reference per cubic metre. Plastic replaces fine aggregate by volume (sand SSD density 2650 kg/m3). An SCM replaces cement by mass. Water is the water/binder ratio times the 383 kg design binder, so it does not change when SCM replaces cement. Cradle-to-gate material factors only; haul is not included.",
+  "baseline_co2_kgco2e_m3": "365.71",
+  "baseline_source": "Goh et al. 2022 conventional M20",
+  "baseline_date": "2022-01-01",
+  "reference": {
+    "cement_kg_m3": "383",
+    "fine_aggregate_kg_m3": "680",
+    "coarse_aggregate_kg_m3": "1210",
+    "aggregate_ssd_density_kg_m3": "2650"
+  },
+  "pet_bottle_kg": "0.025",
+  "emission_factors_kgco2e_per_kg": {
+    "cement_opc": {"value": "0.872", "source": "ICE v4.1 A1-A3, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "sand_river": {"value": "0.0048", "source": "ICE v4.1 A1-A3, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "coarse_aggregate": {"value": "0.0048", "source": "ICE v4.1 A1-A3, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "water": {"value": "0.0003", "source": "ICE v4.1 municipal water, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "fly_ash": {"value": "0.004", "source": "ICE v4.1 A1-A3, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "silica_fume": {"value": "0.014", "source": "ICE v4.1 A1-A3, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "fibres": {"value": "0", "source": "ICE v4.1 recycled plastic fibre, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "none": {"value": "0", "source": "No supplementary cementitious material", "date": "2026-03-01"},
+    "PET": {"value": "-1.32", "source": "ICE v4.1 avoided-burden credit, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "HDPE": {"value": "-1.20", "source": "ICE v4.1 avoided-burden credit, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "LDPE": {"value": "-1.25", "source": "ICE v4.1 avoided-burden credit, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "PVC": {"value": "-0.95", "source": "ICE v4.1 avoided-burden credit, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "PP": {"value": "-1.18", "source": "ICE v4.1 avoided-burden credit, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "Mixed": {"value": "-1.10", "source": "ICE v4.1 avoided-burden credit, ice_emission_factors_extended.csv", "date": "2026-03-01"},
+    "overhead": {"value": "0", "source": "Batching overhead is a cost, not an emission", "date": "2026-03-01"}
+  },
+  "costs_inr_per_kg": {
+    "cement_opc": {"value": "7.00", "source": "material_costs_inr.json cement", "date": "2026-03-01"},
+    "sand_river": {"value": "1.50", "source": "material_costs_inr.json fine_aggregate", "date": "2026-03-01"},
+    "coarse_aggregate": {"value": "1.20", "source": "material_costs_inr.json coarse_aggregate", "date": "2026-03-01"},
+    "water": {"value": "0.10", "source": "material_costs_inr.json water", "date": "2026-03-01"},
+    "fly_ash": {"value": "1.20", "source": "material_costs_inr.json fly_ash", "date": "2026-03-01"},
+    "silica_fume": {"value": "25.00", "source": "material_costs_inr.json silica_fume", "date": "2026-03-01"},
+    "fibres": {"value": "8.00", "source": "material_costs_inr.json fibres", "date": "2026-03-01"},
+    "none": {"value": "0", "source": "No supplementary cementitious material", "date": "2026-03-01"},
+    "PET": {"value": "45", "source": "plastic_props_m2.json cost_rs_per_kg", "date": "2026-03-01"},
+    "HDPE": {"value": "38", "source": "plastic_props_m2.json cost_rs_per_kg", "date": "2026-03-01"},
+    "LDPE": {"value": "35", "source": "plastic_props_m2.json cost_rs_per_kg", "date": "2026-03-01"},
+    "PVC": {"value": "30", "source": "plastic_props_m2.json cost_rs_per_kg", "date": "2026-03-01"},
+    "PP": {"value": "42", "source": "plastic_props_m2.json cost_rs_per_kg", "date": "2026-03-01"},
+    "Mixed": {"value": "25", "source": "plastic_props_m2.json cost_rs_per_kg", "date": "2026-03-01"},
+    "overhead": {"value": "50", "source": "Fixed batching overhead, INR per m3", "date": "2026-03-01"}
+  },
+  "densities_kg_m3": {
+    "PET": {"value": "1380", "source": "plastic_density_lookup.json", "date": "2026-03-01"},
+    "HDPE": {"value": "960", "source": "plastic_density_lookup.json", "date": "2026-03-01"},
+    "LDPE": {"value": "920", "source": "plastic_density_lookup.json", "date": "2026-03-01"},
+    "PVC": {"value": "1400", "source": "plastic_density_lookup.json", "date": "2026-03-01"},
+    "PP": {"value": "905", "source": "plastic_density_lookup.json", "date": "2026-03-01"},
+    "Mixed": {"value": "1100", "source": "plastic_density_lookup.json", "date": "2026-03-01"}
+  }
+}

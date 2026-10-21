@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-500 leading-relaxed max-w-sm">
-              An explainable machine learning platform engineered to predict, optimize, and certify plastic waste composite construction materials — replacing costly lab trials with validated millisecond inference.
+              An explainable mix studio: one recipe, one carbon number, a use-class gate, and a batch passport a lab can fill in after the cube is crushed.
             </p>
             <div className="flex items-center gap-3 pt-2">
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
@@ -33,7 +33,7 @@ export const Footer: React.FC = () => {
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-[11px] font-semibold text-blue-700 border border-blue-200">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                BIS Validated
+                Shared mass balance
               </span>
             </div>
           </div>

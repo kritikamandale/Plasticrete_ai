@@ -33,10 +33,10 @@ export const StandardsPage: React.FC = () => {
           <span>National Building Code & BIS Compliance Matrix</span>
         </div>
         <h1 className="text-3xl font-extrabold text-slate-950 tracking-tight">
-          Indian Standards & Green Certification Benchmarks
+          Indian standards a mix can be screened against
         </h1>
         <p className="text-sm font-semibold text-slate-800 mt-2 max-w-3xl leading-relaxed">
-          PlastiCrete AI incorporates deterministic regulatory rules from the Bureau of Indian Standards (BIS) and green building rating systems (IGBC, GRIHA, LEED v4.1) directly into its multi-objective evaluation pipeline.
+          Each product is allowed only when its own standard clears on the conservative side of the 90% interval. Green-building numbers below are evidence quantities. This app does not file an IGBC, GRIHA, or LEED rating.
         </p>
       </div>
 
@@ -47,15 +47,15 @@ export const StandardsPage: React.FC = () => {
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
               <span className="font-mono text-xs font-bold text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded border border-emerald-200">
-                IS 1237:2012
+                IS 15658
               </span>
-              <span className="text-xs text-slate-700 font-bold">BIS Certified</span>
+              <span className="text-xs text-slate-700 font-bold">Paver gate</span>
             </div>
             <h3 className="font-extrabold text-slate-950 text-base mb-1.5">
               Cement Concrete Flooring Tiles & Pavers
             </h3>
             <p className="text-xs font-medium text-slate-800 leading-relaxed mb-4">
-              Specifies the physical and mechanical requirements for precast cement concrete flooring tiles and heavy pedestrian paving blocks.
+              Precast concrete pavers. Allowed only when the lower strength bound is at least 30 MPa and the upper absorption bound is at most 6%.
             </p>
             <div className="space-y-2 text-xs font-mono">
               <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
@@ -64,11 +64,11 @@ export const StandardsPage: React.FC = () => {
               </div>
               <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
                 <span className="text-slate-700 font-semibold">Max. Water Absorption:</span>
-                <span className="font-extrabold text-slate-950">&lt;= 10.0%</span>
+                <span className="font-extrabold text-slate-950">&lt;= 6%</span>
               </div>
               <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">Wear Resistance:</span>
-                <span className="font-extrabold text-slate-950">&lt;= 2.0 mm (Class AA)</span>
+                <span className="text-slate-700 font-semibold">When the interval crosses:</span>
+                <span className="font-extrabold text-slate-950">Cast one batch</span>
               </div>
             </div>
           </div>
@@ -88,22 +88,22 @@ export const StandardsPage: React.FC = () => {
               <span className="font-mono text-xs font-bold text-blue-900 bg-blue-100 px-2.5 py-0.5 rounded border border-blue-200">
                 IS 2185 (Part 1 & 2)
               </span>
-              <span className="text-xs text-slate-700 font-bold">BIS Certified</span>
+              <span className="text-xs text-slate-700 font-bold">Block gate</span>
             </div>
             <h3 className="font-extrabold text-slate-950 text-base mb-1.5">
               Concrete Masonry Units (Hollow & Solid)
             </h3>
             <p className="text-xs font-medium text-slate-800 leading-relaxed mb-4">
-              Governs precast load-bearing and non-load-bearing masonry blocks, hollow lightweight partitions, and structural infill.
+              Hollow blocks need a lower-bound strength of at least 3.5 MPa. Solid blocks need at least 5.0 MPa.
             </p>
             <div className="space-y-2 text-xs font-mono">
               <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">Min. CS (Grade A):</span>
-                <span className="font-extrabold text-slate-950">&gt;= 5.0 MPa</span>
+                <span className="text-slate-700 font-semibold">Hollow block:</span>
+                <span className="font-extrabold text-slate-950">&gt;= 3.5 MPa</span>
               </div>
               <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">Min. Dry Density:</span>
-                <span className="font-extrabold text-slate-950">&gt;= 1800 kg/m³</span>
+                <span className="text-slate-700 font-semibold">Solid block:</span>
+                <span className="font-extrabold text-slate-950">&gt;= 5.0 MPa</span>
               </div>
               <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
                 <span className="text-slate-700 font-semibold">Drying Shrinkage:</span>
@@ -127,13 +127,13 @@ export const StandardsPage: React.FC = () => {
               <span className="font-mono text-xs font-bold text-indigo-900 bg-indigo-100 px-2.5 py-0.5 rounded border border-indigo-200">
                 IS 456:2000
               </span>
-              <span className="text-xs text-slate-700 font-bold">BIS Structural</span>
+              <span className="text-xs text-slate-700 font-bold">Lab trial</span>
             </div>
             <h3 className="font-extrabold text-slate-950 text-base mb-1.5">
               Plain and Reinforced Structural Concrete
             </h3>
             <p className="text-xs font-medium text-slate-800 leading-relaxed mb-4">
-              Code of practice for general structural concrete design, defining characteristic compressive strength bands from M15 to M60.
+              Even when the lower bound clears M20 (20 MPa) and density stays inside 1800–2500 kg/m³, the certificate says screen for a lab trial. It never says certified.
             </p>
             <div className="space-y-2 text-xs font-mono">
               <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
@@ -169,7 +169,7 @@ export const StandardsPage: React.FC = () => {
               Green Building Rating Frameworks
             </h3>
             <p className="text-xs font-semibold text-slate-700">
-              Credit criteria integrated into the M3 scoring engine
+              Evidence a consultant can attach. The studio does not submit a rating.
             </p>
           </div>
         </div>
@@ -178,7 +178,7 @@ export const StandardsPage: React.FC = () => {
           <div className="p-4 rounded-xl bg-slate-100 border border-slate-200 space-y-2">
             <span className="font-bold text-slate-950 block text-sm">IGBC Green New Buildings</span>
             <p className="text-slate-800 font-medium leading-relaxed">
-              <strong>Credit MR 3: Recycled Content.</strong> Awards up to 3 credits for replacing virgin stone aggregate with certified post-consumer plastic waste (&gt;50 kg/m³ diversion).
+              <strong>Credit MR 3: Recycled Content.</strong> The mass-balance row gives plastic kg/m³ and the factor date a consultant can cite for post-consumer aggregate replacement.
             </p>
           </div>
 

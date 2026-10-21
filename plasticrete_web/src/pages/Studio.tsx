@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useMix, type StudioSubTab } from '../context/MixContext';
-import { generateReport } from '../api/client';
+import { generateReport, createBatch } from '../api/client';
 import { Dashboard } from './Dashboard';
+import { Predictor } from './Predictor';
 import { Optimizer } from './Optimizer';
 import { Sustainability } from './Sustainability';
 import { Recommender } from './Recommender';
@@ -29,17 +30,19 @@ interface TabItem {
 
 const STUDIO_TABS: TabItem[] = [
   { id: 'overview',        label: 'Overview & Properties (M1)', icon: LayoutDashboard },
-  { id: 'optimizer',       label: 'Pareto Optimiser (M2)',       icon: SlidersHorizontal, badge: 'Optuna' },
-  { id: 'sustainability',  label: 'Carbon LCA & BIS (M3)',       icon: Leaf,              badge: 'IS 1237' },
-  { id: 'recommender',     label: 'Product Finder (M4)',         icon: Boxes,             badge: 'RAG' },
+  { id: 'predictor',       label: 'Property Predictor (M1)',    icon: LayoutDashboard },
+  { id: 'optimizer',       label: 'Mix Optimiser (M2)',          icon: SlidersHorizontal, badge: 'M1' },
+  { id: 'sustainability',  label: 'Carbon LCA & Gate (M3)',      icon: Leaf },
+  { id: 'recommender',     label: 'Product Finder (M4)',         icon: Boxes },
   { id: 'explainability',  label: 'SHAP Explainability',         icon: HelpCircle },
 ];
 
 type ReportStatus = 'idle' | 'loading' | 'success' | 'api_unavailable';
 
 export const Studio: React.FC = () => {
-  const { studioTab, setStudioTab, setMainRoute, mix, prediction, score, recommendation } = useMix();
+  const { studioTab, setStudioTab, setMainRoute, mix, prediction, score, recommendation, openBatch, batchId } = useMix();
   const [reportStatus, setReportStatus] = useState<ReportStatus>('idle');
+  const [batchMessage, setBatchMessage] = useState<string>('');
 
   const handleDownloadReport = async () => {
     if (!prediction || !score || !recommendation) {
@@ -49,7 +52,7 @@ export const Studio: React.FC = () => {
     }
     setReportStatus('loading');
     const sessionId = `PLT-${Date.now().toString(36).toUpperCase()}`;
-    const ok = await generateReport(mix, prediction, score, recommendation, sessionId);
+    const ok = await generateReport(mix, prediction, score, recommendation, sessionId, batchId ?? undefined);
     setReportStatus(ok ? 'success' : 'api_unavailable');
     setTimeout(() => setReportStatus('idle'), ok ? 3000 : 5000);
   };
@@ -57,6 +60,7 @@ export const Studio: React.FC = () => {
   const renderContent = () => {
     switch (studioTab) {
       case 'overview':       return <Dashboard />;
+      case 'predictor':      return <Predictor />;
       case 'optimizer':      return <Optimizer />;
       case 'sustainability': return <Sustainability />;
       case 'recommender':    return <Recommender />;
@@ -104,20 +108,48 @@ export const Studio: React.FC = () => {
           <span className="text-slate-950 font-extrabold">AI Engineering Studio</span>
         </div>
 
-        {/* ── Download PDF Report Button ── */}
-        <button
-          id="download-report-btn"
-          onClick={handleDownloadReport}
-          disabled={reportStatus === 'loading'}
-          title="Generate a professional PDF mix design report with all predictions, BIS compliance, LCA carbon, and SHAP analysis"
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide transition-all cursor-pointer ${reportBtnClass[reportStatus]}`}
-        >
-          <Icon className={`w-4 h-4 ${reportStatus === 'loading' ? 'animate-spin' : ''}`} />
-          <span>{reportBtnLabel[reportStatus]}</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={async () => {
+              if (!prediction || !score || !recommendation) {
+                setBatchMessage('Run a mix first, then save the batch.');
+                return;
+              }
+              try {
+                const saved = await createBatch({
+                  plant_name: 'Plant',
+                  mix_params: mix,
+                  prediction,
+                  score,
+                  recommendation,
+                });
+                setBatchMessage(`Saved ${saved.id}`);
+                openBatch(saved.id);
+              } catch (err) {
+                setBatchMessage(err instanceof Error ? err.message : 'Could not save the batch.');
+              }
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide bg-white text-slate-900 border border-slate-300 hover:bg-slate-100 cursor-pointer"
+          >
+            Save batch passport
+          </button>
+          <button
+            id="download-report-btn"
+            onClick={handleDownloadReport}
+            disabled={reportStatus === 'loading'}
+            title="Generate a PDF with the shared mass balance, use-class gate, and a QR code when a batch is saved"
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide transition-all cursor-pointer ${reportBtnClass[reportStatus]}`}
+          >
+            <Icon className={`w-4 h-4 ${reportStatus === 'loading' ? 'animate-spin' : ''}`} />
+            <span>{reportBtnLabel[reportStatus]}</span>
+          </button>
+        </div>
       </div>
 
-      {/* API-unavailable contextual help */}
+      {batchMessage && (
+        <p className="text-xs font-semibold text-slate-700">{batchMessage}</p>
+      )}
       {reportStatus === 'api_unavailable' && (
         <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800">
           <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />

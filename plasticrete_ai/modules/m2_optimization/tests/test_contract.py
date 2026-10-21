@@ -39,23 +39,57 @@ class TestSchemaConstants:
 
 class TestOptimizationResultShape:
     def test_result_has_required_keys(self, monkeypatch):
-        """Verify run_optimization returns the correct response shape (mocked predict)."""
-        from modules.m2_optimization.model import surrogate
-        import modules.m2_optimization.utils.encoding as enc
+        """Strength is injected. Cost and plastic mass still come from the mass balance."""
+        from modules.m2_optimization.model import optimizer
 
-        # Patch surrogate.is_loaded so load_models is skipped
-        monkeypatch.setattr(surrogate, "_loaded", True)
-        monkeypatch.setattr(enc, "predict", lambda *a, **k: (30.0, 4000.0, 300.0, 120.0))
+        def fake_m1(mix):
+            return {
+                "compressive_strength_mpa": 32.0,
+                "flexural_strength_mpa": 4.0,
+                "split_tensile_mpa": 2.5,
+                "density_kgm3": 2200.0,
+                "water_absorption_pct": 4.0,
+                "thermal_conductivity_wm": 0.8,
+                "durability_index": 70.0,
+                "ci_low": {
+                    "compressive_strength_mpa": 30.5,
+                    "water_absorption_pct": 3.0,
+                    "density_kgm3": 2100.0,
+                },
+                "ci_high": {
+                    "compressive_strength_mpa": 34.0,
+                    "water_absorption_pct": 5.0,
+                    "density_kgm3": 2300.0,
+                },
+            }
 
-        from modules.m2_optimization.model.optimizer import run
-        result = run(
-            constraints={"compressive_strength_min": 20.0, "replacement_pct_max": 30.0},
+        monkeypatch.setattr(optimizer, "_m1_properties", fake_m1)
+        result = optimizer.run(
+            constraints={
+                "plastic_type": "PET",
+                "compressive_strength_min": 20.0,
+                "replacement_pct_max": 30.0,
+                "plastic_diversion_min_kg_m3": 40.0,
+                "use_class": "paver",
+            },
             weights={"compressive_strength": 0.4, "cost_per_m3": 0.3,
                      "co2_per_m3": 0.2, "plastic_content_pct": 0.1},
+            mode="constrained",
         )
         required_keys = {
             "best_mix", "predicted_cs_mpa", "predicted_cost_inr_m3",
             "predicted_co2_kgco2e_m3", "predicted_plastic_diversion_kg_m3",
-            "composite_score", "mode",
+            "composite_score", "mode", "tradeoff_points", "mass_balance",
+            "prediction_source", "feasible",
         }
-        assert required_keys == set(result.keys())
+        assert required_keys <= set(result.keys())
+        assert result["prediction_source"] == "m1"
+        assert result["best_mix"]["plastic_type"] == "PET"
+        assert result["best_mix"]["additive_type"] in {"fly_ash", "silica_fume", "fibres", "none"}
+        assert result["mass_balance"]["plastic_kg_m3"] == result["predicted_plastic_diversion_kg_m3"]
+        assert result["mass_balance"]["cost_inr_m3"] == result["predicted_cost_inr_m3"]
+        assert result["feasible"] is True
+        assert 1 <= len(result["tradeoff_points"]) <= 3
+        assert any(point["selected"] for point in result["tradeoff_points"])
+        labels = {point["label"] for point in result["tradeoff_points"]}
+        assert "balanced" in labels or "max_strength" in labels
