@@ -1,7 +1,7 @@
 import type { MassBalance } from '../lib/massBalance';
 import type { UseClassGate } from '../lib/useClassGate';
 
-export type InferenceSource = 'live' | 'demo';
+export type InferenceSource = 'live';
 export type { MassBalance, MassBalanceRow } from '../lib/massBalance';
 export type { UseClassGate, GateStatus } from '../lib/useClassGate';
 

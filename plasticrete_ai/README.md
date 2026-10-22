@@ -1,6 +1,6 @@
 # PlastiCrete AI
 
-An explainable machine learning platform that predicts 7 mechanical and physical properties of plastic waste composite construction materials from 8 mix design inputs — replacing ₹5,000–₹20,000 lab tests with millisecond inference.
+An explainable machine learning platform that predicts 7 mechanical and physical properties of plastic waste composite construction materials from 8 mix design inputs. A cube test is still required before a product is accepted. The studio is the Vite app in `plasticrete_web`.
 
 ---
 
@@ -9,8 +9,8 @@ An explainable machine learning platform that predicts 7 mechanical and physical
 | Module | Status | Description |
 |--------|--------|-------------|
 | **M1 — Prediction** | ✅ Active | Ensemble (XGBoost + RF + DNN) property predictor |
-| **M2 — Optimisation** | ✅ Active | XGBoost-surrogate constrained optimisation via Optuna |
-| **M3 — Sustainability** | ✅ Active | Embodied carbon (LCA), BIS compliance, IGBC/GRIHA/LEED scorer |
+| **M2 — Optimisation** | ✅ Active | Optuna search that calls the M1 ensemble and the shared mass balance |
+| **M3 — Sustainability** | ✅ Active | Shared mass balance, use-class gates, and a sustainability index |
 | **M4 — Recommendation** | ✅ Active | RF classifier + FAISS RAG application recommender |
 | **M5 — Report Generation** | ✅ Active | Automated PDF mix design & compliance audit report engine |
 
@@ -71,7 +71,7 @@ plasticrete_ai/
 │   │   ├── explainability/shap_explainer.py
 │   │   ├── explainability/lime_explainer.py
 │   │   └── explainability/pdp_ice_plots.py
-│   ├── m2_optimization/        ← surrogate-model optimiser (Optuna)
+│   ├── m2_optimization/        ← Optuna search on the M1 ensemble
 │   ├── m3_sustainability/      ← LCA + BIS + green rating scorer
 │   ├── m4_recommendation/      ← RF classifier + FAISS RAG
 │   └── m5_report/              ← Automated ReportLab PDF generator

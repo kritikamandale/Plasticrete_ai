@@ -25,12 +25,12 @@
 
 Traditional laboratory validation of concrete mixes with recycled plastic aggregate replacements requires **28-day curing cycles** and costs between **₹5,000 to ₹25,000 per trial batch**. 
 
-**PlastiCrete.ai** delivers an end-to-end computational intelligence system that:
-1. **Replaces empirical trial-and-error** with sub-second property prediction using a stacked ensemble (XGBoost + Random Forest + Transfer-Learned DNN).
-2. **Discovers optimal formulations** via multi-objective Pareto optimization (maximizing strength & plastic recycling while minimizing carbon footprint & production cost).
-3. **Automates compliance audits** against Indian Standards (IS 456, IS 2185, IS 15658, IS 383) and scores credits for **IGBC, GRIHA, and LEED v4.1**.
-4. **Recommends certified applications** using semantic FAISS vector RAG across peer-reviewed concrete literature.
-5. **Generates publication-ready PDF certification reports** for civil engineering audits and industrial deployment.
+**PlastiCrete.ai** is a studio for screening plastic-aggregate mixes:
+1. **Predicts seven properties** with a stacked ensemble (XGBoost + Random Forest + transfer-learned DNN) and a 90% interval.
+2. **Searches recipes** with Optuna calling that same ensemble, then prices them from one mass-balance table.
+3. **Gates each product** against its own standard (IS 15658, IS 2185, IS 456). Structural use stays a lab trial.
+4. **Lists nearby published mixes** with author, journal, and DOI. A match is not a certificate.
+5. **Writes a PDF** of the prediction, the mass balance, the gates, and a batch QR. It does not replace a cube test.
 
 ---
 
@@ -213,7 +213,7 @@ Plasticrete_ai/
 │   ├── models/                    # Trained model weights, scalers, FAISS indices
 │   ├── modules/                   # The 5 Core Intelligence Engines
 │   │   ├── m1_prediction/         # Ensemble model & explainability (SHAP/LIME)
-│   │   ├── m2_optimization/       # Optuna surrogate optimizer
+│   │   ├── m2_optimization/       # Optuna search on the M1 ensemble
 │   │   ├── m3_sustainability/     # Carbon LCA & BIS / Green rating calculators
 │   │   ├── m4_recommendation/     # RF Classifier + FAISS RAG retrieval
 │   │   └── m5_report/             # Automated ReportLab PDF generator

@@ -9,7 +9,7 @@ import { TechPage } from './pages/TechPage';
 import { BatchPassportPage } from './pages/BatchPassportPage';
 
 const AppContent: React.FC = () => {
-  const { mainRoute, batchId } = useMix();
+  const { mainRoute, batchId, serviceError } = useMix();
 
   const renderCurrentView = () => {
     switch (mainRoute) {
@@ -32,6 +32,11 @@ const AppContent: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-colors selection:bg-emerald-500 selection:text-white">
       <Navbar />
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {serviceError && (
+          <p className="mb-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-950">
+            {serviceError} Start the API from plasticrete_ai with uvicorn deployment.api.app:app --port 8000.
+          </p>
+        )}
         {renderCurrentView()}
       </main>
       <Footer />

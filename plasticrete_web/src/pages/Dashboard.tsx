@@ -7,74 +7,25 @@ import {
   Leaf,
   Sparkles,
   Boxes,
-  ShieldCheck,
   AlertTriangle,
   ArrowRight,
   TrendingUp,
 } from 'lucide-react';
-import {
-  Radar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  ResponsiveContainer,
-  Tooltip,
-} from 'recharts';
+import { APPLICATION_PRETTY_NAMES, TARGET_LABELS } from '../types';
+
+function shown(value: number | null | undefined, digits = 2): string {
+  if (value == null || Number.isNaN(Number(value))) return '—';
+  return Number(value).toFixed(digits);
+}
 
 export const Dashboard: React.FC = () => {
   const { prediction, score, recommendation, setStudioTab } = useMix();
 
-  const cs = prediction?.predictions.compressive_strength_mpa?.mean || 0;
-  const csLow = prediction?.predictions.compressive_strength_mpa?.ci_90_low || 0;
-  const csHigh = prediction?.predictions.compressive_strength_mpa?.ci_90_high || 0;
-  const co2Saving = score?.co2_saving_pct || 0;
-  const diversionKg = score?.plastic_diversion_kg_m3 || 0;
-  const primaryApp = recommendation?.primary_application || 'paving_block_light';
-  const confidence = recommendation?.primary_confidence_pct || 0;
-
-  // Radar chart data comparing current plastic mix vs conventional M20 concrete benchmark
-  const radarData = [
-    {
-      subject: 'Comp. Strength',
-      PlasticMix: Math.min(100, Math.round((cs / 35.0) * 100)),
-      M20Benchmark: 70,
-    },
-    {
-      subject: 'Flexural',
-      PlasticMix: Math.min(100, Math.round(((prediction?.predictions.flexural_strength_mpa?.mean || 3.5) / 4.5) * 100)),
-      M20Benchmark: 65,
-    },
-    {
-      subject: 'Low Carbon',
-      PlasticMix: Math.min(100, Math.max(20, Math.round(co2Saving * 2.5))),
-      M20Benchmark: 30,
-    },
-    {
-      subject: 'Diversion',
-      PlasticMix: Math.min(100, Math.round((diversionKg / 200.0) * 100)),
-      M20Benchmark: 5,
-    },
-    {
-      subject: 'Lightweight',
-      PlasticMix: Math.min(100, Math.round((2400.0 / (prediction?.predictions.density_kg_m3?.mean || 2300)) * 75)),
-      M20Benchmark: 70,
-    },
-    {
-      subject: 'Workability',
-      PlasticMix: Math.min(100, Math.round(((prediction?.predictions.slump_mm?.mean || 75) / 120.0) * 100)),
-      M20Benchmark: 60,
-    },
-  ];
-
-  const APPLICATION_PRETTY_NAMES: Record<string, string> = {
-    paving_block_light: 'Interlocking Paver Block (Light Traffic)',
-    hollow_block_non_load: 'Hollow Concrete Masonry Unit (Non-Load)',
-    solid_block_load: 'Solid Precast Load-Bearing Block',
-    drainage_cover: 'Precast Stormwater Drain Cover Slab',
-    curbstone: 'Roadway Kerbstone & Channel (IS 5758)',
-    boundary_wall_panel: 'Precast Boundary Wall Panel',
-  };
+  const compressive = prediction?.predictions.compressive_strength_mpa;
+  const co2Saving = score?.co2_saving_pct;
+  const diversionKg = score?.plastic_diversion_kg_m3;
+  const primaryApp = recommendation?.primary_application;
+  const confidence = recommendation?.primary_confidence_pct;
 
   return (
     <div className="space-y-6">
@@ -104,19 +55,19 @@ export const Dashboard: React.FC = () => {
           <div>
             <div className="flex items-baseline gap-1.5">
               <span className="text-3xl font-extrabold font-mono text-slate-950">
-                {cs}
+                {shown(compressive?.mean)}
               </span>
               <span className="text-xs font-bold text-slate-600 font-mono">MPa</span>
             </div>
             <p className="text-xs font-semibold text-slate-700 mt-1">
-              90% CI: [{csLow} – {csHigh}] MPa
+              90% CI: [{shown(compressive?.ci_90_low)} – {shown(compressive?.ci_90_high)}] MPa
             </p>
           </div>
           <button
             onClick={() => setStudioTab('optimizer')}
             className="mt-3 pt-2 border-t border-slate-200 text-xs font-bold text-blue-700 flex items-center gap-1 hover:gap-1.5 transition-all cursor-pointer"
           >
-            <span>Run Pareto Optimizer</span>
+            <span>Search mixes</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -132,7 +83,7 @@ export const Dashboard: React.FC = () => {
           <div>
             <div className="flex items-baseline gap-1.5">
               <span className="text-3xl font-extrabold font-mono text-emerald-700">
-                -{co2Saving}%
+                {co2Saving == null ? '—' : `${co2Saving}%`}
               </span>
               <span className="text-xs font-bold text-slate-600 font-mono">vs M20</span>
             </div>
@@ -144,7 +95,7 @@ export const Dashboard: React.FC = () => {
             onClick={() => setStudioTab('sustainability')}
             className="mt-3 pt-2 border-t border-slate-200 text-xs font-bold text-emerald-700 flex items-center gap-1 hover:gap-1.5 transition-all cursor-pointer"
           >
-            <span>LCA & BIS Details</span>
+            <span>Mass balance</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -160,12 +111,12 @@ export const Dashboard: React.FC = () => {
           <div>
             <div className="flex items-baseline gap-1.5">
               <span className="text-3xl font-extrabold font-mono text-cyan-800">
-                {diversionKg}
+                {shown(diversionKg)}
               </span>
               <span className="text-xs font-bold text-slate-600 font-mono">kg/m³</span>
             </div>
             <p className="text-xs font-semibold text-slate-700 mt-1">
-              ≈ {(score?.pet_bottle_equiv || 0).toLocaleString()} PET bottles / m³
+              {score?.pet_bottle_equiv == null ? '—' : score.pet_bottle_equiv.toLocaleString()} bottle equivalents / m³
             </p>
           </div>
           <div className="mt-3 pt-2 border-t border-slate-200 text-xs font-semibold text-slate-700 flex items-center gap-1">
@@ -184,13 +135,13 @@ export const Dashboard: React.FC = () => {
           </div>
           <div>
             <div className="text-sm font-bold text-slate-950 line-clamp-1">
-              {APPLICATION_PRETTY_NAMES[primaryApp] || primaryApp}
+              {primaryApp ? (APPLICATION_PRETTY_NAMES[primaryApp] || primaryApp) : '—'}
             </div>
             <div className="flex items-center gap-1.5 mt-1">
               <span className="text-xs font-mono font-bold text-indigo-700">
-                {confidence}% Confidence
+                {confidence == null ? '—' : `${confidence}% match`}
               </span>
-              <span className="text-xs font-semibold text-slate-600">by RF + FAISS</span>
+              <span className="text-xs font-semibold text-slate-600">{recommendation?.primary_gate_message || 'Waiting for the model'}</span>
             </div>
           </div>
           <button
@@ -203,92 +154,60 @@ export const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Middle Grid: Radar Chart + Sustainability Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Radar Comparison (2 Cols) */}
-        <div className="lg:col-span-2 glass-card rounded-2xl p-5 flex flex-col justify-between border border-slate-300/80 shadow-sm">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-            <div>
-              <h3 className="font-bold text-slate-950 text-base">
-                Engineering Performance Profile (Multi-Target Radar)
-              </h3>
-              <p className="text-xs font-medium text-slate-700">
-                Normalized index comparing current Plastic-Waste Composite vs Conventional M20 concrete
-              </p>
-            </div>
-            <div className="flex items-center gap-3 text-xs font-semibold">
-              <span className="flex items-center gap-1.5 text-emerald-800">
-                <span className="w-3 h-3 rounded-full bg-emerald-600" />
-                <span>Plastic Mix</span>
-              </span>
-              <span className="flex items-center gap-1.5 text-slate-700">
-                <span className="w-3 h-3 rounded-full bg-slate-400" />
-                <span>M20 Baseline</span>
-              </span>
-            </div>
+        <div className="lg:col-span-2 glass-card rounded-2xl p-5 border border-slate-300/80 shadow-sm">
+          <div className="pb-3 border-b border-slate-200 mb-3">
+            <h3 className="font-bold text-slate-950 text-base">M1 property means</h3>
+            <p className="text-xs font-medium text-slate-700">
+              Seven outputs from the ensemble, with the 90% interval when the model returned one.
+            </p>
           </div>
-
-          <div className="h-72 w-full pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData}>
-                <PolarGrid stroke="#cbd5e1" strokeDasharray="3 3" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: '#1e293b', fontSize: 12, fontWeight: 600 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#475569', fontSize: 10, fontWeight: 500 }} />
-                <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: 8, fontSize: 12, fontWeight: 600, border: '1px solid #cbd5e1', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
-                <Radar
-                  name="M20 Baseline"
-                  dataKey="M20Benchmark"
-                  stroke="#64748b"
-                  fill="#94a3b8"
-                  fillOpacity={0.25}
-                />
-                <Radar
-                  name="Plastic Mix"
-                  dataKey="PlasticMix"
-                  stroke="#047857"
-                  fill="#10b981"
-                  fillOpacity={0.45}
-                />
-              </RadarChart>
-            </ResponsiveContainer>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {Object.entries(TARGET_LABELS).map(([key, meta]) => {
+              const result = prediction?.predictions[key];
+              return (
+                <div key={key} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                  <p className="text-[11px] font-bold text-slate-700">{meta.label}</p>
+                  <p className="font-mono text-sm font-bold text-slate-950">
+                    {shown(result?.mean)} {meta.unit}
+                  </p>
+                  <p className="text-[11px] font-mono text-slate-600">
+                    {shown(result?.ci_90_low)} – {shown(result?.ci_90_high)}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Sustainability Score Gauge (1 Col) */}
         <div className="glass-card rounded-2xl p-5 flex flex-col justify-between border border-slate-300/80 shadow-sm">
           <div className="pb-3 border-b border-slate-200">
-            <h3 className="font-bold text-slate-950 text-base">
-              Sustainability & Compliance Score
-            </h3>
+            <h3 className="font-bold text-slate-950 text-base">Use-class gate</h3>
             <p className="text-xs font-medium text-slate-700">
-              Composite index based on LCA carbon, green rating & BIS IS 1237
+              Allowed only when that product's standard clears on the conservative side of the interval.
             </p>
           </div>
 
-          <div className="py-2">
-            <GaugeChart
-              value={score?.sustainability_score || 0}
-              label="Overall Sustainability Score"
-              grade={score?.sustainability_grade || 'B'}
-              sublabel="Target: Grade A (>=75)"
-              size={170}
-            />
-          </div>
+          {score?.sustainability_score != null && (
+            <div className="py-2">
+              <GaugeChart
+                value={score.sustainability_score}
+                label="Sustainability index"
+                grade={score.sustainability_grade}
+                sublabel="Carbon, plastic mass, and cleared gates. Rating points are not added."
+                size={170}
+              />
+            </div>
+          )}
 
           <div className="space-y-2 pt-3 border-t border-slate-200 text-xs">
-            <div className="flex justify-between items-center">
-              <span className="font-bold text-slate-800">BIS IS 1237 Compliance:</span>
-              <span className={`font-bold flex items-center gap-1 ${score?.bis_overall_pass ? 'text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded' : 'text-amber-900 bg-amber-100 px-2 py-0.5 rounded'}`}>
-                <ShieldCheck className="w-3.5 h-3.5" />
-                {score?.bis_overall_pass ? 'PASSED' : 'CHECK NEEDED'}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="font-bold text-slate-800">Green Rating Credits:</span>
-              <span className="font-mono font-bold text-slate-950">
-                {score?.total_green_credits || 0} pts (IGBC/GRIHA/LEED)
-              </span>
-            </div>
+            {(score?.use_class_gates || []).map((gate) => (
+              <div key={gate.id} className="flex justify-between items-center gap-2">
+                <span className="font-bold text-slate-800">{gate.label}</span>
+                <span className="font-bold text-slate-950">{gate.status.replace('_', ' ')}</span>
+              </div>
+            ))}
+            {!score && <p className="font-semibold text-slate-700">Waiting for the model.</p>}
           </div>
         </div>
       </div>

@@ -38,7 +38,9 @@ class ScoreAggregator:
         n_recycled = np.clip(params["replacement_pct"] / 40,      0, 1)
         # Product gates replace the old "3 of 7 standards" pass.
         n_bis      = bis.n_standards_passed / 7 if bis_fraction is None else float(bis_fraction)
-        n_green    = green.total_green_credits / 7
+        # Rating-point counts are not a model output, so they do not add to the index.
+        n_green    = 0.0
+        _ = green
 
         c_carbon   = round(float(n_carbon   * self.w_carbon),   3)
         c_div      = round(float(n_div      * self.w_div),      3)

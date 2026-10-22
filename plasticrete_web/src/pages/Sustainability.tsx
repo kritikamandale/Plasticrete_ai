@@ -10,7 +10,7 @@ import {
 
 export const Sustainability: React.FC = () => {
   const { score } = useMix();
-  const baseline = score?.mass_balance?.baseline_co2_kgco2e_m3 ?? 365.71;
+  const baseline = score?.mass_balance?.baseline_co2_kgco2e_m3;
 
   return (
     <div className="space-y-6">
@@ -34,15 +34,19 @@ export const Sustainability: React.FC = () => {
           <div className="w-full pb-2 border-b border-slate-200 text-center">
             <span className="text-xs font-bold text-slate-800 uppercase tracking-wide">Aggregate Sustainability Index</span>
           </div>
-          <GaugeChart
-            value={score?.sustainability_score || 0}
-            grade={score?.sustainability_grade || 'B'}
-            label="PlastiCrete Green Rating"
-            sublabel="Target: Grade A+ (>=85)"
-            size={180}
-          />
+          {score?.sustainability_score == null ? (
+            <p className="py-8 text-sm font-semibold text-slate-700">Waiting for the model.</p>
+          ) : (
+            <GaugeChart
+              value={score.sustainability_score}
+              grade={score.sustainability_grade}
+              label="Sustainability index"
+              sublabel="Carbon, plastic mass, and cleared gates. Rating points are not added."
+              size={180}
+            />
+          )}
           <div className="w-full pt-3 border-t border-slate-200 text-center text-xs font-semibold text-slate-700">
-            Weighted across 5 lifecycle criteria
+            From the shared mass balance and the use-class gates.
           </div>
         </div>
 
@@ -51,7 +55,7 @@ export const Sustainability: React.FC = () => {
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <span className="text-xs font-bold text-slate-800 uppercase tracking-wide">Embodied Carbon (Cradle-to-Gate)</span>
             <span className="text-xs font-mono font-bold text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
-              -{score?.co2_saving_pct}% Saved
+              {score?.co2_saving_pct == null ? '—' : `${score.co2_saving_pct}% vs baseline`}
             </span>
           </div>
 
@@ -66,7 +70,7 @@ export const Sustainability: React.FC = () => {
               <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-emerald-600 rounded-full"
-                  style={{ width: `${Math.min(100, ((score?.embodied_carbon_kgco2e_m3 || 0) / baseline) * 100)}%` }}
+                  style={{ width: `${baseline && score?.embodied_carbon_kgco2e_m3 != null ? Math.min(100, (score.embodied_carbon_kgco2e_m3 / baseline) * 100) : 0}%` }}
                 />
               </div>
             </div>
@@ -74,7 +78,7 @@ export const Sustainability: React.FC = () => {
             <div>
               <div className="flex justify-between text-xs mb-1">
                 <span className="text-slate-900 font-bold">Conventional M20 Baseline:</span>
-                <span className="font-mono font-bold text-slate-700">{baseline} kg CO₂e/m³</span>
+                <span className="font-mono font-bold text-slate-700">{baseline ?? '—'} kg CO₂e/m³</span>
               </div>
               <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
                 <div className="h-full bg-slate-500 rounded-full" style={{ width: '100%' }} />
@@ -84,14 +88,13 @@ export const Sustainability: React.FC = () => {
 
           <div className="pt-3 border-t border-slate-200 flex items-center gap-2 text-xs font-semibold text-slate-800">
             <TrendingDown className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-            <span>Net saving: {Math.max(0, baseline - (score?.embodied_carbon_kgco2e_m3 || 0)).toFixed(2)} kg CO₂e per cubic meter</span>
+            <span>Difference vs baseline: {baseline == null || score?.embodied_carbon_kgco2e_m3 == null ? '—' : (baseline - score.embodied_carbon_kgco2e_m3).toFixed(2)} kg CO₂e per cubic meter</span>
           </div>
         </div>
 
-        {/* Circular Economy & Green Credits */}
         <div className="glass-card rounded-2xl p-5 flex flex-col justify-between border border-slate-300/80 shadow-sm">
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-            <span className="text-xs font-bold text-slate-800 uppercase tracking-wide">Green Rating Points</span>
+            <span className="text-xs font-bold text-slate-800 uppercase tracking-wide">Recipe quantities</span>
             <div className="p-1 rounded bg-amber-100 text-amber-900">
               <Award className="w-4 h-4" />
             </div>
@@ -99,33 +102,30 @@ export const Sustainability: React.FC = () => {
 
           <div className="grid grid-cols-3 gap-2 text-center my-auto py-2">
             <div className="p-2.5 rounded-xl bg-slate-100 border border-slate-200">
-              <span className="text-[11px] font-bold text-slate-700 block mb-0.5">IGBC Green</span>
+              <span className="text-[11px] font-bold text-slate-700 block mb-0.5">Plastic</span>
               <span className="text-xl font-extrabold font-mono text-emerald-800">
-                {score?.igbc_total_credits}
+                {score?.mass_balance?.plastic_kg_m3 ?? '—'}
               </span>
-              <span className="text-[11px] font-semibold text-slate-600 block">credits</span>
+              <span className="text-[11px] font-semibold text-slate-600 block">kg/m³</span>
             </div>
             <div className="p-2.5 rounded-xl bg-slate-100 border border-slate-200">
-              <span className="text-[11px] font-bold text-slate-700 block mb-0.5">GRIHA v2019</span>
+              <span className="text-[11px] font-bold text-slate-700 block mb-0.5">CO₂e</span>
               <span className="text-xl font-extrabold font-mono text-cyan-800">
-                {score?.griha_material_criterion_pts}
+                {score?.embodied_carbon_kgco2e_m3 ?? '—'}
               </span>
-              <span className="text-[11px] font-semibold text-slate-600 block">points</span>
+              <span className="text-[11px] font-semibold text-slate-600 block">kg/m³</span>
             </div>
             <div className="p-2.5 rounded-xl bg-slate-100 border border-slate-200">
-              <span className="text-[11px] font-bold text-slate-700 block mb-0.5">LEED v4.1</span>
+              <span className="text-[11px] font-bold text-slate-700 block mb-0.5">Bottles</span>
               <span className="text-xl font-extrabold font-mono text-indigo-800">
-                {score?.leed_total_points}
+                {score?.pet_bottle_equiv ?? '—'}
               </span>
-              <span className="text-[11px] font-semibold text-slate-600 block">points</span>
+              <span className="text-[11px] font-semibold text-slate-600 block">equiv.</span>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
-            <span className="font-bold text-slate-800">Evidence for a consultant. This page does not file a rating.</span>
-            <span className="font-mono font-extrabold text-slate-950">
-              ≈ {(score?.pet_bottle_equiv || 0).toLocaleString()} bottles/m³
-            </span>
+          <div className="pt-3 border-t border-slate-200 text-xs font-bold text-slate-800">
+            These quantities come from the shared mass-balance table. This page does not file a green-building rating.
           </div>
         </div>
       </div>
@@ -218,7 +218,7 @@ export const Sustainability: React.FC = () => {
             </h3>
           </div>
           <span className="text-xs font-mono font-bold text-emerald-800">
-            Potential Score Uplift: +{score?.estimated_score_gain || 0} pts
+            From the use-class gate
           </span>
         </div>
 

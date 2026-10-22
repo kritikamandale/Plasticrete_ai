@@ -57,7 +57,7 @@ export const Footer: React.FC = () => {
                   onClick={() => { setMainRoute('studio'); setStudioTab('optimizer'); }}
                   className="hover:text-emerald-600 transition-colors cursor-pointer"
                 >
-                  M2 Pareto Mix Optimiser
+                  Mix search on M1
                 </button>
               </li>
               <li>
@@ -65,7 +65,7 @@ export const Footer: React.FC = () => {
                   onClick={() => { setMainRoute('studio'); setStudioTab('sustainability'); }}
                   className="hover:text-emerald-600 transition-colors cursor-pointer"
                 >
-                  M3 Carbon LCA & BIS Scorer
+                  Mass balance and use-class gates
                 </button>
               </li>
               <li>
@@ -98,7 +98,7 @@ export const Footer: React.FC = () => {
                   onClick={() => setMainRoute('standards')}
                   className="hover:text-emerald-600 transition-colors cursor-pointer"
                 >
-                  IS 1237 (Flooring & Pavers)
+                  IS 15658 (Paving blocks)
                 </button>
               </li>
               <li>
@@ -155,7 +155,7 @@ export const Footer: React.FC = () => {
                   onClick={() => setMainRoute('technology')}
                   className="hover:text-emerald-600 transition-colors cursor-pointer"
                 >
-                  Surrogate Bayesian Optimization
+                  Optuna search on the M1 ensemble
                 </button>
               </li>
               <li>

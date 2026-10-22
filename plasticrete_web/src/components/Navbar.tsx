@@ -72,10 +72,10 @@ export const Navbar: React.FC = () => {
         {/* Header Right Actions */}
         <div className="flex items-center gap-3">
           {/* Real-time Indicator */}
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-xs font-bold shadow-sm">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-xs font-bold shadow-sm">
             <span className={`flex h-2 w-2 rounded-full ${inferenceSource === 'live' ? 'bg-emerald-600' : 'bg-amber-500'}`} />
             <span className="text-[11px] text-slate-800">
-              {loading ? 'Evaluating...' : inferenceSource === 'live' ? 'Live model' : inferenceSource === 'mixed' ? 'Partial demo' : 'Demo data'}
+              {loading ? 'Evaluating...' : inferenceSource === 'live' ? 'Live model' : 'Model unavailable'}
             </span>
           </div>
 

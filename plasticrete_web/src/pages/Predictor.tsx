@@ -42,26 +42,21 @@ export const Predictor: React.FC = () => {
     }
   };
 
+  const bar = (name: string, key: string) => {
+    const result = prediction?.predictions[key];
+    if (result?.mean == null || result.ci_90_high == null || result.ci_90_low == null) return null;
+    return {
+      name,
+      mean: result.mean,
+      errorHigh: result.ci_90_high - result.mean,
+      errorLow: result.mean - result.ci_90_low,
+    };
+  };
   const strengthData = [
-    {
-      name: 'Compressive',
-      mean: prediction?.predictions.compressive_strength_mpa?.mean || 0,
-      errorHigh: (prediction?.predictions.compressive_strength_mpa?.ci_90_high || 0) - (prediction?.predictions.compressive_strength_mpa?.mean || 0),
-      errorLow: (prediction?.predictions.compressive_strength_mpa?.mean || 0) - (prediction?.predictions.compressive_strength_mpa?.ci_90_low || 0),
-    },
-    {
-      name: 'Flexural',
-      mean: prediction?.predictions.flexural_strength_mpa?.mean || 0,
-      errorHigh: (prediction?.predictions.flexural_strength_mpa?.ci_90_high || 0) - (prediction?.predictions.flexural_strength_mpa?.mean || 0),
-      errorLow: (prediction?.predictions.flexural_strength_mpa?.mean || 0) - (prediction?.predictions.flexural_strength_mpa?.ci_90_low || 0),
-    },
-    {
-      name: 'Split Tensile',
-      mean: prediction?.predictions.split_tensile_mpa?.mean || 0,
-      errorHigh: (prediction?.predictions.split_tensile_mpa?.ci_90_high || 0) - (prediction?.predictions.split_tensile_mpa?.mean || 0),
-      errorLow: (prediction?.predictions.split_tensile_mpa?.mean || 0) - (prediction?.predictions.split_tensile_mpa?.ci_90_low || 0),
-    },
-  ];
+    bar('Compressive', 'compressive_strength_mpa'),
+    bar('Flexural', 'flexural_strength_mpa'),
+    bar('Split Tensile', 'split_tensile_mpa'),
+  ].filter((row): row is NonNullable<typeof row> => row != null);
 
   return (
     <div className="space-y-6">
@@ -111,6 +106,9 @@ export const Predictor: React.FC = () => {
           </p>
         </div>
 
+        {strengthData.length === 0 ? (
+          <p className="pt-4 text-sm font-semibold text-slate-700">Waiting for the model. A missing prediction is left blank.</p>
+        ) : (
         <div className="h-64 w-full pt-4">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={strengthData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
@@ -127,6 +125,7 @@ export const Predictor: React.FC = () => {
             </BarChart>
           </ResponsiveContainer>
         </div>
+        )}
       </div>
     </div>
   );

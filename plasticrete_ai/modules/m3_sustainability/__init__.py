@@ -86,7 +86,7 @@ def score_mix(mix_params: dict, m1_props: dict, ci_low: dict | None = None, ci_h
         mix_params, lca_result, bis_result, green_result,
         bis_fraction=cleared / max(len(gates), 1),
     )
-    rem_result   = _advisor.advise(mix_params, m1_props, lca_result, bis_result, score_result)
+    rem_result   = _advisor.advise(gates, balance)
 
     return {
         "sustainability_score":          score_result.sustainability_score,

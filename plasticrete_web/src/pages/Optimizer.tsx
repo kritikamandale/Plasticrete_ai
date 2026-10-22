@@ -101,7 +101,7 @@ export const Optimizer: React.FC = () => {
             </h2>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-900 border border-indigo-300">
               <Sparkles className="w-3.5 h-3.5" />
-              Pareto Frontier
+              Trade-off points
             </span>
           </div>
           <p className="text-xs font-semibold text-slate-700 mt-1">
@@ -410,7 +410,7 @@ export const Optimizer: React.FC = () => {
                 No Optimization Run Yet
               </h3>
               <p className="text-xs font-semibold text-slate-700 max-w-sm mt-1">
-                Configure your objective weights and feasibility limits on the left, then click "Run Mix Optimization".
+                Set the objective weights and the limits, then click Run mix search.
               </p>
             </div>
           )}

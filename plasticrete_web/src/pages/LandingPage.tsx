@@ -15,8 +15,8 @@ import {
 export const LandingPage: React.FC = () => {
   const { setMainRoute, setStudioTab, mix, setMix, prediction, score } = useMix();
 
-  const cs = prediction?.predictions.compressive_strength_mpa?.mean || 28.5;
-  const co2Savings = score?.co2_saving_pct || 24;
+  const cs = prediction?.predictions.compressive_strength_mpa?.mean;
+  const co2Savings = score?.co2_saving_pct;
 
   return (
     <div className="relative overflow-hidden">
@@ -140,7 +140,7 @@ export const LandingPage: React.FC = () => {
                 <div className="p-4 rounded-2xl bg-white border border-slate-300 shadow-sm flex flex-col justify-between">
                   <span className="text-xs font-bold text-slate-800">Predicted CS</span>
                   <div className="my-1.5">
-                    <span className="text-3xl font-extrabold font-mono text-slate-950">{cs}</span>
+                    <span className="text-3xl font-extrabold font-mono text-slate-950">{cs == null ? '—' : cs}</span>
                     <span className="text-xs font-bold text-slate-700 font-mono ml-1">MPa</span>
                   </div>
                   <span className="text-xs text-emerald-800 font-bold flex items-center gap-1">
@@ -152,7 +152,7 @@ export const LandingPage: React.FC = () => {
                 <div className="p-4 rounded-2xl bg-white border border-slate-300 shadow-sm flex flex-col justify-between">
                   <span className="text-xs font-bold text-slate-800">Carbon Reduction</span>
                   <div className="my-1.5">
-                    <span className="text-3xl font-extrabold font-mono text-emerald-800">-{co2Savings}%</span>
+                    <span className="text-3xl font-extrabold font-mono text-emerald-800">{co2Savings == null ? '—' : `${co2Savings}%`}</span>
                     <span className="text-xs font-bold text-slate-700 font-mono ml-1">CO₂e</span>
                   </div>
                   <span className="text-xs text-slate-700 font-semibold">
@@ -245,7 +245,7 @@ export const LandingPage: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Module 2</span>
-                    <h3 className="font-bold text-slate-900 text-lg">Pareto Frontier Mix Optimiser</h3>
+                    <h3 className="font-bold text-slate-900 text-lg">Mix search on the M1 ensemble</h3>
                   </div>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed mb-4">
@@ -262,7 +262,7 @@ export const LandingPage: React.FC = () => {
                 onClick={() => { setMainRoute('studio'); setStudioTab('optimizer'); }}
                 className="mt-6 pt-4 border-t border-slate-100 text-xs font-semibold text-indigo-600 flex items-center gap-1.5 hover:gap-2 transition-all cursor-pointer"
               >
-                <span>Run Pareto Optimizer</span>
+                <span>Search mixes</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -276,7 +276,7 @@ export const LandingPage: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Module 3</span>
-                    <h3 className="font-bold text-slate-900 text-lg">LCA Carbon & BIS Compliance Scorer</h3>
+                    <h3 className="font-bold text-slate-900 text-lg">Mass balance and use-class gates</h3>
                   </div>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed mb-4">
@@ -293,7 +293,7 @@ export const LandingPage: React.FC = () => {
                 onClick={() => { setMainRoute('studio'); setStudioTab('sustainability'); }}
                 className="mt-6 pt-4 border-t border-slate-100 text-xs font-semibold text-emerald-600 flex items-center gap-1.5 hover:gap-2 transition-all cursor-pointer"
               >
-                <span>Evaluate Carbon & BIS</span>
+                <span>Open mass balance</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -394,7 +394,7 @@ export const LandingPage: React.FC = () => {
               Ready to Formulate Your Sustainable Mix?
             </h2>
             <p className="text-xs sm:text-sm text-slate-600">
-              Access the full AI Studio with real-time sliders, Pareto optimizer, and BIS compliance reporting now.
+              Open the studio. Strength, carbon, and product gates come from the running model.
             </p>
             <div className="pt-2">
               <button

@@ -52,9 +52,15 @@ export const Studio: React.FC = () => {
     }
     setReportStatus('loading');
     const sessionId = `PLT-${Date.now().toString(36).toUpperCase()}`;
-    const ok = await generateReport(mix, prediction, score, recommendation, sessionId, batchId ?? undefined);
-    setReportStatus(ok ? 'success' : 'api_unavailable');
-    setTimeout(() => setReportStatus('idle'), ok ? 3000 : 5000);
+    try {
+      await generateReport(mix, prediction, score, recommendation, sessionId, batchId ?? undefined);
+      setReportStatus('success');
+      setTimeout(() => setReportStatus('idle'), 3000);
+    } catch (err) {
+      setBatchMessage(err instanceof Error ? err.message : 'PDF generation failed.');
+      setReportStatus('api_unavailable');
+      setTimeout(() => setReportStatus('idle'), 5000);
+    }
   };
 
   const renderContent = () => {

@@ -61,7 +61,7 @@ From `configs/m1_config.yaml` + `modules/m1_prediction/utils/schema.py`:
 From `configs/m2_config.yaml`: default weights `cs .40 / cost .25 / co2 .20 / diversion .15`; normalisation bounds; 3 scenarios. From `configs/m3_config.yaml`: score weights (carbon 30 / diversion 25 / recycled 20 / BIS 15 / green 10), BIS thresholds, green-rating thresholds, baseline CO₂ `365.71 kg/m³`.
 
 ## Existing wiring preserved (not touched)
-- `app.py` (old) = HF dual-process launcher (uvicorn FastAPI `deployment/api/app:app` on :7861 + old `deployment/frontend/streamlit_app.py` on :7860). Kept in git history; `deployment/` left untouched and still runnable for the API-based deployment.
+- The Streamlit shell and `deployment/frontend/streamlit_app.py` have been removed. The product UI is `plasticrete_web`. The API remains `deployment/api/app.py`.
 - New `app.py` becomes the direct-wired `st.navigation` Streamlit shell (no HTTP hop; `ui/data_bridge.py` imports the modules in-process). This is the natural entrypoint for a Streamlit HF Space.
 
 ## Gaps → mock fallback

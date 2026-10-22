@@ -130,11 +130,14 @@ def build_row(
     scorer: ScoreAggregator,
     advisor: RemediationAdvisor,
 ) -> dict:
+    from modules.shared.mass_balance import compute as compute_mass_balance
+    from modules.shared.use_class_gate import evaluate_classes
+
     lca   = lca_calc.compute(params, props)
     bis   = bis_check.check(props)
     green = green_rater.rate(params, props, lca)
     score = scorer.score(params, lca, bis, green)
-    remed = advisor.advise(params, props, lca, bis, score)
+    remed = advisor.advise(evaluate_classes(props), compute_mass_balance(params))
 
     return {
         # Metadata

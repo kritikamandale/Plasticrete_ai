@@ -28,7 +28,8 @@ interface MixContextType {
   studioTab: StudioSubTab;
   setStudioTab: (tab: StudioSubTab) => void;
   applyPreset: (presetName: string) => void;
-  inferenceSource: 'live' | 'demo' | 'mixed';
+  inferenceSource: 'live' | 'unavailable';
+  serviceError: string | null;
   batchId: string | null;
   openBatch: (id: string) => void;
 }
@@ -85,14 +86,19 @@ export const MixProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [score, setScore] = useState<ScoreResponse | null>(null);
   const [recommendation, setRecommendation] = useState<RecommendationResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [inferenceSource, setInferenceSource] = useState<'live' | 'demo' | 'mixed'>('demo');
+  const [inferenceSource, setInferenceSource] = useState<'live' | 'unavailable'>('unavailable');
+  const [serviceError, setServiceError] = useState<string | null>(null);
   const [mainRoute, setMainRouteState] = useState<MainNavRoute>(initialLocation.route);
   const [studioTab, setStudioTabState] = useState<StudioSubTab>(initialLocation.tab);
   const [batchId, setBatchId] = useState<string | null>(initialLocation.batchId);
   const skipUrlWrite = useRef(false);
 
   const setMix = (next: MixInput | ((prev: MixInput) => MixInput)) => {
-    setMixState(next);
+    setMixState((prev) => {
+      const resolved = typeof next === 'function' ? next(prev) : next;
+      if (JSON.stringify(resolved) !== JSON.stringify(prev)) setBatchId(null);
+      return resolved;
+    });
   };
 
   const writeUrl = useCallback((route: MainNavRoute, tab: StudioSubTab, nextBatch: string | null, nextMix: MixInput, replace: boolean) => {
@@ -131,11 +137,14 @@ export const MixProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ]);
       setScore(sc);
       setRecommendation(rec);
-      const sources = [pred.source, sc.source, rec.source];
-      const liveCount = sources.filter((source) => source === 'live').length;
-      setInferenceSource(liveCount === 3 ? 'live' : liveCount === 0 ? 'demo' : 'mixed');
+      setInferenceSource('live');
+      setServiceError(null);
     } catch (e) {
-      console.error('Refresh error:', e);
+      setPrediction(null);
+      setScore(null);
+      setRecommendation(null);
+      setInferenceSource('unavailable');
+      setServiceError(e instanceof Error ? e.message : 'The model service did not return a result.');
     } finally {
       setLoading(false);
     }
@@ -190,6 +199,7 @@ export const MixProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setStudioTab,
         applyPreset,
         inferenceSource,
+        serviceError,
         batchId,
         openBatch,
       }}
