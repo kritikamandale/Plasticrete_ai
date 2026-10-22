@@ -70,6 +70,8 @@ pnpm-debug.log*
 
 plasticrete_ai/data/batches/*.sqlite
 plasticrete_ai/data/batches/photos/
+plasticrete_ai/test_report.pdf
+plasticrete_ai/logs/
 *.tmp
 
 # Operating System files

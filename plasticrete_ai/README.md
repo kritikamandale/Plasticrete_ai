@@ -43,6 +43,8 @@ python pipeline/run_m1_training.py --no-ctgan       # skip CTGAN augmentation
 plasticrete_ai/
 ├── README.md
 ├── requirements.txt
+├── requirements-train.txt
+├── requirements-optional.txt
 ├── .env.example
 ├── configs/
 │   ├── m1_config.yaml
@@ -51,10 +53,12 @@ plasticrete_ai/
 │   └── m4_config.yaml
 ├── data/
 │   ├── raw/                    ← immutable source CSVs
-│   ├── processed/              ← master_dataset.csv
-│   ├── augmented/              ← CTGAN synthetic rows
-│   └── external/               ← BIS tables, ICE factors
+│   ├── processed/              ← master_dataset.csv, m2/m3/m4 training sets
+│   ├── external/               ← mass_balance_factors.json, use_class_gates.json, ICE factors, costs
+│   └── batches/                ← batch passport SQLite + photos (gitignored)
 ├── modules/
+│   ├── shared/                 ← mass_balance.py, use_class_gate.py (used by M2–M5)
+│   ├── batch_passport/         ← store.py (SQLite batch records)
 │   ├── m1_prediction/
 │   │   ├── __init__.py         ← PUBLIC CONTRACT
 │   │   ├── CONTRACT.md
@@ -75,11 +79,14 @@ plasticrete_ai/
 │   ├── m3_sustainability/      ← LCA + BIS + green rating scorer
 │   ├── m4_recommendation/      ← RF classifier + FAISS RAG
 │   └── m5_report/              ← Automated ReportLab PDF generator
-├── models/                     ← trained artefacts (M1, M4 FAISS index)
+├── models/                     ← trained artefacts (m1, m2, m3, m4 FAISS index)
+├── notebooks/                  ← EDA and M1 training notebooks
 ├── pipeline/
 │   ├── run_data_pipeline.py
 │   ├── run_m1_training.py
-│   └── run_m4_data_pipeline.py
+│   ├── run_m4_data_pipeline.py
+│   ├── generate_m2_dataset.py
+│   └── generate_m3_dataset.py
 ├── deployment/
 │   └── api/
 │       ├── app.py              ← FastAPI main application

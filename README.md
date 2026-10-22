@@ -204,39 +204,57 @@ Plasticrete_ai/
 ├── .gitattributes                 # Git LFS configuration for model binaries
 │
 ├── plasticrete_ai/                # Backend API & AI/ML modules
-│   ├── configs/                   # Hyperparameters and pipeline configuration
-│   ├── data/                      # Raw, processed, and synthetic datasets
-│   ├── deployment/                # FastAPI application and schemas
+│   ├── configs/                   # m1–m4 YAML hyperparameters and pipeline configuration
+│   ├── data/
+│   │   ├── raw/                   # Source CSVs (UCI Yeh, PlastiCreteAI_M1_Final_2000)
+│   │   ├── processed/             # master_dataset.csv and m2/m3/m4 training sets
+│   │   ├── external/              # Mass-balance factors, use-class gates, ICE factors, costs
+│   │   └── batches/               # SQLite batch passports and cube photos (gitignored)
+│   ├── deployment/
 │   │   └── api/
 │   │       ├── app.py             # FastAPI entrypoint
 │   │       └── schemas.py         # Pydantic v2 validation models
-│   ├── models/                    # Trained model weights, scalers, FAISS indices
-│   ├── modules/                   # The 5 Core Intelligence Engines
+│   ├── docs/                      # Audit report, data extraction guide, abstract draft
+│   ├── models/                    # Trained artefacts: m1 ensemble, m2, m3, m4 FAISS index
+│   ├── modules/
+│   │   ├── shared/                # Mass balance and use-class gate used by M2, M3, M4, M5
 │   │   ├── m1_prediction/         # Ensemble model & explainability (SHAP/LIME)
 │   │   ├── m2_optimization/       # Optuna search on the M1 ensemble
-│   │   ├── m3_sustainability/     # Carbon LCA & BIS / Green rating calculators
+│   │   ├── m3_sustainability/     # Carbon LCA, use-class gates, sustainability index
 │   │   ├── m4_recommendation/     # RF Classifier + FAISS RAG retrieval
-│   │   └── m5_report/             # Automated ReportLab PDF generator
+│   │   ├── m5_report/             # ReportLab PDF generator
+│   │   └── batch_passport/        # SQLite store for predicted vs measured strength
+│   ├── notebooks/                 # EDA and M1 training notebooks
 │   ├── pipeline/                  # Training & ETL data pipelines
-│   └── requirements.txt           # Python backend dependencies
+│   ├── requirements.txt           # Python backend dependencies
+│   ├── requirements-train.txt     # Training-only dependencies
+│   └── requirements-optional.txt  # Optional extras
 │
-└── plasticrete_web/               # Modern Frontend (React 19 + TypeScript + Vite)
+└── plasticrete_web/               # Frontend (React 19 + TypeScript + Vite + Tailwind)
     ├── package.json               # Node dependencies & build scripts
-    ├── vite.config.ts             # Vite configuration
+    ├── vite.config.ts             # Vite configuration and /api proxy
     ├── index.html                 # Single page application entry
+    ├── public/                    # Favicon and icon sprite
     └── src/
-        ├── api/                   # Axios / fetch client hooks for API
-        ├── components/            # UI components (Navbar, Sidebar, Gauges, Cards)
-        ├── context/               # Global mix parameter state
-        └── pages/                 # Full-featured interactive views
-            ├── Dashboard.tsx      # Overview metrics & project status
-            ├── Predictor.tsx      # Interactive property simulator
-            ├── Optimizer.tsx      # Interactive Pareto trade-off explorer
-            ├── Sustainability.tsx # Embodied carbon & BIS compliance
+        ├── api/client.ts          # fetch client for the FastAPI routes
+        ├── components/            # Navbar, Footer, MixControlPanel, GaugeChart, MetricCard
+        ├── context/MixContext.tsx # Global mix state, URL sync, service status
+        ├── data/                  # Copies of mass_balance_factors.json and use_class_gates.json
+        ├── lib/                   # TypeScript port of the mass balance and use-class gate
+        ├── types/index.ts         # API response types and product-name map
+        ├── routing.ts             # History API routes
+        └── pages/
+            ├── LandingPage.tsx    # Home
+            ├── Studio.tsx         # Studio shell with tabs, batch save, PDF
+            ├── Dashboard.tsx      # Overview: seven M1 means and use-class gates
+            ├── Predictor.tsx      # Property predictor with 90% intervals
+            ├── Optimizer.tsx      # Mix search with trade-off points
+            ├── Sustainability.tsx # Mass balance and use-class gates
             ├── Recommender.tsx    # Application suitability & RAG analogues
             ├── Explainability.tsx # TreeSHAP & feature attribution
             ├── StandardsPage.tsx  # IS Codes & Green rating handbook
-            └── Studio.tsx         # Complete all-in-one mix design workflow
+            ├── TechPage.tsx       # Model architecture and evaluation metrics
+            └── BatchPassportPage.tsx # Batch record, lab results, passport PDF
 ```
 
 ---
