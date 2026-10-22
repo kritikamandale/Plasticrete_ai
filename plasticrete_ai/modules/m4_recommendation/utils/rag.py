@@ -25,16 +25,23 @@ def retrieve(m1_properties: dict, top_k: int = 3) -> List[RAGAnalogue]:
     results: List[RAGAnalogue] = []
     for rank, (dist, idx) in enumerate(zip(distances[0], indices[0]), 1):
         e = classifiers.rag_kb[idx]
+        entry_id = str(e.get("id", ""))
+        synthetic = entry_id.startswith("SYN_")
+        verified = bool(e.get("verified", True)) and not synthetic
+        doi = str(e.get("doi") or "")
+        placeholder = doi.strip().lower() in {"", "verify-on-publisher"}
         results.append(RAGAnalogue(
             rank=rank,
-            id=e["id"],
+            id=entry_id,
             author=e["author"],
             year=e["year"],
             journal=e["journal"],
-            doi=e["doi"],
+            doi="" if (not verified or placeholder) else doi,
             primary_application=e["primary_application"],
             secondary_application=e.get("secondary_application", "N/A"),
             l2_distance=round(float(dist), 4),
             properties={p: e[p] for p in prop_cols},
+            verified=verified and not placeholder,
+            reference_kind="model-generated" if synthetic else "literature",
         ))
     return results

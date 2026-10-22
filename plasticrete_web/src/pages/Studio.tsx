@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMix, type StudioSubTab } from '../context/MixContext';
-import { generateReport, createBatch } from '../api/client';
+import { generateReport, createBatch, fetchDueBatches, scheduleVerification } from '../api/client';
 import { Dashboard } from './Dashboard';
 import { Predictor } from './Predictor';
 import { Optimizer } from './Optimizer';
@@ -43,6 +43,20 @@ export const Studio: React.FC = () => {
   const { studioTab, setStudioTab, setMainRoute, mix, prediction, score, recommendation, openBatch, batchId } = useMix();
   const [reportStatus, setReportStatus] = useState<ReportStatus>('idle');
   const [batchMessage, setBatchMessage] = useState<string>('');
+  const [dueBatches, setDueBatches] = useState<{ id: string }[]>([]);
+  const [dueError, setDueError] = useState('');
+
+  useEffect(() => {
+    fetchDueBatches()
+      .then((rows) => {
+        setDueBatches(rows);
+        setDueError('');
+      })
+      .catch((err: unknown) => {
+        setDueBatches([]);
+        setDueError(err instanceof Error ? err.message : 'Could not load due batches');
+      });
+  }, [batchId]);
 
   const handleDownloadReport = async () => {
     if (!prediction || !score || !recommendation) {
@@ -140,6 +154,34 @@ export const Studio: React.FC = () => {
           >
             Save batch passport
           </button>
+          {(score?.use_class_gates || []).some((gate) => gate.status === 'verification_batch' || gate.status === 'lab_trial') && (
+            <button
+              type="button"
+              onClick={async () => {
+                if (!prediction || !score || !recommendation) return;
+                try {
+                  const opened = await scheduleVerification({
+                    plant_name: 'Plant',
+                    mix_params: mix,
+                    prediction,
+                    score,
+                    recommendation,
+                  });
+                  if (!opened.opened || !opened.batch) {
+                    setBatchMessage('This score does not ask for a verification cube.');
+                    return;
+                  }
+                  setBatchMessage(`Verification passport ${opened.batch.id} is due ${opened.batch.due_7d ?? ''} and ${opened.batch.due_28d ?? ''}`);
+                  openBatch(opened.batch.id);
+                } catch (err) {
+                  setBatchMessage(err instanceof Error ? err.message : 'Could not open a verification passport.');
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide bg-amber-100 text-amber-950 border border-amber-300 cursor-pointer"
+            >
+              Open verification passport
+            </button>
+          )}
           <button
             id="download-report-btn"
             onClick={handleDownloadReport}
@@ -199,6 +241,25 @@ export const Studio: React.FC = () => {
           );
         })}
       </div>
+
+      {dueError && (
+        <p className="text-xs font-bold text-red-800 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+          {dueError}
+        </p>
+      )}
+      {dueBatches.length > 0 && (
+        <p className="text-xs font-bold text-slate-900 bg-white border border-slate-300 rounded-xl px-3 py-2">
+          Cube results due: {dueBatches.map((item) => item.id).join(', ')}
+        </p>
+      )}
+      <p className="text-xs font-semibold text-slate-700">
+        Screening estimate. Not a substitute for IS-compliant laboratory testing or a structural engineer's sign-off.
+      </p>
+      {(prediction?.uncertainty_flag || (prediction && prediction.predictions.compressive_strength_mpa?.ci_90_low == null)) && (
+        <p className="text-xs font-bold text-amber-950 bg-amber-50 border border-amber-300 rounded-xl px-3 py-2">
+          Verify in lab before use. The ensemble flagged this mix or did not return a 90% interval.
+        </p>
+      )}
 
       {/* Active Tab Content */}
       <div className="pt-2">

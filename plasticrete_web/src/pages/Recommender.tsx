@@ -193,10 +193,18 @@ export const Recommender: React.FC = () => {
               </div>
 
               <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-xs text-blue-700">
-                <span className="font-mono text-[11px] text-slate-700 font-medium truncate max-w-[140px]">{item.doi}</span>
-                <span className="inline-flex items-center gap-1 font-bold">
-                  DOI <ExternalLink className="w-3.5 h-3.5" />
-                </span>
+                {item.verified === false || !item.doi ? (
+                  <span className="font-semibold text-slate-700">
+                    {item.reference_kind === 'model-generated' ? 'Model-generated reference' : 'DOI not verified'}
+                  </span>
+                ) : (
+                  <span className="font-mono text-[11px] text-slate-700 font-medium truncate max-w-[140px]">{item.doi}</span>
+                )}
+                {item.verified !== false && item.doi ? (
+                  <span className="inline-flex items-center gap-1 font-bold">
+                    DOI <ExternalLink className="w-3.5 h-3.5" />
+                  </span>
+                ) : null}
               </div>
             </div>
           ))}

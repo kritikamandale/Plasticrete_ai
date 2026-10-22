@@ -23,6 +23,15 @@ from modules.m1_prediction.utils.schema import (
 )
 
 
+def _synthetic_mask(df: pd.DataFrame) -> pd.Series:
+    """True for CTGAN or other synthetic rows. Experimental papers stay put."""
+    study = df[STUDY_TYPE].fillna("").astype(str).str.lower() if STUDY_TYPE in df.columns else ""
+    doi = df[SOURCE_DOI].fillna("").astype(str).str.lower() if SOURCE_DOI in df.columns else ""
+    if isinstance(study, str):
+        return pd.Series(False, index=df.index)
+    return study.str.contains("synthetic") | doi.str.contains("synthetic") | doi.str.contains("ctgan")
+
+
 class Preprocessor:
     """
     Encapsulates all data preparation steps for M1.
@@ -98,6 +107,19 @@ class Preprocessor:
             tr_idx, v_idx = train_test_split(idxs, test_size=rel_val, random_state=random_seed)
             train_df = train_val_df.iloc[tr_idx].reset_index(drop=True)
             val_df   = train_val_df.iloc[v_idx].reset_index(drop=True)
+
+        # Synthetic groups are not measurements. Keep them in train so a future
+        # fit does not score CTGAN rows as held-out papers.
+        syn_val = _synthetic_mask(val_df)
+        syn_test = _synthetic_mask(test_df)
+        if bool(syn_val.any() or syn_test.any()):
+            train_df = pd.concat(
+                [train_df, val_df.loc[syn_val], test_df.loc[syn_test]],
+                ignore_index=True,
+            )
+            val_df = val_df.loc[~syn_val].reset_index(drop=True)
+            test_df = test_df.loc[~syn_test].reset_index(drop=True)
+            logger.info("Moved synthetic rows out of val/test into train")
 
         logger.info(
             "Split sizes -- train: {}, val: {}, test: {}".format(

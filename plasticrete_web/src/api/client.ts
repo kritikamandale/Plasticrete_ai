@@ -156,6 +156,8 @@ export interface SavedBatch {
   model_version: string;
   qr_url: string;
   notes: string | null;
+  due_7d?: string | null;
+  due_28d?: string | null;
   calibration: {
     ready: boolean;
     n_pairs: number;
@@ -194,6 +196,12 @@ export async function updateBatch(id: string, body: {
   measured_cs_28d?: number;
   measured_absorption_pct?: number;
   notes?: string;
+  lab_name?: string;
+  operator?: string;
+  cube_size_mm?: number;
+  cube_values_mpa?: number[];
+  test_standard?: string;
+  confirm_high_cv?: boolean;
 }): Promise<SavedBatch> {
   const res = await fetch(`${API_BASE}/batches/${encodeURIComponent(id)}`, {
     method: 'PATCH',
@@ -212,6 +220,29 @@ export async function uploadBatchPhoto(id: string, file: File): Promise<void> {
     body: form,
   });
   if (!res.ok) throw new Error(await readError(res, 'Photo upload failed'));
+}
+
+export async function scheduleVerification(input: {
+  plant_name: string;
+  cast_date?: string;
+  mix_params: MixInput;
+  prediction: PredictionResponse;
+  score: ScoreResponse;
+  recommendation: RecommendationResponse;
+}): Promise<{ opened: boolean; batch: SavedBatch | null }> {
+  const res = await fetch(`${API_BASE}/batches/schedule`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(await readError(res, 'Could not open a verification passport'));
+  return res.json();
+}
+
+export async function fetchDueBatches(): Promise<{ id: string }[]> {
+  const res = await fetch(`${API_BASE}/batches/due`);
+  if (!res.ok) throw new Error(await readError(res, 'Could not load due batches'));
+  return res.json();
 }
 
 export function batchPhotoUrl(id: string): string {

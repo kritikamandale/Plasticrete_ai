@@ -54,6 +54,16 @@ class TestDOIGroupedSplit:
         assert train_dois.isdisjoint(val_dois), \
             f"DOI leakage between train and val: {train_dois & val_dois}"
 
+    def test_synthetic_group_stays_in_train(self):
+        df = _make_df(200, 10)
+        df.loc[df[SOURCE_DOI] == "doi_0", STUDY_TYPE] = "synthetic"
+        df.loc[df[SOURCE_DOI] == "doi_0", SOURCE_DOI] = "ctgan_synthetic"
+        prep = Preprocessor()
+        train, val, test = prep.split(df, test_size=0.15, val_size=0.15, random_seed=42)
+        assert (val[SOURCE_DOI] == "ctgan_synthetic").sum() == 0
+        assert (test[SOURCE_DOI] == "ctgan_synthetic").sum() == 0
+        assert (train[SOURCE_DOI] == "ctgan_synthetic").sum() == (df[SOURCE_DOI] == "ctgan_synthetic").sum()
+
     def test_split_sizes(self):
         df = _make_df(200, 20)
         prep = Preprocessor()

@@ -48,5 +48,6 @@ class TestSchemaDataclasses:
             "rank", "id", "author", "year", "journal", "doi",
             "primary_application", "secondary_application",
             "l2_distance", "properties",
+            "verified", "reference_kind",
         }
         assert required == field_names

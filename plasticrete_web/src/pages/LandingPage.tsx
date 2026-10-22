@@ -6,7 +6,6 @@ import {
   Leaf,
   Activity,
   Layers,
-  CheckCircle2,
   FileCheck,
   Scale,
   FlaskConical,
@@ -15,7 +14,8 @@ import {
 export const LandingPage: React.FC = () => {
   const { setMainRoute, setStudioTab, mix, setMix, prediction, score } = useMix();
 
-  const cs = prediction?.predictions.compressive_strength_mpa?.mean;
+  const compressive = prediction?.predictions.compressive_strength_mpa;
+  const cs = compressive?.mean;
   const co2Savings = score?.co2_saving_pct;
 
   return (
@@ -143,9 +143,13 @@ export const LandingPage: React.FC = () => {
                     <span className="text-3xl font-extrabold font-mono text-slate-950">{cs == null ? '—' : cs}</span>
                     <span className="text-xs font-bold text-slate-700 font-mono ml-1">MPa</span>
                   </div>
-                  <span className="text-xs text-emerald-800 font-bold flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    90% interval — confirm with a cube
+                  <span className="text-xs text-slate-700 font-semibold">
+                    {compressive?.ci_90_low == null || compressive?.ci_90_high == null
+                      ? '90% interval not returned'
+                      : `90% interval ${compressive.ci_90_low}–${compressive.ci_90_high} MPa`}
+                  </span>
+                  <span className="text-[11px] text-slate-600 font-semibold mt-1">
+                    Screening estimate. Not a substitute for IS-compliant laboratory testing or a structural engineer's sign-off.
                   </span>
                 </div>
 

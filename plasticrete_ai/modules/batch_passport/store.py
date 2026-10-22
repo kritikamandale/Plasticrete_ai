@@ -7,6 +7,8 @@ reports how far this plant sits from the global model.
 """
 from __future__ import annotations
 
+import csv
+import io
 import json
 import os
 import sqlite3
@@ -20,7 +22,20 @@ _DB_PATH = Path(os.environ.get("BATCH_DB_PATH", str(_ROOT / "data" / "batches" /
 _PHOTO_DIR = _DB_PATH.parent / "photos"
 MODEL_VERSION = "m1-ensemble evaluation_report.json compressive R2 0.9104"
 _MIN_PAIRS = 3
+_CV_LIMIT = 0.15
 _LOCK = threading.Lock()
+_EXTRA_COLUMNS = (
+    ("lab_name", "TEXT"),
+    ("operator", "TEXT"),
+    ("cube_size_mm", "REAL"),
+    ("n_cubes", "INTEGER"),
+    ("cube_values_json", "TEXT"),
+    ("cube_std_mpa", "REAL"),
+    ("test_standard", "TEXT"),
+    ("source", "TEXT"),
+    ("due_7d", "TEXT"),
+    ("due_28d", "TEXT"),
+)
 
 
 def _now() -> str:
@@ -62,9 +77,28 @@ def init_db() -> None:
                 )
                 """
             )
+            _ensure_columns(conn)
             conn.commit()
         finally:
             conn.close()
+
+
+def _ensure_columns(conn: sqlite3.Connection) -> None:
+    have = {row[1] for row in conn.execute("PRAGMA table_info(batches)")}
+    for name, kind in _EXTRA_COLUMNS:
+        if name not in have:
+            conn.execute(f"ALTER TABLE batches ADD COLUMN {name} {kind}")
+
+
+def cube_stats(values: list[float]) -> tuple[float, float, float]:
+    """Mean, standard deviation, and coefficient of variation of the cube list."""
+    if not values:
+        raise ValueError("Cube list is empty.")
+    mean = sum(values) / len(values)
+    variance = sum((value - mean) ** 2 for value in values) / len(values)
+    std = variance ** 0.5
+    cv = std / mean if mean else float("inf")
+    return mean, std, cv
 
 
 def public_batch_url(batch_id: str) -> str:
@@ -186,10 +220,37 @@ def update_measurements(
     measured_cs_28d: float | None = None,
     measured_absorption_pct: float | None = None,
     notes: str | None = None,
+    lab_name: str | None = None,
+    operator: str | None = None,
+    cube_size_mm: float | None = None,
+    cube_values_mpa: list[float] | None = None,
+    test_standard: str | None = None,
+    source: str | None = None,
+    confirm_high_cv: bool = False,
+    due_7d: str | None = None,
+    due_28d: str | None = None,
 ) -> dict | None:
     current = get_batch(batch_id)
     if current is None:
         return None
+    cube_std = None
+    n_cubes = None
+    cube_json = None
+    if cube_values_mpa:
+        mean, cube_std, cv = cube_stats([float(value) for value in cube_values_mpa])
+        if cv > _CV_LIMIT and not confirm_high_cv:
+            raise ValueError(
+                "Coefficient of variation is above 0.15. Send confirm_high_cv to store these cubes."
+            )
+        measured_cs_28d = round(mean, 3)
+        n_cubes = len(cube_values_mpa)
+        cube_json = json.dumps([float(value) for value in cube_values_mpa])
+        cube_std = round(cube_std, 3)
+    wrote_measurement = any(value is not None for value in (
+        measured_cs_7d, measured_cs_28d, measured_absorption_pct, cube_values_mpa,
+    ))
+    if wrote_measurement and source is None:
+        source = "lab"
     error = current["error_mpa"]
     if measured_cs_28d is not None and current["predicted_cs_mean"] is not None:
         error = round(float(measured_cs_28d) - float(current["predicted_cs_mean"]), 3)
@@ -204,12 +265,24 @@ def update_measurements(
                     measured_cs_28d = COALESCE(?, measured_cs_28d),
                     measured_absorption_pct = COALESCE(?, measured_absorption_pct),
                     notes = COALESCE(?, notes),
+                    lab_name = COALESCE(?, lab_name),
+                    operator = COALESCE(?, operator),
+                    cube_size_mm = COALESCE(?, cube_size_mm),
+                    n_cubes = COALESCE(?, n_cubes),
+                    cube_values_json = COALESCE(?, cube_values_json),
+                    cube_std_mpa = COALESCE(?, cube_std_mpa),
+                    test_standard = COALESCE(?, test_standard),
+                    source = COALESCE(?, source),
+                    due_7d = COALESCE(?, due_7d),
+                    due_28d = COALESCE(?, due_28d),
                     error_mpa = ?
                 WHERE id = ?
                 """,
                 (
                     cast_date, measured_cs_7d, measured_cs_28d,
-                    measured_absorption_pct, notes, error, batch_id,
+                    measured_absorption_pct, notes, lab_name, operator, cube_size_mm,
+                    n_cubes, cube_json, cube_std, test_standard, source,
+                    due_7d, due_28d, error, batch_id,
                 ),
             )
             conn.commit()
@@ -250,6 +323,7 @@ def calibration(plant_name: str, exclude_id: str | None = None, _already_open: b
                 FROM batches
                 WHERE plant_name = ? AND measured_cs_28d IS NOT NULL
                       AND predicted_cs_mean IS NOT NULL
+                      AND COALESCE(source, 'lab') = 'lab'
                 """,
                 (plant_name,),
             ).fetchall()
@@ -285,3 +359,146 @@ def calibration(plant_name: str, exclude_id: str | None = None, _already_open: b
         "residual_std_mpa": round(std, 2) if ready else None,
         "message": message,
     }
+
+
+_CSV_FIELDS = [
+    "plant_name", "cast_date", "plastic_type", "replacement_pct", "particle_size_mm",
+    "wc_ratio", "additive_type", "additive_pct", "curing_temp_c", "curing_days",
+    "predicted_cs_mean", "predicted_cs_low", "predicted_cs_high",
+    "measured_cs_7d", "measured_cs_28d", "measured_absorption_pct",
+    "cube_values_mpa", "lab_name", "operator", "cube_size_mm", "test_standard",
+    "source", "model_version", "notes",
+]
+
+
+def export_csv() -> str:
+    """Flat export. Predicted columns are the values stored with each batch."""
+    init_db()
+    buffer = io.StringIO()
+    writer = csv.DictWriter(buffer, fieldnames=_CSV_FIELDS, extrasaction="ignore")
+    writer.writeheader()
+    for record in list_batches(limit=1000):
+        full = get_batch(record["id"])
+        if full is None:
+            continue
+        mix = full["mix_params"]
+        cubes = full.get("cube_values_json")
+        writer.writerow({
+            "plant_name": full["plant_name"],
+            "cast_date": full.get("cast_date") or "",
+            "plastic_type": mix.get("plastic_type", ""),
+            "replacement_pct": mix.get("replacement_pct", ""),
+            "particle_size_mm": mix.get("particle_size_mm", ""),
+            "wc_ratio": mix.get("wc_ratio", ""),
+            "additive_type": mix.get("additive_type", ""),
+            "additive_pct": mix.get("additive_pct", ""),
+            "curing_temp_c": mix.get("curing_temp_c", ""),
+            "curing_days": mix.get("curing_days", ""),
+            "predicted_cs_mean": full.get("predicted_cs_mean") if full.get("predicted_cs_mean") is not None else "",
+            "predicted_cs_low": full.get("predicted_cs_low") if full.get("predicted_cs_low") is not None else "",
+            "predicted_cs_high": full.get("predicted_cs_high") if full.get("predicted_cs_high") is not None else "",
+            "measured_cs_7d": full.get("measured_cs_7d") if full.get("measured_cs_7d") is not None else "",
+            "measured_cs_28d": full.get("measured_cs_28d") if full.get("measured_cs_28d") is not None else "",
+            "measured_absorption_pct": full.get("measured_absorption_pct") if full.get("measured_absorption_pct") is not None else "",
+            "cube_values_mpa": cubes or "",
+            "lab_name": full.get("lab_name") or "",
+            "operator": full.get("operator") or "",
+            "cube_size_mm": full.get("cube_size_mm") if full.get("cube_size_mm") is not None else "",
+            "test_standard": full.get("test_standard") or "",
+            "source": full.get("source") or "",
+            "model_version": full.get("model_version") or "",
+            "notes": full.get("notes") or "",
+        })
+    return buffer.getvalue()
+
+
+def _blank(value: str | None) -> float | None:
+    if value is None or str(value).strip() == "":
+        return None
+    return float(value)
+
+
+def import_csv(text: str) -> dict:
+    """Load lab rows. Example lines and rows without a stored prediction are skipped."""
+    reader = csv.DictReader(io.StringIO(text))
+    imported = 0
+    skipped = 0
+    for row in reader:
+        blob = " ".join(str(value) for value in row.values())
+        if "EXAMPLE ROW" in blob:
+            skipped += 1
+            continue
+        if str(row.get("source") or "").strip().lower() != "lab":
+            skipped += 1
+            continue
+        predicted = _blank(row.get("predicted_cs_mean"))
+        if predicted is None:
+            skipped += 1
+            continue
+        mix = {
+            "plastic_type": row.get("plastic_type") or "",
+            "replacement_pct": _blank(row.get("replacement_pct")),
+            "particle_size_mm": _blank(row.get("particle_size_mm")),
+            "wc_ratio": _blank(row.get("wc_ratio")),
+            "additive_type": row.get("additive_type") or "",
+            "additive_pct": _blank(row.get("additive_pct")),
+            "curing_temp_c": _blank(row.get("curing_temp_c")),
+            "curing_days": int(float(row["curing_days"])) if str(row.get("curing_days") or "").strip() else None,
+        }
+        low = _blank(row.get("predicted_cs_low"))
+        high = _blank(row.get("predicted_cs_high"))
+        prediction = {
+            "predictions": {
+                "compressive_strength_mpa": {
+                    "mean": predicted,
+                    "ci_90_low": low,
+                    "ci_90_high": high,
+                }
+            }
+        }
+        created = create_batch(
+            mix, prediction, {}, {},
+            plant_name=row.get("plant_name") or "Plant",
+            cast_date=row.get("cast_date") or None,
+        )
+        cubes_raw = str(row.get("cube_values_mpa") or "").strip()
+        cubes = None
+        if cubes_raw.startswith("["):
+            cubes = [float(value) for value in json.loads(cubes_raw)]
+        update_measurements(
+            created["id"],
+            measured_cs_7d=_blank(row.get("measured_cs_7d")),
+            measured_cs_28d=_blank(row.get("measured_cs_28d")),
+            measured_absorption_pct=_blank(row.get("measured_absorption_pct")),
+            lab_name=row.get("lab_name") or None,
+            operator=row.get("operator") or None,
+            cube_size_mm=_blank(row.get("cube_size_mm")),
+            cube_values_mpa=cubes,
+            test_standard=row.get("test_standard") or None,
+            notes=row.get("notes") or None,
+            source="lab",
+        )
+        imported += 1
+    if imported == 0:
+        raise ValueError("No source=lab rows to import.")
+    return {"imported": imported, "skipped": skipped}
+
+
+def due_batches(today: str) -> list[dict]:
+    """Passports whose 7-day or 28-day measurement is still empty and the due date has arrived."""
+    init_db()
+    with _LOCK:
+        conn = _connect()
+        try:
+            rows = conn.execute(
+                """
+                SELECT id FROM batches
+                WHERE (due_7d IS NOT NULL AND due_7d <= ? AND measured_cs_7d IS NULL)
+                   OR (due_28d IS NOT NULL AND due_28d <= ? AND measured_cs_28d IS NULL)
+                ORDER BY created_at
+                """,
+                (today, today),
+            ).fetchall()
+        finally:
+            conn.close()
+    return [item for row in rows if (item := get_batch(row["id"])) is not None]

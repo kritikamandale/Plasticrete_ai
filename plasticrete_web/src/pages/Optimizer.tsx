@@ -33,6 +33,8 @@ export const Optimizer: React.FC = () => {
 
   const [costMax, setCostMax] = useState<string>('');
   const [diversionMin, setDiversionMin] = useState<string>('');
+  const [kgAvailable, setKgAvailable] = useState<string>('');
+  const [processingCost, setProcessingCost] = useState<string>('');
   const [useClass, setUseClass] = useState<string>('');
   const [error, setError] = useState<string>('');
 
@@ -62,6 +64,8 @@ export const Optimizer: React.FC = () => {
         cost_max_inr_per_m3: costMax === '' ? null : Number(costMax),
         plastic_diversion_min_kg_m3: diversionMin === '' ? null : Number(diversionMin),
         use_class: useClass || null,
+        plastic_kg_available: kgAvailable === '' ? null : Number(kgAvailable),
+        processing_cost_inr_per_kg: processingCost === '' ? null : Number(processingCost),
         weight_compressive: weightCompressive,
         weight_cost: weightCost,
         weight_co2: weightCo2,
@@ -286,6 +290,26 @@ export const Optimizer: React.FC = () => {
                     className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 font-mono"
                   />
                 </label>
+                <label className="text-slate-900 font-bold block">
+                  Plastic kg this month
+                  <input
+                    type="number"
+                    value={kgAvailable}
+                    onChange={(e) => setKgAvailable(e.target.value)}
+                    placeholder="Your lot"
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 font-mono"
+                  />
+                </label>
+                <label className="text-slate-900 font-bold block">
+                  Processing ₹/kg
+                  <input
+                    type="number"
+                    value={processingCost}
+                    onChange={(e) => setProcessingCost(e.target.value)}
+                    placeholder="Your cost"
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 font-mono"
+                  />
+                </label>
               </div>
             </div>
 
@@ -317,8 +341,19 @@ export const Optimizer: React.FC = () => {
                     </h3>
                   </div>
                   <p className="text-xs font-semibold text-slate-700 mt-0.5">
-                    {result.source === 'live' ? 'Live model' : 'Demo data'} · {result.prediction_source === 'm1' ? 'M1 ensemble' : 'Demo strength curve'} · {result.feasible ? 'Feasible' : 'No feasible mix'}
+                    {result.prediction_source === 'm1' ? 'Live model · M1 ensemble' : 'Result'} · {result.feasible ? 'Feasible' : 'No feasible mix'}
+                    {result.monthly_m3 != null ? ` · ${result.monthly_m3} m³ from ${result.plastic_kg_available} kg at ${result.mass_balance?.plastic_kg_m3} kg plastic per m³` : ''}
+                    {result.processing_cost_inr_per_kg != null ? ` · processing ₹${result.processing_cost_inr_per_kg}/kg as entered` : ''}
                   </p>
+                  {(result.tradeoff_points || [])
+                    .filter((point) => point.predicted_cs_high != null && point.predicted_cs_low != null)
+                    .map((point) => ({ point, width: (point.predicted_cs_high as number) - (point.predicted_cs_low as number) }))
+                    .sort((left, right) => right.width - left.width)
+                    .map(({ point, width }) => (
+                      <p key={point.label} className="text-xs font-semibold text-slate-700">
+                        90% interval width is {width.toFixed(3)} MPa on {point.label}.
+                      </p>
+                    ))}
                 </div>
 
                 <button

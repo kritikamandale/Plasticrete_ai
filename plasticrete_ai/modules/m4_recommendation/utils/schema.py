@@ -19,6 +19,8 @@ class RAGAnalogue:
     secondary_application: str
     l2_distance:           float
     properties:            Dict[str, float]
+    verified:              bool = True
+    reference_kind:        str = "literature"
 
 
 @dataclass

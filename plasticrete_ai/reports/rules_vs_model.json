@@ -1,0 +1,122 @@
+{
+  "n": 6,
+  "disagreement_count": 0,
+  "disagreement_rate": 0.0,
+  "label": "agreement with the use-class rule, not accuracy against ground truth",
+  "rows": [
+    {
+      "mix": {
+        "plastic_type": "PET",
+        "replacement_pct": 15.0,
+        "particle_size_mm": 4.0,
+        "wc_ratio": 0.45,
+        "additive_type": "fly_ash",
+        "additive_pct": 10.0,
+        "curing_temp_c": 27.0,
+        "curing_days": 28
+      },
+      "classifier_primary": "hollow_concrete_block",
+      "classifier_gate_status": "verification_batch",
+      "classifier_gate_message": "IS 2185 (Part 1): cast one verification batch. The 90% interval crosses the grade line.",
+      "authoritative_primary": "hollow_concrete_block",
+      "authoritative_gate_status": "verification_batch",
+      "disagreed": false,
+      "note": "Disagreement means the gate replaced the classifier. The gate is the verdict."
+    },
+    {
+      "mix": {
+        "plastic_type": "HDPE",
+        "replacement_pct": 20.0,
+        "particle_size_mm": 6.0,
+        "wc_ratio": 0.5,
+        "additive_type": "silica_fume",
+        "additive_pct": 8.0,
+        "curing_temp_c": 27.0,
+        "curing_days": 28
+      },
+      "classifier_primary": "hollow_concrete_block",
+      "classifier_gate_status": "allowed",
+      "classifier_gate_message": "IS 2185 (Part 1): the lower confidence bound clears this standard.",
+      "authoritative_primary": "hollow_concrete_block",
+      "authoritative_gate_status": "allowed",
+      "disagreed": false,
+      "note": "Disagreement means the gate replaced the classifier. The gate is the verdict."
+    },
+    {
+      "mix": {
+        "plastic_type": "LDPE",
+        "replacement_pct": 30.0,
+        "particle_size_mm": 2.0,
+        "wc_ratio": 0.55,
+        "additive_type": "none",
+        "additive_pct": 0.0,
+        "curing_temp_c": 27.0,
+        "curing_days": 28
+      },
+      "classifier_primary": "hollow_concrete_block",
+      "classifier_gate_status": "allowed",
+      "classifier_gate_message": "IS 2185 (Part 1): the lower confidence bound clears this standard.",
+      "authoritative_primary": "hollow_concrete_block",
+      "authoritative_gate_status": "allowed",
+      "disagreed": false,
+      "note": "Disagreement means the gate replaced the classifier. The gate is the verdict."
+    },
+    {
+      "mix": {
+        "plastic_type": "PP",
+        "replacement_pct": 10.0,
+        "particle_size_mm": 4.0,
+        "wc_ratio": 0.4,
+        "additive_type": "fly_ash",
+        "additive_pct": 15.0,
+        "curing_temp_c": 27.0,
+        "curing_days": 28
+      },
+      "classifier_primary": "hollow_concrete_block",
+      "classifier_gate_status": "allowed",
+      "classifier_gate_message": "IS 2185 (Part 1): the lower confidence bound clears this standard.",
+      "authoritative_primary": "hollow_concrete_block",
+      "authoritative_gate_status": "allowed",
+      "disagreed": false,
+      "note": "Disagreement means the gate replaced the classifier. The gate is the verdict."
+    },
+    {
+      "mix": {
+        "plastic_type": "PVC",
+        "replacement_pct": 5.0,
+        "particle_size_mm": 8.0,
+        "wc_ratio": 0.42,
+        "additive_type": "fibres",
+        "additive_pct": 5.0,
+        "curing_temp_c": 27.0,
+        "curing_days": 28
+      },
+      "classifier_primary": "hollow_concrete_block",
+      "classifier_gate_status": "allowed",
+      "classifier_gate_message": "IS 2185 (Part 1): the lower confidence bound clears this standard.",
+      "authoritative_primary": "hollow_concrete_block",
+      "authoritative_gate_status": "allowed",
+      "disagreed": false,
+      "note": "Disagreement means the gate replaced the classifier. The gate is the verdict."
+    },
+    {
+      "mix": {
+        "plastic_type": "Mixed",
+        "replacement_pct": 25.0,
+        "particle_size_mm": 4.0,
+        "wc_ratio": 0.48,
+        "additive_type": "fly_ash",
+        "additive_pct": 10.0,
+        "curing_temp_c": 27.0,
+        "curing_days": 28
+      },
+      "classifier_primary": "hollow_concrete_block",
+      "classifier_gate_status": "allowed",
+      "classifier_gate_message": "IS 2185 (Part 1): the lower confidence bound clears this standard.",
+      "authoritative_primary": "hollow_concrete_block",
+      "authoritative_gate_status": "allowed",
+      "disagreed": false,
+      "note": "Disagreement means the gate replaced the classifier. The gate is the verdict."
+    }
+  ]
+}

@@ -1,125 +1,5 @@
 [
   {
-    "id": "IFT_2023_01",
-    "plastic_type": "LDPE",
-    "replacement_pct": 30.0,
-    "particle_size_mm": 2.0,
-    "wc_ratio": 0.0,
-    "additive_type": "fibres",
-    "additive_pct": 0.5,
-    "curing_temp_c": 25.0,
-    "curing_days": 28,
-    "compressive_strength_mpa": 22.82,
-    "flexural_strength_mpa": 3.8,
-    "split_tensile_mpa": 2.1,
-    "density_kgm3": 1050.0,
-    "water_absorption_pct": 4.2,
-    "thermal_conductivity_wm": 0.42,
-    "durability_index": 68.0,
-    "primary_application": "plastic_sand_paver",
-    "secondary_application": "paving_block_light",
-    "author": "Iftikhar et al.",
-    "year": 2023,
-    "journal": "Heliyon",
-    "doi": "10.1016/j.heliyon.2023.e17107"
-  },
-  {
-    "id": "IFT_2023_02",
-    "plastic_type": "LDPE",
-    "replacement_pct": 20.0,
-    "particle_size_mm": 2.0,
-    "wc_ratio": 0.0,
-    "additive_type": "fibres",
-    "additive_pct": 0.5,
-    "curing_temp_c": 25.0,
-    "curing_days": 28,
-    "compressive_strength_mpa": 18.5,
-    "flexural_strength_mpa": 3.2,
-    "split_tensile_mpa": 1.8,
-    "density_kgm3": 980.0,
-    "water_absorption_pct": 5.8,
-    "thermal_conductivity_wm": 0.45,
-    "durability_index": 62.0,
-    "primary_application": "plastic_sand_paver",
-    "secondary_application": "nonstructural_concrete_fill",
-    "author": "Iftikhar et al.",
-    "year": 2023,
-    "journal": "Heliyon",
-    "doi": "10.1016/j.heliyon.2023.e17107"
-  },
-  {
-    "id": "IFT_2023_03",
-    "plastic_type": "LDPE",
-    "replacement_pct": 10.0,
-    "particle_size_mm": 2.0,
-    "wc_ratio": 0.0,
-    "additive_type": "none",
-    "additive_pct": 0.0,
-    "curing_temp_c": 25.0,
-    "curing_days": 28,
-    "compressive_strength_mpa": 15.2,
-    "flexural_strength_mpa": 2.8,
-    "split_tensile_mpa": 1.5,
-    "density_kgm3": 920.0,
-    "water_absorption_pct": 7.1,
-    "thermal_conductivity_wm": 0.5,
-    "durability_index": 55.0,
-    "primary_application": "plastic_sand_paver",
-    "secondary_application": "hollow_concrete_block",
-    "author": "Iftikhar et al.",
-    "year": 2023,
-    "journal": "Heliyon",
-    "doi": "10.1016/j.heliyon.2023.e17107"
-  },
-  {
-    "id": "STR_2024_01",
-    "plastic_type": "Mixed",
-    "replacement_pct": 60.0,
-    "particle_size_mm": 4.0,
-    "wc_ratio": 0.0,
-    "additive_type": "none",
-    "additive_pct": 0.0,
-    "curing_temp_c": 25.0,
-    "curing_days": 28,
-    "compressive_strength_mpa": 8.5,
-    "flexural_strength_mpa": 1.9,
-    "split_tensile_mpa": 0.9,
-    "density_kgm3": 950.0,
-    "water_absorption_pct": 0.4,
-    "thermal_conductivity_wm": 0.38,
-    "durability_index": 50.0,
-    "primary_application": "thermal_insulation_panel",
-    "secondary_application": "wall_cladding_panel",
-    "author": "Structures author group",
-    "year": 2024,
-    "journal": "Structures",
-    "doi": "S2352012424004375"
-  },
-  {
-    "id": "STR_2024_02",
-    "plastic_type": "Mixed",
-    "replacement_pct": 10.0,
-    "particle_size_mm": 4.0,
-    "wc_ratio": 0.0,
-    "additive_type": "none",
-    "additive_pct": 0.0,
-    "curing_temp_c": 25.0,
-    "curing_days": 28,
-    "compressive_strength_mpa": 19.2,
-    "flexural_strength_mpa": 3.5,
-    "split_tensile_mpa": 2.0,
-    "density_kgm3": 1060.0,
-    "water_absorption_pct": 8.6,
-    "thermal_conductivity_wm": 0.55,
-    "durability_index": 61.0,
-    "primary_application": "paving_block_light",
-    "secondary_application": "plastic_sand_paver",
-    "author": "Structures author group",
-    "year": 2024,
-    "journal": "Structures",
-    "doi": "S2352012424004375"
-  },
-  {
     "id": "NAF_2022_01",
     "plastic_type": "PET",
     "replacement_pct": 10.0,
@@ -141,7 +21,9 @@
     "author": "Nafees et al.",
     "year": 2022,
     "journal": "Polymers",
-    "doi": "10.3390/polym14081583"
+    "doi": "10.3390/polym14081583",
+    "source_page_or_table": "",
+    "extraction_notes": ""
   },
   {
     "id": "NAF_2022_02",
@@ -165,7 +47,9 @@
     "author": "Nafees et al.",
     "year": 2022,
     "journal": "Polymers",
-    "doi": "10.3390/polym14081583"
+    "doi": "10.3390/polym14081583",
+    "source_page_or_table": "",
+    "extraction_notes": ""
   },
   {
     "id": "NAF_2022_03",
@@ -189,7 +73,9 @@
     "author": "Nafees et al.",
     "year": 2022,
     "journal": "Polymers",
-    "doi": "10.3390/polym14081583"
+    "doi": "10.3390/polym14081583",
+    "source_page_or_table": "",
+    "extraction_notes": ""
   },
   {
     "id": "NAY_2024_01",
@@ -213,7 +99,9 @@
     "author": "Nayir & Yilmaz",
     "year": 2024,
     "journal": "Structures",
-    "doi": "10.1016/j.istruc.2024.107363"
+    "doi": "10.1016/j.istruc.2024.107363",
+    "source_page_or_table": "",
+    "extraction_notes": ""
   },
   {
     "id": "NAY_2024_02",
@@ -237,7 +125,9 @@
     "author": "Nayir & Yilmaz",
     "year": 2024,
     "journal": "Structures",
-    "doi": "10.1016/j.istruc.2024.107363"
+    "doi": "10.1016/j.istruc.2024.107363",
+    "source_page_or_table": "",
+    "extraction_notes": ""
   },
   {
     "id": "THR_2025_01",
@@ -261,7 +151,9 @@
     "author": "Results in Engineering group",
     "year": 2025,
     "journal": "Results in Engineering",
-    "doi": "S2590123025046742"
+    "doi": "S2590123025046742",
+    "source_page_or_table": "",
+    "extraction_notes": ""
   },
   {
     "id": "THR_2025_02",
@@ -285,7 +177,9 @@
     "author": "Results in Engineering group",
     "year": 2025,
     "journal": "Results in Engineering",
-    "doi": "S2590123025046742"
+    "doi": "S2590123025046742",
+    "source_page_or_table": "",
+    "extraction_notes": ""
   },
   {
     "id": "CHO_2023_01",
@@ -309,7 +203,9 @@
     "author": "Chong & Shi",
     "year": 2023,
     "journal": "J. Infrastruct. Preserv. Resil.",
-    "doi": "10.1186/s43065-022-00069-y"
+    "doi": "10.1186/s43065-022-00069-y",
+    "source_page_or_table": "",
+    "extraction_notes": ""
   },
   {
     "id": "CHO_2023_02",
@@ -333,7 +229,9 @@
     "author": "Chong & Shi",
     "year": 2023,
     "journal": "J. Infrastruct. Preserv. Resil.",
-    "doi": "10.1186/s43065-022-00069-y"
+    "doi": "10.1186/s43065-022-00069-y",
+    "source_page_or_table": "",
+    "extraction_notes": ""
   },
   {
     "id": "ALK_2025_01",
@@ -357,7 +255,10 @@
     "author": "Alkharisi & Dahish",
     "year": 2025,
     "journal": "Construction & Building Materials",
-    "doi": "verify-on-publisher"
+    "doi": "verify-on-publisher",
+    "source_page_or_table": "",
+    "verified": false,
+    "extraction_notes": "DOI was a placeholder and is not shown"
   },
   {
     "id": "SYN_TC_01",
@@ -381,7 +282,10 @@
     "author": "Iftikhar et al.",
     "year": 2023,
     "journal": "Heliyon",
-    "doi": "10.1016/j.heliyon.2023.e17107"
+    "doi": "10.1016/j.heliyon.2023.e17107",
+    "source_page_or_table": "",
+    "verified": false,
+    "extraction_notes": "model-generated reference; not a published mix"
   },
   {
     "id": "SYN_TC_02",
@@ -405,7 +309,10 @@
     "author": "Nayir & Yilmaz",
     "year": 2024,
     "journal": "Structures",
-    "doi": "10.1016/j.istruc.2024.107363"
+    "doi": "10.1016/j.istruc.2024.107363",
+    "source_page_or_table": "",
+    "verified": false,
+    "extraction_notes": "model-generated reference; not a published mix"
   },
   {
     "id": "SYN_KS_01",
@@ -429,6 +336,9 @@
     "author": "Chong & Shi",
     "year": 2023,
     "journal": "J. Infrastruct. Preserv. Resil.",
-    "doi": "10.1186/s43065-022-00069-y"
+    "doi": "10.1186/s43065-022-00069-y",
+    "source_page_or_table": "",
+    "verified": false,
+    "extraction_notes": "model-generated reference; not a published mix"
   }
 ]

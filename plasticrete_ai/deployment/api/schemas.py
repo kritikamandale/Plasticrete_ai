@@ -147,6 +147,8 @@ class RAGAnalogueSchema(BaseModel):
     secondary_application: str
     l2_distance:           float
     properties:            Dict[str, float]
+    verified:              bool = True
+    reference_kind:        str = "literature"
 
 
 class CostBenefitSchema(BaseModel):
@@ -264,6 +266,8 @@ class OptimizeRequest(BaseModel):
     )
     mode:                      str             = Field("constrained",
                                                        description="constrained | scenario")
+    plastic_kg_available:      Optional[float] = Field(None, ge=0.0)
+    processing_cost_inr_per_kg: Optional[float] = Field(None, ge=0.0)
 
     @model_validator(mode="after")
     def weights_sum_to_one(self) -> "OptimizeRequest":
@@ -304,6 +308,7 @@ class TradeoffPoint(BaseModel):
     selected: bool
     predicted_cs_mpa: float
     predicted_cs_low: float = 0.0
+    predicted_cs_high: Optional[float] = None
     predicted_cost_inr_m3: float
     predicted_co2_kgco2e_m3: float
     predicted_plastic_diversion_kg_m3: float
@@ -314,6 +319,7 @@ class OptimizeResponse(BaseModel):
     best_mix:               Dict[str, Any]
     predicted_cs_mpa:       float
     predicted_cs_low:       float = 0.0
+    predicted_cs_high:      Optional[float] = None
     predicted_cost_inr_m3:  float
     predicted_co2_kgco2e_m3: float
     predicted_plastic_diversion_kg_m3: float
@@ -324,6 +330,9 @@ class OptimizeResponse(BaseModel):
     mass_balance:           Optional[Dict[str, Any]] = None
     tradeoff_points:        List[TradeoffPoint] = Field(default_factory=list)
     use_class:              Optional[str] = None
+    plastic_kg_available:   Optional[float] = None
+    processing_cost_inr_per_kg: Optional[float] = None
+    monthly_m3:             Optional[float] = None
 
 
 # ═══════════════════════════════════════════════════════════
@@ -376,6 +385,13 @@ class BatchUpdateRequest(BaseModel):
     measured_cs_28d: Optional[float] = None
     measured_absorption_pct: Optional[float] = None
     notes: Optional[str] = None
+    lab_name: Optional[str] = None
+    operator: Optional[str] = None
+    cube_size_mm: Optional[float] = None
+    cube_values_mpa: Optional[List[float]] = None
+    test_standard: Optional[str] = None
+    source: Optional[str] = None
+    confirm_high_cv: bool = False
 
     class Config:
         json_schema_extra = {

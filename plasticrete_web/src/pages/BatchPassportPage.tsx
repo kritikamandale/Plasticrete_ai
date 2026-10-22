@@ -9,12 +9,19 @@ import {
 
 export const BatchPassportPage: React.FC<{ batchId: string | null }> = ({ batchId }) => {
   const [batch, setBatch] = useState<SavedBatch | null>(null);
-  const [error, setError] = useState('');
+  const [loadError, setLoadError] = useState('');
+  const [saveError, setSaveError] = useState('');
   const [castDate, setCastDate] = useState('');
   const [cs7, setCs7] = useState('');
   const [cs28, setCs28] = useState('');
   const [absorption, setAbsorption] = useState('');
   const [notes, setNotes] = useState('');
+  const [labName, setLabName] = useState('');
+  const [operator, setOperator] = useState('');
+  const [cubeSize, setCubeSize] = useState('150');
+  const [cubeList, setCubeList] = useState('');
+  const [testStandard, setTestStandard] = useState('');
+  const [confirmHighCv, setConfirmHighCv] = useState(false);
   const [photoStamp, setPhotoStamp] = useState(0);
 
   useEffect(() => {
@@ -29,10 +36,10 @@ export const BatchPassportPage: React.FC<{ batchId: string | null }> = ({ batchI
         setCs28(loaded.measured_cs_28d == null ? '' : String(loaded.measured_cs_28d));
         setAbsorption(loaded.measured_absorption_pct == null ? '' : String(loaded.measured_absorption_pct));
         setNotes(loaded.notes || '');
-        setError('');
+        setLoadError('');
       })
       .catch((err: unknown) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Could not load the batch.');
+        if (!cancelled) setLoadError(err instanceof Error ? err.message : 'Could not load the batch.');
       });
     return () => {
       cancelled = true;
@@ -42,8 +49,8 @@ export const BatchPassportPage: React.FC<{ batchId: string | null }> = ({ batchI
   if (!batchId) {
     return <p className="text-sm font-semibold text-slate-800">Save a batch from the studio to open its passport.</p>;
   }
-  if (error) {
-    return <p className="text-sm font-semibold text-red-800">{error}</p>;
+  if (loadError) {
+    return <p className="text-sm font-semibold text-red-800">{loadError}</p>;
   }
   if (!batch) {
     return <p className="text-sm font-semibold text-slate-700">Loading batch {batchId}…</p>;
@@ -78,24 +85,39 @@ export const BatchPassportPage: React.FC<{ batchId: string | null }> = ({ batchI
         </div>
       </div>
 
-      <p className="text-sm font-semibold text-slate-800">{batch.calibration.message}</p>
+      <p className="text-xs font-semibold text-slate-700">
+        Screening estimate. Not a substitute for IS-compliant laboratory testing or a structural engineer's sign-off.
+      </p>
+      <p className="text-sm font-semibold text-slate-800">
+        {batch.calibration.n_pairs === 0 ? 'Unvalidated. ' : ''}
+        {batch.calibration.message}
+      </p>
 
       <form
         className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-semibold text-slate-900"
         onSubmit={async (event) => {
           event.preventDefault();
           try {
+            const cubes = cubeList.trim() === ''
+              ? undefined
+              : cubeList.split(',').map((part) => Number(part.trim())).filter((value) => !Number.isNaN(value));
             const saved = await updateBatch(batch.id, {
               cast_date: castDate || undefined,
               measured_cs_7d: numberOrUndefined(cs7),
-              measured_cs_28d: numberOrUndefined(cs28),
+              measured_cs_28d: cubes && cubes.length > 0 ? undefined : numberOrUndefined(cs28),
               measured_absorption_pct: numberOrUndefined(absorption),
               notes,
+              lab_name: labName || undefined,
+              operator: operator || undefined,
+              cube_size_mm: numberOrUndefined(cubeSize),
+              cube_values_mpa: cubes && cubes.length > 0 ? cubes : undefined,
+              test_standard: testStandard || undefined,
+              confirm_high_cv: confirmHighCv,
             });
             setBatch(saved);
-            setError('');
+            setSaveError('');
           } catch (err) {
-            setError(err instanceof Error ? err.message : 'Could not save the lab result.');
+            setSaveError(err instanceof Error ? err.message : 'Could not save the lab result.');
           }
         }}
       >
@@ -111,9 +133,31 @@ export const BatchPassportPage: React.FC<{ batchId: string | null }> = ({ batchI
         <label>Absorption (%)
           <input type="number" step="0.1" value={absorption} onChange={(e) => setAbsorption(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 font-mono" />
         </label>
+        <label>Lab name
+          <input value={labName} onChange={(e) => setLabName(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5" />
+        </label>
+        <label>Operator
+          <input value={operator} onChange={(e) => setOperator(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5" />
+        </label>
+        <label>Cube size (mm)
+          <input type="number" value={cubeSize} onChange={(e) => setCubeSize(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 font-mono" />
+        </label>
+        <label>Test standard written on the sheet
+          <input value={testStandard} onChange={(e) => setTestStandard(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5" />
+        </label>
+        <label className="sm:col-span-2">28-day cube strengths, comma separated (MPa)
+          <input value={cubeList} onChange={(e) => setCubeList(e.target.value)} placeholder="comma-separated cube results" className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 font-mono" />
+        </label>
+        <label className="sm:col-span-2 flex items-center gap-2">
+          <input type="checkbox" checked={confirmHighCv} onChange={(e) => setConfirmHighCv(e.target.checked)} />
+          Store these cubes even if the coefficient of variation is above 0.15
+        </label>
         <label className="sm:col-span-2">Notes
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5" rows={3} />
         </label>
+        {saveError && (
+          <p className="sm:col-span-2 text-sm font-semibold text-red-800">{saveError}</p>
+        )}
         <button type="submit" className="sm:col-span-2 rounded-xl bg-slate-900 text-white font-bold py-2.5 cursor-pointer">
           Save lab result
         </button>
@@ -133,7 +177,7 @@ export const BatchPassportPage: React.FC<{ batchId: string | null }> = ({ batchI
                 await uploadBatchPhoto(batch.id, file);
                 setPhotoStamp(Date.now());
               } catch (err) {
-                setError(err instanceof Error ? err.message : 'Photo upload failed.');
+                setSaveError(err instanceof Error ? err.message : 'Photo upload failed.');
               }
             }}
           />

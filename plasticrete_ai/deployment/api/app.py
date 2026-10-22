@@ -263,6 +263,11 @@ def optimize(payload: OptimizeRequest) -> OptimizeResponse:
         logger.exception(f"M2 optimisation error: {exc}")
         raise HTTPException(status_code=500, detail="Internal optimisation error.")
 
+    result["plastic_kg_available"] = payload.plastic_kg_available
+    result["processing_cost_inr_per_kg"] = payload.processing_cost_inr_per_kg
+    plastic_kg = (result.get("mass_balance") or {}).get("plastic_kg_m3")
+    if payload.plastic_kg_available is not None and plastic_kg:
+        result["monthly_m3"] = round(payload.plastic_kg_available / float(plastic_kg), 3)
     return OptimizeResponse(**result)
 
 
@@ -325,6 +330,47 @@ def get_batches(limit: int = 50) -> list:
     return batches.list_batches(limit=limit)
 
 
+@app.get("/batches/export.csv")
+def export_batches() -> StreamingResponse:
+    text = batches.export_csv()
+    return StreamingResponse(
+        io.BytesIO(text.encode("utf-8")),
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="batches.csv"'},
+    )
+
+
+@app.post("/batches/import.csv")
+async def import_batches(file: UploadFile = File(...)) -> dict:
+    text = (await file.read()).decode("utf-8")
+    try:
+        return batches.import_csv(text)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.post("/batches/schedule")
+def schedule_verification(payload: BatchCreateRequest) -> dict:
+    """Open a passport when a gate already returned verification_batch or lab_trial."""
+    from modules.batch_passport.scheduler import open_if_gate_requires_cube
+
+    opened = open_if_gate_requires_cube(
+        payload.mix_params,
+        payload.prediction,
+        payload.score,
+        payload.recommendation,
+        plant_name=payload.plant_name,
+        cast_date=payload.cast_date,
+    )
+    return {"opened": opened is not None, "batch": opened}
+
+
+@app.get("/batches/due")
+def batches_due(today: str | None = None) -> list:
+    from datetime import date
+    return batches.due_batches(today or date.today().isoformat())
+
+
 @app.get("/batches/{batch_id}")
 def read_batch(batch_id: str) -> dict:
     record = batches.get_batch(batch_id)
@@ -335,14 +381,24 @@ def read_batch(batch_id: str) -> dict:
 
 @app.patch("/batches/{batch_id}")
 def patch_batch(batch_id: str, payload: BatchUpdateRequest) -> dict:
-    record = batches.update_measurements(
-        batch_id,
-        cast_date=payload.cast_date,
-        measured_cs_7d=payload.measured_cs_7d,
-        measured_cs_28d=payload.measured_cs_28d,
-        measured_absorption_pct=payload.measured_absorption_pct,
-        notes=payload.notes,
-    )
+    try:
+        record = batches.update_measurements(
+            batch_id,
+            cast_date=payload.cast_date,
+            measured_cs_7d=payload.measured_cs_7d,
+            measured_cs_28d=payload.measured_cs_28d,
+            measured_absorption_pct=payload.measured_absorption_pct,
+            notes=payload.notes,
+            lab_name=payload.lab_name,
+            operator=payload.operator,
+            cube_size_mm=payload.cube_size_mm,
+            cube_values_mpa=payload.cube_values_mpa,
+            test_standard=payload.test_standard,
+            source=payload.source,
+            confirm_high_cv=payload.confirm_high_cv,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     if record is None:
         raise HTTPException(status_code=404, detail="Batch not found.")
     return record

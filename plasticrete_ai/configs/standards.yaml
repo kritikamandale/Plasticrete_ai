@@ -1,0 +1,32 @@
+# Same numbers as data/external/use_class_gates.json.
+# verified is false: the repo does not contain the official BIS text.
+table_id: plasticrete-use-class-gates-v1
+factor_date: "2026-03-01"
+classes:
+  - id: paver
+    label: Paver
+    standard: IS 15658
+    clause: "IS 15658: compressive strength at least 30 MPa and water absorption not more than 6% by mass."
+    cs_min_mpa: 30.0
+    wa_max_pct: 6.0
+    verified: false
+  - id: hollow_block
+    label: Hollow concrete block
+    standard: "IS 2185 (Part 1)"
+    clause: "IS 2185 Part 1 hollow masonry: compressive strength at least 3.5 MPa on the lower confidence bound."
+    cs_min_mpa: 3.5
+    verified: false
+  - id: solid_block
+    label: Solid concrete block
+    standard: "IS 2185 (Part 1)"
+    clause: "IS 2185 Part 1 solid masonry: compressive strength at least 5.0 MPa on the lower confidence bound."
+    cs_min_mpa: 5.0
+    verified: false
+  - id: structural
+    label: Structural concrete
+    standard: IS 456
+    clause: "IS 456 M20. A lower bound that clears the grade still means screen for a lab trial. This is not a certificate."
+    cs_min_mpa: 20.0
+    density_min_kgm3: 1800.0
+    density_max_kgm3: 2500.0
+    verified: false

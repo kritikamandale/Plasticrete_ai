@@ -1,0 +1,23 @@
+{
+  "same_mix_in_both_files": true,
+  "bo_demo_result_cs_mpa": 44.40842056274414,
+  "sensitivity_analysis_cs_mpa": 55.68912124633789,
+  "surrogate_file_gap_mpa": 11.28070068359375,
+  "m1_ensemble_cs_mpa": 45.46335324702586,
+  "m1_ci_90_low": 21.36632749525026,
+  "m1_ci_90_high": 69.56037899880145,
+  "bo_vs_m1_abs_gap_mpa": 1.0549326842817166,
+  "sensitivity_vs_m1_abs_gap_mpa": 10.225767999312033,
+  "label": "surrogate vs ensemble gap",
+  "note": "bo_demo_result.json and sensitivity_analysis.json are surrogate-era snapshots. The live optimiser calls M1 and sets prediction_source to m1.",
+  "mix": {
+    "plastic_type": "LDPE",
+    "additive_type": "silica_fume",
+    "replacement_pct": 8.474485316924312,
+    "particle_size_mm": 0.5,
+    "wc_ratio": 0.35,
+    "additive_pct": 30.0,
+    "curing_temp_c": 20.0,
+    "curing_days": 90
+  }
+}

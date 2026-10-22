@@ -1,0 +1,3 @@
+plant_name,cast_date,plastic_type,replacement_pct,particle_size_mm,wc_ratio,additive_type,additive_pct,curing_temp_c,curing_days,predicted_cs_mean,predicted_cs_low,predicted_cs_high,measured_cs_7d,measured_cs_28d,measured_absorption_pct,cube_values_mpa,lab_name,operator,cube_size_mm,test_standard,source,model_version,notes
+EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE ROW (not real)
+EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE,EXAMPLE ROW (not real)

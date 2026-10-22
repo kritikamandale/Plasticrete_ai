@@ -63,6 +63,8 @@ export interface RAGAnalogue {
   secondary_application: string;
   l2_distance: number;
   properties: Record<string, number>;
+  verified?: boolean;
+  reference_kind?: string;
 }
 
 export interface CostBenefit {
@@ -105,6 +107,8 @@ export interface OptimizeRequest {
   weight_co2: number;
   weight_plastic_content: number;
   mode: 'constrained' | 'scenario';
+  plastic_kg_available?: number | null;
+  processing_cost_inr_per_kg?: number | null;
 }
 
 export interface RecipeMix {
@@ -129,6 +133,7 @@ export interface TradeoffPoint {
   selected: boolean;
   predicted_cs_mpa: number;
   predicted_cs_low?: number;
+  predicted_cs_high?: number;
   predicted_cost_inr_m3: number;
   predicted_co2_kgco2e_m3: number;
   predicted_plastic_diversion_kg_m3: number;
@@ -139,6 +144,7 @@ export interface OptimizeResponse {
   best_mix: RecipeMix;
   predicted_cs_mpa: number;
   predicted_cs_low?: number;
+  predicted_cs_high?: number;
   predicted_cost_inr_m3: number;
   predicted_co2_kgco2e_m3: number;
   predicted_plastic_diversion_kg_m3: number;
@@ -149,6 +155,9 @@ export interface OptimizeResponse {
   mass_balance?: MassBalance;
   tradeoff_points?: TradeoffPoint[];
   use_class?: string | null;
+  plastic_kg_available?: number | null;
+  processing_cost_inr_per_kg?: number | null;
+  monthly_m3?: number | null;
   source?: InferenceSource;
 }
 

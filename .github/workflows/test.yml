@@ -1,0 +1,20 @@
+name: tests
+on:
+  push:
+  pull_request:
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install -r plasticrete_ai/requirements.txt
+      - name: Test
+        working-directory: plasticrete_ai
+        run: python -m pytest modules -q
+      - name: Knowledge base
+        working-directory: plasticrete_ai
+        run: python scripts/validate_kb.py
