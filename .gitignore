@@ -81,3 +81,5 @@ paper/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+.cursor/
