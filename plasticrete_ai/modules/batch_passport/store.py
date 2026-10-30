@@ -189,6 +189,8 @@ def _public_summary(row: sqlite3.Row) -> dict:
         "error_mpa": item["error_mpa"],
         "cast_date": item["cast_date"],
         "model_version": item["model_version"],
+        "notes": item.get("notes"),
+        "has_photo": bool(item.get("cube_photo_path")),
         "qr_url": public_batch_url(item["id"]),
     }
 
@@ -303,6 +305,31 @@ def save_photo(batch_id: str, data: bytes, suffix: str) -> dict | None:
             conn.execute(
                 "UPDATE batches SET cube_photo_path = ? WHERE id = ?",
                 (str(path), batch_id),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+    return get_batch(batch_id)
+
+
+def delete_photo(batch_id: str) -> dict | None:
+    current = get_batch(batch_id)
+    if current is None:
+        return None
+    stored = current.get("cube_photo_path")
+    if stored:
+        path = Path(stored)
+        if path.exists():
+            path.unlink()
+    if _PHOTO_DIR.exists():
+        for leftover in _PHOTO_DIR.glob(f"{batch_id}.*"):
+            leftover.unlink(missing_ok=True)
+    with _LOCK:
+        conn = _connect()
+        try:
+            conn.execute(
+                "UPDATE batches SET cube_photo_path = NULL WHERE id = ?",
+                (batch_id,),
             )
             conn.commit()
         finally:

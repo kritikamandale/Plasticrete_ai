@@ -412,3 +412,33 @@ class BatchUpdateRequest(BaseModel):
                 "session_id": "PLT-20241021-001",
             }
         }
+
+
+# ═══════════════════════════════════════════════════════════
+# Formulations & Pipeline History Schemas
+# ═══════════════════════════════════════════════════════════
+
+class FormulationCreateRequest(BaseModel):
+    name: str = Field(..., description="Readable title for the formulation")
+    mix_params: Dict[str, Any] = Field(..., description="8 mix parameters")
+    version: int = Field(1, description="Version number")
+    is_baseline: bool = Field(True, description="Whether this is baseline or an optimized candidate")
+    parent_id: Optional[str] = Field(None, description="Parent formulation ID if cloned/derived")
+    prediction: Optional[Dict[str, Any]] = None
+    optimization: Optional[Dict[str, Any]] = None
+    score: Optional[Dict[str, Any]] = None
+    recommendation: Optional[Dict[str, Any]] = None
+    status: str = Field("active", description="active, stale, archived")
+    notes: Optional[str] = None
+    id: Optional[str] = None
+
+
+class FormulationUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    mix_params: Optional[Dict[str, Any]] = None
+    prediction: Optional[Dict[str, Any]] = None
+    optimization: Optional[Dict[str, Any]] = None
+    score: Optional[Dict[str, Any]] = None
+    recommendation: Optional[Dict[str, Any]] = None
+    status: Optional[str] = None
+    notes: Optional[str] = None

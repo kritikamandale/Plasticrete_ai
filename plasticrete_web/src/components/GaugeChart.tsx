@@ -17,17 +17,16 @@ export const GaugeChart: React.FC<GaugeChartProps> = ({
   grade,
   size = 180,
 }) => {
-  const strokeWidth = 14;
+  const strokeWidth = 12;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const normalizedValue = Math.min(Math.max(value, 0), max);
   const strokeDashoffset = circumference - (normalizedValue / max) * circumference;
 
-  // Determine color based on score
-  let strokeColor = '#059669'; // Emerald
-  if (value < 50) strokeColor = '#EF4444'; // Red
-  else if (value < 70) strokeColor = '#D97706'; // Amber-600
-  else if (value < 85) strokeColor = '#0284C7'; // Cyan
+  // Concrete & Composite Theme: Blue for high, structural dark for neutral, orange for warning/low
+  let strokeColor = '#2563EB'; // Polymer Blue
+  if (value < 45) strokeColor = '#F97316'; // Safety Orange warning
+  else if (value < 70) strokeColor = '#333A42'; // Structural Dark
 
   return (
     <div className="flex flex-col items-center justify-center p-3">
@@ -38,9 +37,8 @@ export const GaugeChart: React.FC<GaugeChartProps> = ({
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="currentColor"
+            stroke="#E5E5E0"
             strokeWidth={strokeWidth}
-            className="text-slate-200"
             fill="transparent"
           />
           {/* Animated score circle */}
@@ -54,28 +52,33 @@ export const GaugeChart: React.FC<GaugeChartProps> = ({
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
             fill="transparent"
-            style={{ transition: 'stroke-dashoffset 0.8s ease-out' }}
+            className="transition-all duration-700 ease-out"
           />
         </svg>
 
-        {/* Center label */}
-        <div className="absolute flex flex-col items-center justify-center text-center">
-          <span className="text-3xl font-extrabold font-mono text-slate-950">
-            {value.toFixed(0)}
+        {/* Center Text */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <span className="text-3xl font-bold font-mono text-[#1E2022] tracking-tight">
+            {Math.round(normalizedValue)}
+          </span>
+          <span className="text-[10px] uppercase font-bold text-[#525866] font-mono tracking-wider">
+            / {max}
           </span>
           {grade && (
-            <span className="inline-block mt-0.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-900 border border-slate-300">
+            <span className="mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#333A42] text-white">
               Grade {grade}
             </span>
           )}
         </div>
       </div>
 
-      <span className="mt-3 text-sm font-bold text-slate-950 text-center">
-        {label}
-      </span>
+      {label && (
+        <span className="mt-3 font-heading font-semibold text-[#1E2022] text-xs text-center">
+          {label}
+        </span>
+      )}
       {sublabel && (
-        <span className="text-xs font-semibold text-slate-700 text-center mt-0.5">
+        <span className="text-[11px] text-[#525866] text-center max-w-[200px] mt-0.5 leading-snug">
           {sublabel}
         </span>
       )}

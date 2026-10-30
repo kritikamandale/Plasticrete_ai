@@ -74,6 +74,9 @@ plasticrete_ai/test_report.pdf
 plasticrete_ai/logs/
 *.tmp
 
+# Research Paper
+paper/
+
 # Operating System files
 .DS_Store
 Thumbs.db

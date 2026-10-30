@@ -40,6 +40,25 @@ def load_ensemble(model_dir: str, config: dict) -> None:
     from modules.m1_prediction.explainability.shap_explainer import SHAPExplainer
     _ensemble = PlastiCreteEnsemble.from_saved(model_dir, config)
     explainer = SHAPExplainer(config, _ensemble, _ensemble.preprocessor)
+    try:
+        # Generate representative reference background across typical concrete mix ranges
+        sample_presets = [
+            {"plastic_type": pt, "replacement_pct": r, "particle_size_mm": ps, "wc_ratio": wc,
+             "additive_type": ad, "additive_pct": ap, "curing_temp_c": ct, "curing_days": cd}
+            for pt in ["PET", "HDPE", "Mixed", "LDPE"]
+            for r in [0.0, 10.0, 20.0]
+            for ps in [2.0, 5.0]
+            for wc in [0.40, 0.50]
+            for ad in ["none", "fly_ash"]
+            for ap in [0.0, 10.0]
+            for ct in [27.0]
+            for cd in [28]
+        ]
+        X_bg = np.vstack([_ensemble.preprocessor.transform_input(p) for p in sample_presets[:50]])
+        explainer.fit(X_bg)
+    except Exception as exc:
+        from loguru import logger
+        logger.warning(f"Could not pre-fit SHAP explainer: {exc}")
     _ensemble.set_shap_explainer(explainer)
 
 

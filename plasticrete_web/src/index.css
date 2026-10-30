@@ -5,124 +5,173 @@
 @layer base {
   :root {
     --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Space Grotesk', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
+    
+    /* Concrete & Composite Core Design Tokens */
+    --color-canvas: #F5F5F3;
+    --color-surface: #FFFFFF;
+    --color-text-primary: #1E2022;
+    --color-structural-dark: #333A42;
+    --color-accent-blue: #2563EB;
+    --color-safety-orange: #F97316;
+    --color-border-mortar: #E5E5E0;
+    --color-secondary-muted: #525866;
+
     color-scheme: light;
   }
 
   html {
     color-scheme: light;
+    background-color: var(--color-canvas);
   }
 
   body {
     font-family: var(--font-sans);
-    background-color: #f8fafc;
-    color: #0f172a;
+    background-color: #F5F5F3;
+    color: #1E2022;
     overflow-x: hidden;
   }
 
-  code, kbd, samp, pre {
+  h1, h2, h3, h4, .font-heading {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+  }
+
+  code, kbd, samp, pre, .font-mono {
     font-family: var(--font-mono);
   }
 }
 
-/* Glassmorphism Classes - Light Theme Exclusive */
-.glass-nav {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.03);
+/* Micro-grid & Technical Concrete Textures */
+.concrete-grid {
+  background-image: 
+    linear-gradient(to right, rgba(51, 58, 66, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(51, 58, 66, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 
-    0 1px 2px 0 rgba(15, 23, 42, 0.03),
-    0 8px 24px -4px rgba(15, 23, 42, 0.05),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.8);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.concrete-specimen-pattern {
+  background-color: #F5F5F3;
+  background-image: radial-gradient(rgba(51, 58, 66, 0.08) 0.75px, transparent 0.75px);
+  background-size: 12px 12px;
 }
 
-.glass-card:hover {
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 
-    0 4px 6px -1px rgba(15, 23, 42, 0.04),
-    0 16px 32px -4px rgba(15, 23, 42, 0.08),
-    inset 0 1px 2px 0 rgba(255, 255, 255, 1);
-  transform: translateY(-2px);
-  border-color: rgba(16, 185, 129, 0.25);
+/* Engineering Surfaces & Cards */
+.engineering-nav {
+  background-color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #E5E5E0;
 }
 
-.glass-pill {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+.engineering-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E5E0;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px 0 rgba(30, 32, 34, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.glass-input {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(203, 213, 225, 0.8);
-  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
-  transition: all 0.2s ease;
+.engineering-card:hover {
+  border-color: #D4D4CE;
+  box-shadow: 0 4px 12px -2px rgba(30, 32, 34, 0.06);
 }
 
-.glass-input:focus {
-  background: #ffffff;
-  border-color: #059669;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
-  outline: none;
+.structural-panel {
+  background-color: #333A42;
+  color: #FFFFFF;
+  border-radius: 10px;
 }
 
-/* Ambient Background Glows */
-.ambient-glow-emerald {
-  position: absolute;
-  filter: blur(100px);
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
-  pointer-events: none;
-  z-index: 0;
+/* Engineering Eyebrow Tag */
+.eyebrow-tag {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-size: 0.6875rem; /* 11px */
+  line-height: 1rem;
 }
 
-.ambient-glow-cyan {
-  position: absolute;
-  filter: blur(100px);
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
-  pointer-events: none;
-  z-index: 0;
+/* Solid Tactical Buttons */
+.btn-primary {
+  background-color: #2563EB;
+  color: #FFFFFF;
+  border: 1px solid #1D4ED8;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.btn-primary:hover {
+  background-color: #1D4ED8;
 }
 
-.ambient-glow-indigo {
-  position: absolute;
-  filter: blur(100px);
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
-  pointer-events: none;
-  z-index: 0;
+.btn-secondary {
+  background-color: #FFFFFF;
+  color: #1E2022;
+  border: 1px solid #E5E5E0;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.btn-secondary:hover {
+  background-color: #F5F5F3;
+  border-color: #D4D4CE;
 }
 
-/* Custom Range Slider */
-input[type=range] {
-  accent-color: #059669;
+.btn-structural {
+  background-color: #333A42;
+  color: #FFFFFF;
+  border: 1px solid #282E34;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.btn-structural:hover {
+  background-color: #24292F;
 }
 
-/* Custom Scrollbar */
+/* Tactical Engineering Slider */
+input[type="range"] {
+  accent-color: #2563EB;
+}
+
+/* Custom Scrollbar for Engineering tables */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #F5F5F3;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
+  background: #D4D4CE;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B5B5AD;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+@keyframes indeterminate-slide {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(280%); }
+}
+
+.indeterminate-bar {
+  width: 35%;
+  animation: indeterminate-slide 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indeterminate-bar {
+    animation: none;
+    width: 100%;
+    opacity: 0.55;
+  }
+
+  .animate-spin,
+  .animate-pulse {
+    animation: none !important;
+  }
 }

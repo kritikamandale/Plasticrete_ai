@@ -145,3 +145,11 @@ def test_photo_round_trip(db_path):
     saved = store.save_photo(created["id"], b"not-a-real-image", ".jpg")
     assert saved["cube_photo_path"]
     assert os.path.exists(saved["cube_photo_path"])
+    listed = store.list_batches()
+    assert listed[0]["id"] == created["id"]
+    assert listed[0]["has_photo"] is True
+    photo_path = saved["cube_photo_path"]
+    removed = store.delete_photo(created["id"])
+    assert removed["cube_photo_path"] is None
+    assert not os.path.exists(photo_path)
+    assert store.list_batches()[0]["has_photo"] is False

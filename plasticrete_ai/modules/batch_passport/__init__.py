@@ -10,6 +10,7 @@ from modules.batch_passport.store import (
     import_csv,
     list_batches,
     public_batch_url,
+    delete_photo,
     save_photo,
     update_measurements,
 )
@@ -18,6 +19,7 @@ __all__ = [
     "MODEL_VERSION",
     "calibration",
     "create_batch",
+    "delete_photo",
     "due_batches",
     "export_csv",
     "get_batch",

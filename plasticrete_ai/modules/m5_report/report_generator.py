@@ -88,7 +88,38 @@ def _styles() -> dict[str, ParagraphStyle]:
         "small_grey": s("small_grey", fontSize=7, leading=9, textColor=C_SLATE_600),
         "center":     s("center", fontSize=8, leading=11, alignment=TA_CENTER,
                          textColor=C_SLATE_600),
+        "th":         s("th", fontSize=7, leading=9, textColor=C_WHITE,
+                         fontName="Helvetica-Bold"),
+        "td":         s("td", fontSize=7.5, leading=9.5, textColor=C_SLATE_800),
+        "td_r":       s("td_r", fontSize=7.5, leading=9.5, textColor=C_SLATE_800,
+                         alignment=TA_RIGHT),
     }
+
+
+def _soft(value: Any) -> str:
+    """Escape text and wrap long filenames on punctuation."""
+    text = "-" if value is None or value == "" else str(value)
+    text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    words = []
+    for word in text.split(" "):
+        if len(word) <= 18:
+            words.append(word)
+            continue
+        pieces: list[str] = []
+        buf: list[str] = []
+        for ch in word:
+            buf.append(ch)
+            if ch in "_-/" and len(buf) >= 6:
+                pieces.append("".join(buf))
+                buf = []
+        if buf:
+            pieces.append("".join(buf))
+        words.append("<br/>".join(pieces))
+    return " ".join(words)
+
+
+def _P(value: Any, style: ParagraphStyle, html: bool = False) -> Paragraph:
+    return Paragraph(str(value) if html else _soft(value), style)
 
 
 def _tbl_style(header_color=C_SLATE_800, alt=True) -> TableStyle:
@@ -101,11 +132,11 @@ def _tbl_style(header_color=C_SLATE_800, alt=True) -> TableStyle:
         ("ROWBACKGROUND", (0, 1), (-1, -1),
          [C_WHITE, C_SLATE_100] if alt else [C_WHITE]),
         ("GRID",        (0, 0), (-1, -1), 0.3, C_SLATE_300),
-        ("VALIGN",      (0, 0), (-1, -1), "MIDDLE"),
+        ("VALIGN",      (0, 0), (-1, -1), "TOP"),
         ("TOPPADDING",  (0, 0), (-1, -1), 4),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-        ("LEFTPADDING", (0, 0), (-1, -1), 6),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+        ("LEFTPADDING", (0, 0), (-1, -1), 3),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 3),
         ("ROWBACKGROUNDS", (0, 1), (-1, -1), [C_WHITE, C_SLATE_100]),
     ]
     return TableStyle(cmds)
@@ -122,9 +153,12 @@ def _header_footer(canvas, doc, mix_params, session_id):
     canvas.rect(0, h - 14 * mm, w, 14 * mm, fill=1, stroke=0)
     canvas.setFillColor(C_WHITE)
     canvas.setFont("Helvetica-Bold", 10)
-    canvas.drawString(MARGIN, h - 9 * mm, "PlastiCrete.ai")
+    brand = "PlastiCrete.ai"
+    canvas.drawString(MARGIN, h - 9 * mm, brand)
+    brand_w = canvas.stringWidth(brand, "Helvetica-Bold", 10)
     canvas.setFillColor(C_EMERALD_700)
-    canvas.drawString(MARGIN + 65, h - 9 * mm, "— Mix Design Report")
+    canvas.setFont("Helvetica-Bold", 9)
+    canvas.drawString(MARGIN + brand_w + 8, h - 9 * mm, "Mix Design Report")
     canvas.setFillColor(C_SLATE_300)
     canvas.setFont("Helvetica", 7.5)
     canvas.drawRightString(w - MARGIN, h - 9 * mm,
@@ -151,22 +185,36 @@ def _section_mix_recipe(mix_params: dict, st: dict) -> list:
 
     balance = compute_mass_balance(mix_params)
     plastic_pct = mix_params.get("replacement_pct", 0)
-    data = [["Constituent", "Quantity", "Factor", "Source", "Date", "CO2e kg/m3", "INR/m3"]]
+    th, td, num = st["th"], st["td"], st["td_r"]
+    data = [[
+        _P("Constituent", th),
+        _P("Quantity<br/>kg/m3", th, html=True),
+        _P("Factor", th),
+        _P("CO2e<br/>kg/m3", th, html=True),
+        _P("Cost<br/>INR/m3", th, html=True),
+        _P("Date", th),
+        _P("Source", th),
+    ]]
     for row in balance["rows"]:
         data.append([
-            row["material"],
-            f"{row['quantity_kg_m3']:.2f}",
-            f"{row['co2_factor_kg_per_kg']}",
-            row["co2_factor_source"],
-            row["co2_factor_date"],
-            f"{row['co2_kgco2e_m3']:.2f}",
-            f"{row['cost_inr_m3']:.2f}",
+            _P(row["material"], td),
+            _P(f"{row['quantity_kg_m3']:.2f}", num),
+            _P(f"{row['co2_factor_kg_per_kg']}", num),
+            _P(f"{row['co2_kgco2e_m3']:.2f}", num),
+            _P(f"{row['cost_inr_m3']:.2f}", num),
+            _P(row["co2_factor_date"], td),
+            _P(row["co2_factor_source"], td),
         ])
     data.append([
-        "Total", "—", "—", balance["table_id"], balance["factor_date"],
-        f"{balance['co2_kgco2e_m3']:.2f}", f"{balance['cost_inr_m3']:.2f}",
+        _P("Total", td),
+        _P("—", num),
+        _P("—", num),
+        _P(f"{balance['co2_kgco2e_m3']:.2f}", num),
+        _P(f"{balance['cost_inr_m3']:.2f}", num),
+        _P(balance["factor_date"], td),
+        _P(balance["table_id"], td),
     ])
-    tbl = Table(data, colWidths=[32*mm, 18*mm, 16*mm, 42*mm, 22*mm, 22*mm, 18*mm])
+    tbl = Table(data, colWidths=[28*mm, 20*mm, 16*mm, 20*mm, 20*mm, 22*mm, 48*mm], repeatRows=1)
     tbl.setStyle(_tbl_style())
     return [
         Paragraph("Mass balance (per m³)", st["h2"]),
@@ -199,7 +247,7 @@ def _section_predicted_properties(prediction: dict, st: dict) -> list:
         "density_kgm3": "kg/m³",
         "water_absorption_pct": "%",
         "thermal_conductivity_wm": "W/m·K",
-        "durability_index": "0–100",
+        "durability_index": "0-100",
     }
     LABELS = {
         "compressive_strength_mpa": "Compressive Strength",
@@ -212,21 +260,28 @@ def _section_predicted_properties(prediction: dict, st: dict) -> list:
     }
 
     preds = prediction.get("predictions", {})
-    data = [["Property", "Predicted Mean", "90% CI Low", "90% CI High", "Unit"]]
+    th, td, num = st["th"], st["td"], st["td_r"]
+    data = [[
+        _P("Property", th),
+        _P("Predicted mean", th),
+        _P("90% CI low", th),
+        _P("90% CI high", th),
+        _P("Unit", th),
+    ]]
     for key, label in LABELS.items():
         prop = preds.get(key, {})
         mean = prop.get("mean")
         low  = prop.get("ci_90_low")
         high = prop.get("ci_90_high")
         data.append([
-            label,
-            f"{mean:.2f}" if mean is not None else "—",
-            f"{low:.2f}"  if low  is not None else "—",
-            f"{high:.2f}" if high is not None else "—",
-            UNITS[key],
+            _P(label, td),
+            _P(f"{mean:.2f}" if mean is not None else "—", num),
+            _P(f"{low:.2f}" if low is not None else "—", num),
+            _P(f"{high:.2f}" if high is not None else "—", num),
+            _P(UNITS[key], td),
         ])
 
-    tbl = Table(data, colWidths=[60*mm, 30*mm, 28*mm, 30*mm, 22*mm])
+    tbl = Table(data, colWidths=[52*mm, 32*mm, 30*mm, 32*mm, 28*mm], repeatRows=1)
     tbl.setStyle(_tbl_style(C_BLUE_700))
 
     unc = prediction.get("uncertainty_flag", False)
@@ -270,15 +325,21 @@ def _section_bis_compliance(score: dict, st: dict) -> list:
         "lab_trial": "LAB TRIAL",
         "refused": "REFUSED",
     }
-    data = [["Product", "Standard", "Status", "What the bound says"]]
+    th, td = st["th"], st["td"]
+    data = [[
+        _P("Product", th),
+        _P("Standard", th),
+        _P("Status", th),
+        _P("What the bound says", th),
+    ]]
     for gate in gates:
         data.append([
-            gate.get("label", ""),
-            gate.get("standard", ""),
-            labels.get(gate.get("status"), gate.get("status", "")),
-            gate.get("message", ""),
+            _P(gate.get("label", ""), td),
+            _P(gate.get("standard", ""), td),
+            _P(labels.get(gate.get("status"), gate.get("status", "")), td),
+            _P(gate.get("message", ""), td),
         ])
-    tbl = Table(data, colWidths=[38*mm, 32*mm, 24*mm, None])
+    tbl = Table(data, colWidths=[36*mm, 32*mm, 24*mm, 82*mm], repeatRows=1)
     style = _tbl_style(C_SLATE_800)
     for index, gate in enumerate(gates, start=1):
         status = gate.get("status")
@@ -322,24 +383,25 @@ def _section_lca_sustainability(score: dict, st: dict) -> list:
         "B": C_AMBER_700, "C": C_RED_700,
     }.get(grade, C_SLATE_600)
 
+    th, td, num = st["th"], st["td"], st["td_r"]
     lca_data = [
-        ["LCA Metric", "Value"],
-        ["Embodied Carbon", f"{co2:.1f} kg CO₂e/m³"],
-        ["CO₂ Saving vs Conventional M20", f"−{saving:.1f}%"],
-        ["Plastic Waste Diverted from Landfill", f"{diversion:.1f} kg/m³"],
-        ["Equivalent PET Bottles Diverted", f"~{int(bottles):,} bottles/m³"],
+        [_P("LCA metric", th), _P("Value", th)],
+        [_P("Embodied carbon", td), _P(f"{co2:.1f} kg CO2e/m3", num)],
+        [_P("CO2 saving vs conventional M20", td), _P(f"{saving:.1f}%", num)],
+        [_P("Plastic diverted from landfill", td), _P(f"{diversion:.1f} kg/m3", num)],
+        [_P("PET-bottle equivalent", td), _P(f"{int(bottles)} bottles/m3", num)],
     ]
-    lca_tbl = Table(lca_data, colWidths=[90*mm, None])
+    lca_tbl = Table(lca_data, colWidths=[110*mm, 64*mm], repeatRows=1)
     lca_tbl.setStyle(_tbl_style(C_EMERALD_700))
 
     green_data = [
-        ["Green Rating Scheme", "Credits Earned", "Criterion"],
-        ["IGBC Green Homes / Buildings", f"{igbc:.1f} pts", "Recycled Content + Thermal"],
-        ["GRIHA (BEE/TERI)", f"{griha:.1f} pts", "Embodied Energy, Waste"],
-        ["LEED v4 Materials & Resources", f"{leed:.1f} pts", "Recycled Content %"],
-        ["Total Green Credits", f"{total_gc:.1f} pts", "All Schemes Combined"],
+        [_P("Green rating scheme", th), _P("Credits", th), _P("Criterion", th)],
+        [_P("IGBC Green Homes / Buildings", td), _P(f"{igbc:.1f} pts", num), _P("Recycled content and thermal", td)],
+        [_P("GRIHA (BEE/TERI)", td), _P(f"{griha:.1f} pts", num), _P("Embodied energy, waste", td)],
+        [_P("LEED v4 Materials and Resources", td), _P(f"{leed:.1f} pts", num), _P("Recycled content", td)],
+        [_P("Total green credits", td), _P(f"{total_gc:.1f} pts", num), _P("All schemes combined", td)],
     ]
-    green_tbl = Table(green_data, colWidths=[75*mm, 35*mm, None])
+    green_tbl = Table(green_data, colWidths=[78*mm, 28*mm, 68*mm], repeatRows=1)
     green_tbl.setStyle(_tbl_style(C_EMERALD_700))
 
     return [
@@ -374,12 +436,17 @@ def _section_shap(prediction: dict, st: dict) -> list:
         return []
 
     sorted_feats = sorted(cs_shap.items(), key=lambda x: abs(x[1]), reverse=True)[:6]
-    data = [["Feature", "SHAP Contribution (MPa)", "Direction"]]
+    th, td, num = st["th"], st["td"], st["td_r"]
+    data = [[
+        _P("Feature", th),
+        _P("SHAP contribution (MPa)", th),
+        _P("Direction", th),
+    ]]
     for feat, val in sorted_feats:
-        direction = "▲ Positive" if val >= 0 else "▼ Negative"
-        data.append([feat, f"{val:+.2f}", direction])
+        direction = "Positive" if val >= 0 else "Negative"
+        data.append([_P(feat.replace("_", " "), td), _P(f"{val:+.2f}", num), _P(direction, td)])
 
-    tbl = Table(data, colWidths=[90*mm, 50*mm, None])
+    tbl = Table(data, colWidths=[88*mm, 46*mm, 40*mm], repeatRows=1)
     style = _tbl_style(C_BLUE_700)
     for i, (_, val) in enumerate(sorted_feats, start=1):
         if val >= 0:
@@ -434,19 +501,29 @@ def _section_rag_analogues(recommendation: dict, st: dict) -> list:
     if not analogues:
         return []
 
-    data = [["Rank", "Authors (Year)", "Journal", "Application", "CS (MPa)", "DOI"]]
+    th, td, num = st["th"], st["td"], st["td_r"]
+    data = [[
+        _P("Rank", th),
+        _P("Authors (year)", th),
+        _P("Journal", th),
+        _P("Application", th),
+        _P("CS MPa", th),
+        _P("DOI", th),
+    ]]
     for a in analogues[:3]:
         props = a.get("properties", {})
+        cs = props.get("compressive_strength_mpa")
+        hide_doi = a.get("verified") is False or not a.get("doi") or str(a.get("id", "")).startswith("SYN_") or a.get("doi") == "verify-on-publisher"
         data.append([
-            str(a.get("rank", "")),
-            f"{a.get('author','')} ({a.get('year','')})",
-            a.get("journal", "")[:30] + "…" if len(a.get("journal","")) > 30 else a.get("journal",""),
-            a.get("primary_application", "").replace("_", " ").title(),
-            f"{props.get('compressive_strength_mpa', '—'):.1f}" if isinstance(props.get('compressive_strength_mpa'), float) else "—",
-            "" if a.get("verified") is False or not a.get("doi") or str(a.get("id", "")).startswith("SYN_") or a.get("doi") == "verify-on-publisher" else str(a.get("doi"))[:28],
+            _P(a.get("rank", ""), td),
+            _P(f"{a.get('author', '')} ({a.get('year', '')})", td),
+            _P(a.get("journal", ""), td),
+            _P(str(a.get("primary_application", "")).replace("_", " "), td),
+            _P(f"{cs:.1f}" if isinstance(cs, float) else "—", num),
+            _P("" if hide_doi else a.get("doi"), td),
         ])
 
-    tbl = Table(data, colWidths=[12*mm, 40*mm, 40*mm, 35*mm, 16*mm, None])
+    tbl = Table(data, colWidths=[14*mm, 36*mm, 36*mm, 32*mm, 18*mm, 38*mm], repeatRows=1)
     tbl.setStyle(_tbl_style(C_SLATE_800))
 
     return [
@@ -466,17 +543,34 @@ def _section_cost_benefit(recommendation: dict, st: dict) -> list:
     if not cb:
         return []
 
+    th, td, num = st["th"], st["td"], st["td_r"]
     data = [
-        ["Cost Metric", "Plastic-Waste Concrete", "Conventional Concrete", "Saving"],
-        ["Cost per m³ (INR)", f"₹{cb.get('plastic_mix_cost_inr_m3',0):,.0f}",
-         f"₹{cb.get('conventional_cost_inr_m3',0):,.0f}",
-         f"₹{cb.get('cost_saving_inr_m3',0):,.0f} ({cb.get('cost_saving_pct',0):.1f}%)"],
-        ["Cost per m² product", f"₹{cb.get('plastic_mix_cost_inr_m2',0):,.0f}",
-         f"₹{cb.get('conventional_cost_inr_m2',0):,.0f}",
-         f"₹{cb.get('cost_saving_inr_m2',0):,.0f}"],
-        ["Plastic aggregate input", f"{cb.get('plastic_kg_per_m3',0):.0f} kg/m³", "0 kg/m³", "—"],
+        [
+            _P("Cost metric", th),
+            _P("Plastic-waste concrete", th),
+            _P("Conventional concrete", th),
+            _P("Saving", th),
+        ],
+        [
+            _P("Cost per m3 (INR)", td),
+            _P(f"Rs {cb.get('plastic_mix_cost_inr_m3', 0):,.0f}", num),
+            _P(f"Rs {cb.get('conventional_cost_inr_m3', 0):,.0f}", num),
+            _P(f"Rs {cb.get('cost_saving_inr_m3', 0):,.0f} ({cb.get('cost_saving_pct', 0):.1f}%)", num),
+        ],
+        [
+            _P("Cost per m2 product", td),
+            _P(f"Rs {cb.get('plastic_mix_cost_inr_m2', 0):,.0f}", num),
+            _P(f"Rs {cb.get('conventional_cost_inr_m2', 0):,.0f}", num),
+            _P(f"Rs {cb.get('cost_saving_inr_m2', 0):,.0f}", num),
+        ],
+        [
+            _P("Plastic aggregate input", td),
+            _P(f"{cb.get('plastic_kg_per_m3', 0):.1f} kg/m3", num),
+            _P("0 kg/m3", num),
+            _P("—", num),
+        ],
     ]
-    tbl = Table(data, colWidths=[55*mm, 35*mm, 40*mm, None])
+    tbl = Table(data, colWidths=[42*mm, 42*mm, 46*mm, 44*mm], repeatRows=1)
     tbl.setStyle(_tbl_style(C_BLUE_700))
 
     primary = recommendation.get("primary_application", "").replace("_", " ").title()
@@ -520,27 +614,29 @@ def _section_batch(batch: dict, qr_url: str, st: dict) -> list:
             return f"{value:.2f}{suffix}"
         return f"{value}{suffix}"
 
-    data = [
-        ["Field", "Value"],
-        ["Batch", batch.get("id", "—")],
-        ["Plant", batch.get("plant_name", "—")],
-        ["Model", batch.get("model_version", "—")],
-        ["Cast date", shown(batch.get("cast_date"))],
-        ["Predicted 28-day mean", shown(batch.get("predicted_cs_mean"), " MPa")],
-        ["90% interval", (
+    th, td, num = st["th"], st["td"], st["td_r"]
+    rows = [
+        ("Batch", batch.get("id", "—")),
+        ("Plant", batch.get("plant_name", "—")),
+        ("Model", batch.get("model_version", "—")),
+        ("Cast date", shown(batch.get("cast_date"))),
+        ("Predicted 28-day mean", shown(batch.get("predicted_cs_mean"), " MPa")),
+        ("90% interval", (
             f"{shown(batch.get('predicted_cs_low'))} to {shown(batch.get('predicted_cs_high'))} MPa"
             if batch.get("predicted_cs_low") is not None else "Not supplied"
-        )],
-        ["Measured 7-day strength", shown(batch.get("measured_cs_7d"), " MPa")],
-        ["Measured 28-day strength", shown(batch.get("measured_cs_28d"), " MPa")],
-        ["Measured absorption", shown(batch.get("measured_absorption_pct"), " %")],
-        ["Error (measured − predicted)", shown(batch.get("error_mpa"), " MPa")],
+        )),
+        ("Measured 7-day strength", shown(batch.get("measured_cs_7d"), " MPa")),
+        ("Measured 28-day strength", shown(batch.get("measured_cs_28d"), " MPa")),
+        ("Measured absorption", shown(batch.get("measured_absorption_pct"), " %")),
+        ("Error (measured - predicted)", shown(batch.get("error_mpa"), " MPa")),
     ]
     calibration = batch.get("calibration") or {}
     n_pairs = calibration.get("n_pairs") or 0
     status = "Unvalidated" if n_pairs == 0 else calibration.get("message") or f"Calibrated on {n_pairs} pairs"
-    data.append(["Validation status", status])
-    tbl = Table(data, colWidths=[55*mm, None])
+    rows.append(("Validation status", status))
+    data = [[_P("Field", th), _P("Value", th)]]
+    data += [[_P(label, td), _P(value, num)] for label, value in rows]
+    tbl = Table(data, colWidths=[62*mm, 112*mm], repeatRows=1)
     tbl.setStyle(_tbl_style(C_SLATE_800))
     story = [
         Paragraph("Batch passport", st["h2"]),
@@ -607,22 +703,23 @@ def generate_report(
     story.append(Paragraph("PlastiCrete<font color='#047857'>.ai</font>", st["h1"]))
     story.append(Paragraph("Plastic-Waste Composite Concrete — Mix Design Report", st["h2"]))
 
-    meta_data = [
-        ["Generated", datetime.now().strftime("%d %B %Y, %H:%M IST")],
-        ["Session ID", session_id],
-        ["Mix Type", f"{mix_params.get('plastic_type', '—')} Aggregate Concrete"],
-        ["Replacement Level", f"{mix_params.get('replacement_pct', '—'):.1f}% vol."],
-        ["Standards scope", "Use-class gates: IS 15658, IS 2185, IS 456"],
-        ["Model version", (batch or {}).get("model_version") or "m1-ensemble evaluation_report.json compressive R2 0.9104"],
+    label_style = ParagraphStyle("meta_label", parent=st["td"], fontName="Helvetica-Bold", textColor=C_SLATE_600)
+    meta_rows = [
+        ("Generated", datetime.now().strftime("%d %B %Y, %H:%M IST")),
+        ("Session ID", session_id),
+        ("Mix type", f"{mix_params.get('plastic_type', '—')} aggregate concrete"),
+        ("Replacement level", f"{float(mix_params.get('replacement_pct', 0)):.1f}% vol."),
+        ("Standards scope", "Use-class gates: IS 15658, IS 2185, IS 456"),
+        ("Model version", (batch or {}).get("model_version") or "m1-ensemble evaluation_report.json compressive R2 0.9104"),
     ]
-    meta_tbl = Table(meta_data, colWidths=[45*mm, None])
+    meta_data = [[_P(label, label_style), _P(value, st["td"])] for label, value in meta_rows]
+    meta_tbl = Table(meta_data, colWidths=[42*mm, 132*mm])
     meta_tbl.setStyle(TableStyle([
-        ("FONTNAME",   (0, 0), (0, -1), "Helvetica-Bold"),
-        ("FONTSIZE",   (0, 0), (-1, -1), 8),
-        ("TEXTCOLOR",  (0, 0), (0, -1), C_SLATE_600),
-        ("TEXTCOLOR",  (1, 0), (1, -1), C_SLATE_800),
+        ("VALIGN",     (0, 0), (-1, -1), "TOP"),
         ("TOPPADDING", (0, 0), (-1, -1), 3),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+        ("LEFTPADDING", (0, 0), (-1, -1), 4),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 4),
         ("GRID",       (0, 0), (-1, -1), 0.2, C_SLATE_300),
         ("BACKGROUND", (0, 0), (-1, -1), C_SLATE_100),
     ]))

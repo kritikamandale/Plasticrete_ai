@@ -2,10 +2,10 @@ import React from 'react';
 import { useMix } from '../context/MixContext';
 import {
   ShieldCheck,
-  Award,
   ArrowRight,
   ChevronRight,
   Home,
+  AlertTriangle,
 } from 'lucide-react';
 
 export const StandardsPage: React.FC = () => {
@@ -14,187 +14,162 @@ export const StandardsPage: React.FC = () => {
   return (
     <div className="space-y-8 max-w-5xl mx-auto py-4">
       {/* Breadcrumbs */}
-      <div className="flex items-center gap-2 text-xs text-slate-800 font-bold">
+      <div className="flex items-center gap-2 text-xs text-[#525866] font-semibold">
         <button
           onClick={() => setMainRoute('home')}
-          className="flex items-center gap-1 hover:text-slate-950 transition-colors cursor-pointer"
+          className="flex items-center gap-1 hover:text-[#1E2022] transition-colors cursor-pointer"
         >
-          <Home className="w-4 h-4 text-slate-700" />
+          <Home className="w-3.5 h-3.5" />
           <span>Home</span>
         </button>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-        <span className="text-slate-950 font-extrabold">Regulatory Standards & Compliance</span>
+        <ChevronRight className="w-3.5 h-3.5" />
+        <span className="text-[#1E2022] font-bold">Regulatory Standards & Compliance</span>
       </div>
 
       {/* Header */}
       <div>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-950 text-xs font-bold border border-emerald-300 mb-3">
-          <ShieldCheck className="w-4 h-4 text-emerald-800" />
-          <span>National Building Code & BIS Compliance Matrix</span>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#F5F5F3] border border-[#E5E5E0] text-[#333A42] text-[11px] font-mono mb-3">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#2563EB]" />
+          <span className="font-bold uppercase tracking-wider text-[10px]">
+            Screening requirements
+          </span>
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-950 tracking-tight">
-          Indian standards a mix can be screened against
+        <h1 className="text-3xl font-heading font-bold text-[#1E2022] tracking-tight">
+          Indian Standards a Mix Can Be Screened Against
         </h1>
-        <p className="text-sm font-semibold text-slate-800 mt-2 max-w-3xl leading-relaxed">
-          Each product is allowed only when its own standard clears on the conservative side of the 90% interval. Green-building numbers below are evidence quantities. This app does not file an IGBC, GRIHA, or LEED rating.
+        <p className="text-xs sm:text-sm text-[#525866] mt-2 max-w-3xl leading-relaxed">
+          Each candidate product is evaluated against its corresponding Indian standard using the conservative lower bound of the 90% prediction interval. Screening clearance indicates eligibility for trial casting; physical IS 516 cube testing is required for certified compliance.
         </p>
       </div>
 
-      {/* Standards Cards */}
+      {/* Standards Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* IS 1237 */}
-        <div className="glass-card rounded-2xl p-6 border border-slate-300 shadow-sm flex flex-col justify-between">
+        {/* IS 15658 */}
+        <div id="is-15658" className="engineering-card scroll-mt-24 rounded-xl p-6 border border-[#E5E5E0] bg-[#FFFFFF] shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
-              <span className="font-mono text-xs font-bold text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded border border-emerald-200">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5E5E0] mb-3">
+              <span className="font-mono text-xs font-bold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded border border-[#2563EB]/20">
                 IS 15658
               </span>
-              <span className="text-xs text-slate-700 font-bold">Paver gate</span>
+              <span className="eyebrow-tag text-[9px] text-[#525866]">PAVER GATE</span>
             </div>
-            <h3 className="font-extrabold text-slate-950 text-base mb-1.5">
-              Cement Concrete Flooring Tiles & Pavers
+            <h3 className="font-heading font-bold text-[#1E2022] text-base mb-1.5">
+              Concrete Paving Blocks
             </h3>
-            <p className="text-xs font-medium text-slate-800 leading-relaxed mb-4">
-              Precast concrete pavers. Allowed only when the lower strength bound is at least 30 MPa and the upper absorption bound is at most 6%.
+            <p className="text-xs text-[#525866] leading-relaxed mb-4">
+              Precast concrete paving units for residential, commercial and light industrial pavements.
             </p>
             <div className="space-y-2 text-xs font-mono">
-              <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">Min. Compressive:</span>
-                <span className="font-extrabold text-slate-950">&gt;= 30.0 MPa</span>
+              <div className="flex justify-between p-2 rounded-lg bg-[#F5F5F3] border border-[#E5E5E0]">
+                <span className="text-[#525866]">Min Compressive:</span>
+                <span className="font-bold text-[#1E2022]">≥ 30.0 MPa</span>
               </div>
-              <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">Max. Water Absorption:</span>
-                <span className="font-extrabold text-slate-950">&lt;= 6%</span>
+              <div className="flex justify-between p-2 rounded-lg bg-[#F5F5F3] border border-[#E5E5E0]">
+                <span className="text-[#525866]">Max Water Absorption:</span>
+                <span className="font-bold text-[#1E2022]">≤ 6.0%</span>
               </div>
-              <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">When the interval crosses:</span>
-                <span className="font-extrabold text-slate-950">Cast one batch</span>
+              <div className="flex justify-between p-2 rounded-lg bg-[#F5F5F3] border border-[#E5E5E0]">
+                <span className="text-[#525866]">Verification Gate:</span>
+                <span className="font-bold text-[#2563EB]">Cast 28d Batch</span>
               </div>
             </div>
           </div>
           <button
             onClick={() => { setMainRoute('studio'); setStudioTab('sustainability'); }}
-            className="mt-6 pt-3 border-t border-slate-200 text-xs font-bold text-emerald-800 flex items-center gap-1 cursor-pointer hover:gap-1.5 transition-all"
+            className="mt-6 pt-3 border-t border-[#E5E5E0] text-xs font-heading font-bold uppercase tracking-wider text-[#2563EB] flex items-center gap-1 cursor-pointer hover:gap-1.5 transition-all"
           >
-            <span>Verify current mix in Studio</span>
+            <span>Verify in Studio</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
         {/* IS 2185 */}
-        <div className="glass-card rounded-2xl p-6 border border-slate-300 shadow-sm flex flex-col justify-between">
+        <div id="is-2185" className="engineering-card scroll-mt-24 rounded-xl p-6 border border-[#E5E5E0] bg-[#FFFFFF] shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
-              <span className="font-mono text-xs font-bold text-blue-900 bg-blue-100 px-2.5 py-0.5 rounded border border-blue-200">
-                IS 2185 (Part 1 & 2)
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5E5E0] mb-3">
+              <span className="font-mono text-xs font-bold text-[#333A42] bg-[#F5F5F3] px-2 py-0.5 rounded border border-[#E5E5E0]">
+                IS 2185 (Part 1)
               </span>
-              <span className="text-xs text-slate-700 font-bold">Block gate</span>
+              <span className="eyebrow-tag text-[9px] text-[#525866]">MASONRY GATE</span>
             </div>
-            <h3 className="font-extrabold text-slate-950 text-base mb-1.5">
-              Concrete Masonry Units (Hollow & Solid)
+            <h3 className="font-heading font-bold text-[#1E2022] text-base mb-1.5">
+              Concrete Masonry Units
             </h3>
-            <p className="text-xs font-medium text-slate-800 leading-relaxed mb-4">
-              Hollow blocks need a lower-bound strength of at least 3.5 MPa. Solid blocks need at least 5.0 MPa.
+            <p className="text-xs text-[#525866] leading-relaxed mb-4">
+              Solid and hollow concrete blocks for load-bearing and non-load-bearing masonry partition walls.
             </p>
             <div className="space-y-2 text-xs font-mono">
-              <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">Hollow block:</span>
-                <span className="font-extrabold text-slate-950">&gt;= 3.5 MPa</span>
+              <div className="flex justify-between p-2 rounded-lg bg-[#F5F5F3] border border-[#E5E5E0]">
+                <span className="text-[#525866]">Min Compressive:</span>
+                <span className="font-bold text-[#1E2022]">≥ 5.0 MPa</span>
               </div>
-              <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">Solid block:</span>
-                <span className="font-extrabold text-slate-950">&gt;= 5.0 MPa</span>
+              <div className="flex justify-between p-2 rounded-lg bg-[#F5F5F3] border border-[#E5E5E0]">
+                <span className="text-[#525866]">Max Dry Density:</span>
+                <span className="font-bold text-[#1E2022]">≤ 1800 kg/m³</span>
               </div>
-              <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">Drying Shrinkage:</span>
-                <span className="font-extrabold text-slate-950">&lt;= 0.06%</span>
+              <div className="flex justify-between p-2 rounded-lg bg-[#F5F5F3] border border-[#E5E5E0]">
+                <span className="text-[#525866]">Max Water Absorption:</span>
+                <span className="font-bold text-[#1E2022]">≤ 10.0%</span>
               </div>
             </div>
           </div>
           <button
             onClick={() => { setMainRoute('studio'); setStudioTab('sustainability'); }}
-            className="mt-6 pt-3 border-t border-slate-200 text-xs font-bold text-blue-800 flex items-center gap-1 cursor-pointer hover:gap-1.5 transition-all"
+            className="mt-6 pt-3 border-t border-[#E5E5E0] text-xs font-heading font-bold uppercase tracking-wider text-[#2563EB] flex items-center gap-1 cursor-pointer hover:gap-1.5 transition-all"
           >
-            <span>Verify current mix in Studio</span>
+            <span>Verify in Studio</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
         {/* IS 456 */}
-        <div className="glass-card rounded-2xl p-6 border border-slate-300 shadow-sm flex flex-col justify-between">
+        <div id="is-456" className="engineering-card scroll-mt-24 rounded-xl p-6 border border-[#E5E5E0] bg-[#FFFFFF] shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
-              <span className="font-mono text-xs font-bold text-indigo-900 bg-indigo-100 px-2.5 py-0.5 rounded border border-indigo-200">
-                IS 456:2000
+            <div id="is-10262" className="flex items-center justify-between pb-3 border-b border-[#E5E5E0] mb-3 scroll-mt-24">
+              <span className="font-mono text-xs font-bold text-[#333A42] bg-[#F5F5F3] px-2 py-0.5 rounded border border-[#E5E5E0]">
+                IS 456 & 10262
               </span>
-              <span className="text-xs text-slate-700 font-bold">Lab trial</span>
+              <span className="eyebrow-tag text-[9px] text-[#525866]">STRUCTURAL GATE</span>
             </div>
-            <h3 className="font-extrabold text-slate-950 text-base mb-1.5">
-              Plain and Reinforced Structural Concrete
+            <h3 className="font-heading font-bold text-[#1E2022] text-base mb-1.5">
+              Plain & Reinforced Concrete
             </h3>
-            <p className="text-xs font-medium text-slate-800 leading-relaxed mb-4">
-              Even when the lower bound clears M20 (20 MPa) and density stays inside 1800–2500 kg/m³, the certificate says screen for a lab trial. It never says certified.
+            <p className="text-xs text-[#525866] leading-relaxed mb-4">
+              Structural concrete elements. Plastic aggregate replacement is restricted to non-structural or experimental applications.
             </p>
             <div className="space-y-2 text-xs font-mono">
-              <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">Min. Grade (PCC):</span>
-                <span className="font-extrabold text-slate-950">M15 (15.0 MPa)</span>
+              <div className="flex justify-between p-2 rounded-lg bg-[#F5F5F3] border border-[#E5E5E0]">
+                <span className="text-[#525866]">Min Structural Grade:</span>
+                <span className="font-bold text-[#1E2022]">M20 / M25</span>
               </div>
-              <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">Min. Grade (RCC):</span>
-                <span className="font-extrabold text-slate-950">M20 (20.0 MPa)</span>
+              <div className="flex justify-between p-2 rounded-lg bg-[#F5F5F3] border border-[#E5E5E0]">
+                <span className="text-[#525866]">Max Plastic Volume:</span>
+                <span className="font-bold text-[#F97316]">≤ 15.0% Rec.</span>
               </div>
-              <div className="flex justify-between p-2 rounded-lg bg-slate-100 border border-slate-200">
-                <span className="text-slate-700 font-semibold">Max. Free W/C Ratio:</span>
-                <span className="font-extrabold text-slate-950">&lt;= 0.50 (Moderate)</span>
+              <div className="flex justify-between p-2 rounded-lg bg-[#F5F5F3] border border-[#E5E5E0]">
+                <span className="text-[#525866]">Approval Path:</span>
+                <span className="font-bold text-[#1E2022]">Site Engineer Hold</span>
               </div>
             </div>
           </div>
           <button
             onClick={() => { setMainRoute('studio'); setStudioTab('sustainability'); }}
-            className="mt-6 pt-3 border-t border-slate-200 text-xs font-bold text-indigo-800 flex items-center gap-1 cursor-pointer hover:gap-1.5 transition-all"
+            className="mt-6 pt-3 border-t border-[#E5E5E0] text-xs font-heading font-bold uppercase tracking-wider text-[#2563EB] flex items-center gap-1 cursor-pointer hover:gap-1.5 transition-all"
           >
-            <span>Verify current mix in Studio</span>
+            <span>Verify in Studio</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Green Rating Points Matrix */}
-      <div className="glass-card rounded-2xl p-6 border border-slate-300 shadow-sm">
-        <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
-          <Award className="w-5 h-5 text-emerald-700" />
-          <div>
-            <h3 className="font-bold text-slate-950 text-base">
-              Green Building Rating Frameworks
-            </h3>
-            <p className="text-xs font-semibold text-slate-700">
-              Evidence a consultant can attach. The studio does not submit a rating.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div className="p-4 rounded-xl bg-slate-100 border border-slate-200 space-y-2">
-            <span className="font-bold text-slate-950 block text-sm">IGBC Green New Buildings</span>
-            <p className="text-slate-800 font-medium leading-relaxed">
-              <strong>Credit MR 3: Recycled Content.</strong> The mass-balance row gives plastic kg/m³ and the factor date a consultant can cite for post-consumer aggregate replacement.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-100 border border-slate-200 space-y-2">
-            <span className="font-bold text-slate-950 block text-sm">GRIHA v2019 (TERI / MNRE)</span>
-            <p className="text-slate-800 font-medium leading-relaxed">
-              <strong>Criterion 17: Low-Embodied Carbon Materials.</strong> Up to 2 points for &gt;10% reduction in cradle-to-gate embodied energy vs conventional M20 concrete.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-100 border border-slate-200 space-y-2">
-            <span className="font-bold text-slate-950 block text-sm">LEED v4.1 (USGBC / GBCI)</span>
-            <p className="text-slate-800 font-medium leading-relaxed">
-              <strong>MR Credit: Building Product Disclosure & Optimization.</strong> Environmental Product Declaration (EPD) alignment and circular feedstock diversion points.
-            </p>
-          </div>
+      {/* Standards Disclaimer Banner */}
+      <div className="rounded-xl border border-[#E5E5E0] bg-[#FFFFFF] p-5 shadow-xs flex items-start gap-3">
+        <AlertTriangle className="w-5 h-5 text-[#F97316] shrink-0 mt-0.5" />
+        <div className="text-xs text-[#525866] leading-relaxed">
+          <strong className="text-[#1E2022] block font-heading text-sm mb-1">
+            Certification & Regulatory Disclaimer
+          </strong>
+          Screening candidate formulations through PlastiCrete.ai does not constitute official certification by the Bureau of Indian Standards (BIS) or statutory building authorities. Output data serves as an algorithmic decision-support tool. Production deployment mandates certified independent laboratory verification per IS 516 protocols.
         </div>
       </div>
     </div>

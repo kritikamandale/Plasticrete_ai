@@ -185,3 +185,38 @@ export const APPLICATION_PRETTY_NAMES: Record<string, string> = {
   thermal_insulation_panel: 'Thermal & Acoustic Insulation Panels',
   kerb_stone: 'Roadside Kerb & Gutter Stones',
 };
+
+
+export interface FormulationRecord {
+  id: string;
+  name: string;
+  version: number;
+  is_baseline: boolean;
+  parent_id?: string | null;
+  created_at: string;
+  updated_at: string;
+  mix_params: MixInput;
+  prediction?: PredictionResponse | null;
+  optimization?: OptimizeResponse | null;
+  score?: ScoreResponse | null;
+  recommendation?: RecommendationResponse | null;
+  status: 'active' | 'stale' | 'archived';
+  notes?: string | null;
+}
+
+export interface FormulationCreatePayload {
+  name: string;
+  mix_params: MixInput;
+  version?: number;
+  is_baseline?: boolean;
+  parent_id?: string | null;
+  prediction?: PredictionResponse | null;
+  optimization?: OptimizeResponse | null;
+  score?: ScoreResponse | null;
+  recommendation?: RecommendationResponse | null;
+  status?: string;
+  notes?: string | null;
+  id?: string;
+}
+
+export type PipelineStepStatus = 'not_started' | 'ready' | 'running' | 'completed' | 'stale' | 'failed';

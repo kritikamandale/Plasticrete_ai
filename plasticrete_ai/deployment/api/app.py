@@ -20,6 +20,7 @@ import modules.m3_sustainability as m3
 import modules.m4_recommendation as m4
 import modules.m5_report as m5
 import modules.batch_passport as batches
+import modules.formulations as formulations
 
 
 from deployment.api.schemas import (
@@ -30,6 +31,8 @@ from deployment.api.schemas import (
     ReportRequest,
     BatchCreateRequest,
     BatchUpdateRequest,
+    FormulationCreateRequest,
+    FormulationUpdateRequest,
 )
 from modules.m1_prediction.utils.schema import (
     ADDITIVE_TYPE_CLASSES, INPUT_RANGES, PLASTIC_TYPE_CLASSES, TARGET_COLUMNS,
@@ -68,6 +71,11 @@ async def lifespan(app: FastAPI):
         logger.info("M4 recommendation models loaded")
     except Exception as exc:
         logger.error(f"Failed to load M4 models: {exc}")
+    try:
+        formulations.init_db()
+        logger.info("Formulations database initialized")
+    except Exception as exc:
+        logger.error(f"Failed to initialize formulations DB: {exc}")
     yield
     logger.info("PlastiCrete AI shutting down")
 
@@ -429,6 +437,14 @@ def read_batch_photo(batch_id: str) -> FileResponse:
     return FileResponse(path)
 
 
+@app.delete("/batches/{batch_id}/photo")
+def delete_batch_photo(batch_id: str) -> dict:
+    record = batches.delete_photo(batch_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Batch not found.")
+    return {"id": record["id"], "cube_photo_path": record.get("cube_photo_path")}
+
+
 @app.get("/batches/{batch_id}/passport.pdf")
 def batch_passport_pdf(batch_id: str) -> StreamingResponse:
     record = batches.get_batch(batch_id)
@@ -452,3 +468,83 @@ def batch_passport_pdf(batch_id: str) -> StreamingResponse:
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="plasticrete_passport_{batch_id}.pdf"'},
     )
+
+
+# ═══════════════════════════════════════════════════════════
+# Formulations & Pipeline State Endpoints
+# ═══════════════════════════════════════════════════════════
+
+@app.get("/formulations")
+def list_saved_formulations(search: Optional[str] = None, limit: int = 50) -> list:
+    """Retrieve saved formulation history with optional search query."""
+    return formulations.list_formulations(search=search, limit=limit)
+
+
+@app.post("/formulations")
+def save_formulation(payload: FormulationCreateRequest) -> dict:
+    """Save or create a new formulation version with associated pipeline outputs."""
+    try:
+        created = formulations.create_formulation(
+            name=payload.name,
+            mix_params=payload.mix_params,
+            version=payload.version,
+            is_baseline=payload.is_baseline,
+            parent_id=payload.parent_id,
+            prediction=payload.prediction,
+            optimization=payload.optimization,
+            score=payload.score,
+            recommendation=payload.recommendation,
+            status=payload.status,
+            notes=payload.notes,
+            formulation_id=payload.id,
+        )
+        return created
+    except Exception as exc:
+        logger.exception(f"Error saving formulation: {exc}")
+        raise HTTPException(status_code=500, detail=f"Failed to save formulation: {exc}")
+
+
+@app.get("/formulations/{formulation_id}")
+def get_saved_formulation(formulation_id: str) -> dict:
+    """Retrieve an individual formulation by ID including its ML pipeline predictions."""
+    record = formulations.get_formulation(formulation_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="Formulation not found.")
+    return record
+
+
+@app.patch("/formulations/{formulation_id}")
+def update_saved_formulation(formulation_id: str, payload: FormulationUpdateRequest) -> dict:
+    """Update fields or pipeline outputs of an existing formulation."""
+    updated = formulations.update_formulation(
+        formulation_id,
+        name=payload.name,
+        mix_params=payload.mix_params,
+        prediction=payload.prediction,
+        optimization=payload.optimization,
+        score=payload.score,
+        recommendation=payload.recommendation,
+        status=payload.status,
+        notes=payload.notes,
+    )
+    if not updated:
+        raise HTTPException(status_code=404, detail="Formulation not found.")
+    return updated
+
+
+@app.post("/formulations/{formulation_id}/duplicate")
+def duplicate_saved_formulation(formulation_id: str, name: Optional[str] = None) -> dict:
+    """Clone a formulation as a new version or child candidate."""
+    cloned = formulations.duplicate_formulation(formulation_id, new_name=name)
+    if not cloned:
+        raise HTTPException(status_code=404, detail="Source formulation not found.")
+    return cloned
+
+
+@app.delete("/formulations/{formulation_id}")
+def delete_saved_formulation(formulation_id: str) -> dict:
+    """Delete a saved formulation."""
+    success = formulations.delete_formulation(formulation_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Formulation not found.")
+    return {"deleted": True, "id": formulation_id}

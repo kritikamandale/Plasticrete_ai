@@ -1,6 +1,6 @@
 import type { MixInput } from './types';
 
-export type MainNavRoute = 'home' | 'studio' | 'standards' | 'technology' | 'batch';
+export type MainNavRoute = 'home' | 'studio' | 'interactive' | 'standards' | 'batch';
 export type StudioSubTab = 'overview' | 'predictor' | 'optimizer' | 'sustainability' | 'recommender' | 'explainability';
 
 export function mixToQuery(mix: MixInput): string {
@@ -37,20 +37,22 @@ export function mixFromQuery(search: string): MixInput | null {
 }
 
 export function pathFor(route: MainNavRoute, tab: StudioSubTab, batchId: string | null): string {
-  if (route === 'batch' && batchId) return `/batch/${encodeURIComponent(batchId)}`;
+  if (route === 'batch') return batchId ? `/batch/${encodeURIComponent(batchId)}` : '/batch';
   if (route === 'standards') return '/standards';
-  if (route === 'technology') return '/technology';
+  if (route === 'interactive') return '/interactive';
   if (route === 'studio') return tab === 'overview' ? '/studio' : `/studio/${tab}`;
   return '/';
 }
 
 export function readLocation(): { route: MainNavRoute; tab: StudioSubTab; batchId: string | null } {
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
+  if (path === '/batch') return { route: 'batch', tab: 'overview', batchId: null };
   if (path.startsWith('/batch/')) {
     return { route: 'batch', tab: 'overview', batchId: decodeURIComponent(path.slice('/batch/'.length)) };
   }
   if (path === '/standards') return { route: 'standards', tab: 'overview', batchId: null };
-  if (path === '/technology') return { route: 'technology', tab: 'overview', batchId: null };
+  if (path === '/interactive') return { route: 'interactive', tab: 'overview', batchId: null };
+  if (path === '/technology') return { route: 'studio', tab: 'overview', batchId: null }; // clean legacy redirect
   if (path === '/studio/predictor') return { route: 'studio', tab: 'predictor', batchId: null };
   if (path === '/studio/optimizer') return { route: 'studio', tab: 'optimizer', batchId: null };
   if (path === '/studio/sustainability') return { route: 'studio', tab: 'sustainability', batchId: null };
@@ -58,4 +60,29 @@ export function readLocation(): { route: MainNavRoute; tab: StudioSubTab; batchI
   if (path === '/studio/explainability') return { route: 'studio', tab: 'explainability', batchId: null };
   if (path === '/studio') return { route: 'studio', tab: 'overview', batchId: null };
   return { route: 'home', tab: 'overview', batchId: null };
+}
+
+const ANCHOR_KEY = 'plasticrete-anchor';
+
+export function queueAnchor(id: string) {
+  sessionStorage.setItem(ANCHOR_KEY, id);
+}
+
+export function takeQueuedAnchor(): string | null {
+  const id = sessionStorage.getItem(ANCHOR_KEY);
+  if (id) sessionStorage.removeItem(ANCHOR_KEY);
+  return id;
+}
+
+export function revealTarget(id?: string | null) {
+  if (id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ block: 'start' });
+      el.classList.add('ring-2', 'ring-[#2563EB]');
+      window.setTimeout(() => el.classList.remove('ring-2', 'ring-[#2563EB]'), 1600);
+      return;
+    }
+  }
+  window.scrollTo(0, 0);
 }
